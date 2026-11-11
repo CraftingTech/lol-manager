@@ -30,10 +30,10 @@ mod tests {
     #[test]
     fn champion_is_id_and_name() {
         let champion = Champion {
-            id: ChampionId(12),
+            id: ChampionId(uuid::Uuid::from_u128(12)),
             name: "Ahri".into(),
         };
-        assert_eq!(champion.id, ChampionId(12));
+        assert_eq!(champion.id, ChampionId(uuid::Uuid::from_u128(12)));
         assert_eq!(champion.name, "Ahri");
     }
 

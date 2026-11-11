@@ -59,7 +59,7 @@ mod tests {
     #[test]
     fn season_allows_unknown_team_count_and_salary_cap() {
         let season = LeagueSeason {
-            league: LeagueId(1),
+            league: LeagueId(uuid::Uuid::from_u128(1)),
             year: 2014,
             team_count: None,
             splits: Vec::new(),

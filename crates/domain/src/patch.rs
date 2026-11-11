@@ -43,7 +43,7 @@ mod tests {
     #[test]
     fn patch_without_sliders() {
         let empty = Patch {
-            id: PatchId(1),
+            id: PatchId(uuid::Uuid::from_u128(1)),
             version: "16.1".into(),
             date: "2026-01-08".into(),
             champions: vec![],
@@ -55,11 +55,11 @@ mod tests {
         assert_eq!(empty.date, "2026-01-08");
 
         let patch = Patch {
-            id: PatchId(2),
+            id: PatchId(uuid::Uuid::from_u128(2)),
             version: "16.2".into(),
             date: "2026-01-22".into(),
             champions: vec![ChampionOnPatch {
-                champion: ChampionId(7),
+                champion: ChampionId(uuid::Uuid::from_u128(7)),
                 roles: None,
                 damage: None,
                 tankiness: None,

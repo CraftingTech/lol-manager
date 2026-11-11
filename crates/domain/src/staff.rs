@@ -40,7 +40,7 @@ mod tests {
     #[test]
     fn presta_is_not_a_staff_member() {
         let member = StaffMember {
-            id: StaffId(1),
+            id: StaffId(uuid::Uuid::from_u128(1)),
             name: "Analyst".to_string(),
             role: StaffRole::Analyst,
             competencies: CoachCompetencies {
@@ -52,13 +52,13 @@ mod tests {
             },
         };
         let presta = Presta {
-            player: PlayerId(4),
-            champion: ChampionId(8),
+            player: PlayerId(uuid::Uuid::from_u128(4)),
+            champion: ChampionId(uuid::Uuid::from_u128(8)),
         };
 
         assert_ne!(TypeId::of::<Presta>(), TypeId::of::<StaffMember>());
-        assert_eq!(member.id, StaffId(1));
-        assert_eq!(presta.player, PlayerId(4));
-        assert_eq!(presta.champion, ChampionId(8));
+        assert_eq!(member.id, StaffId(uuid::Uuid::from_u128(1)));
+        assert_eq!(presta.player, PlayerId(uuid::Uuid::from_u128(4)));
+        assert_eq!(presta.champion, ChampionId(uuid::Uuid::from_u128(8)));
     }
 }

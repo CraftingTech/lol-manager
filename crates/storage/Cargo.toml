@@ -6,4 +6,5 @@ publish = false
 
 [dependencies]
 domain = { path = "../domain" }
+uuid = "1"
 rusqlite = { version = "0.32", features = ["bundled"] }

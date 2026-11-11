@@ -39,7 +39,7 @@ pub struct Finances {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct FanBase {
     pub count: Option<u64>,
-    pub mood: Score,
+    pub mood: Option<Score>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -49,9 +49,9 @@ pub struct Organisation {
     pub region: String,
     pub history: String,
     pub teams: Vec<TeamId>,
-    pub staff_seats: u8,
-    pub locaux: Locaux,
-    pub jersey: Jersey,
+    pub staff_seats: Option<u8>,
+    pub locaux: Option<Locaux>,
+    pub jersey: Option<Jersey>,
     pub sponsors: Vec<SponsorContract>,
     pub influencer_contracts: Vec<InfluencerContract>,
     pub finances: Finances,
@@ -67,20 +67,20 @@ mod tests {
     #[test]
     fn organisation_accepts_two_teams() {
         let organisation = Organisation {
-            id: OrganisationId(1),
+            id: OrganisationId(uuid::Uuid::from_u128(1)),
             name: "Org".to_string(),
             region: "EU".to_string(),
             history: String::new(),
-            teams: vec![TeamId(1), TeamId(2)],
-            staff_seats: 3,
-            locaux: Locaux {
+            teams: vec![TeamId(uuid::Uuid::from_u128(1)), TeamId(uuid::Uuid::from_u128(2))],
+            staff_seats: Some(3),
+            locaux: Some(Locaux {
                 scrim_room: false,
                 gaming_house: false,
                 chef: false,
-            },
-            jersey: Jersey {
+            }),
+            jersey: Some(Jersey {
                 name: "Home".to_string(),
-            },
+            }),
             sponsors: Vec::new(),
             influencer_contracts: Vec::new(),
             finances: Finances {
@@ -89,11 +89,11 @@ mod tests {
             },
             fan_base: FanBase {
                 count: None,
-                mood: Score::new(40).unwrap(),
+                mood: Some(Score::new(40).unwrap()),
             },
         };
 
-        assert_eq!(organisation.teams, vec![TeamId(1), TeamId(2)]);
+        assert_eq!(organisation.teams, vec![TeamId(uuid::Uuid::from_u128(1)), TeamId(uuid::Uuid::from_u128(2))]);
         assert!(organisation.finances.budget.is_none());
         assert!(organisation.sponsors.is_empty());
     }

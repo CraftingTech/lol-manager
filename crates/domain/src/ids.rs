@@ -1,7 +1,9 @@
+use uuid::Uuid;
+
 macro_rules! identifier {
     ($name:ident) => {
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-        pub struct $name(pub u64);
+        pub struct $name(pub Uuid);
     };
 }
 

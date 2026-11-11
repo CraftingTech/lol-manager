@@ -38,11 +38,11 @@ mod tests {
     fn head_coach_builds_without_staff_seats() {
         let coach = HeadCoach {
             identity: HeadCoachIdentity {
-                id: CoachId(1),
+                id: CoachId(uuid::Uuid::from_u128(1)),
                 name: "Coach".to_string(),
                 nationality: "KR".to_string(),
                 age: 35,
-                teams: vec![TeamId(7)],
+                teams: vec![TeamId(uuid::Uuid::from_u128(7))],
                 palmares: Vec::new(),
             },
             competencies: CoachCompetencies {
@@ -55,8 +55,8 @@ mod tests {
             reputation: Score::new(65).unwrap(),
         };
 
-        assert_eq!(coach.identity.id, CoachId(1));
-        assert_eq!(coach.identity.teams, vec![TeamId(7)]);
+        assert_eq!(coach.identity.id, CoachId(uuid::Uuid::from_u128(1)));
+        assert_eq!(coach.identity.teams, vec![TeamId(uuid::Uuid::from_u128(7))]);
         assert!(coach.identity.palmares.is_empty());
     }
 }

@@ -97,8 +97,8 @@ pub struct PlayerIdentity {
     pub id: PlayerId,
     pub name: String,
     pub role: Role,
-    pub nationality: String,
-    pub age: u8,
+    pub nationality: Option<String>,
+    pub age: Option<u8>,
     pub teams: Vec<TeamId>,
     pub palmares: Vec<PalmaresEntry>,
 }
@@ -133,8 +133,8 @@ pub struct PlayerState {
 pub struct Player {
     pub identity: PlayerIdentity,
     pub pool: Vec<PoolEntry>,
-    pub competencies: Competencies,
-    pub state: PlayerState,
+    pub competencies: Option<Competencies>,
+    pub state: Option<PlayerState>,
     pub tags: Vec<Tag>,
     pub aspirations: Vec<PlayerAspiration>,
 }
@@ -150,13 +150,15 @@ impl Player {
     pub fn try_new(
         identity: PlayerIdentity,
         pool: Vec<PoolEntry>,
-        competencies: Competencies,
-        state: PlayerState,
+        competencies: Option<Competencies>,
+        state: Option<PlayerState>,
         tags: Vec<Tag>,
         aspirations: Vec<PlayerAspiration>,
     ) -> Result<Self, PlayerError> {
-        if !competencies.role_skill.fits(identity.role) {
-            return Err(PlayerError::RoleSkillMismatch);
+        if let Some(competencies) = &competencies {
+            if !competencies.role_skill.fits(identity.role) {
+                return Err(PlayerError::RoleSkillMismatch);
+            }
         }
         let mut seen = Vec::new();
         for aspiration in &aspirations {
@@ -194,12 +196,12 @@ mod tests {
 
     fn identity(role: Role) -> PlayerIdentity {
         PlayerIdentity {
-            id: PlayerId(1),
+            id: PlayerId(uuid::Uuid::from_u128(1)),
             name: "Jungler".into(),
             role,
-            nationality: "KR".into(),
-            age: 20,
-            teams: vec![TeamId(1)],
+            nationality: Some("KR".into()),
+            age: Some(20),
+            teams: vec![TeamId(uuid::Uuid::from_u128(1))],
             palmares: vec![PalmaresEntry {
                 award: "MVP".into(),
                 competition: "Split".into(),
@@ -240,8 +242,8 @@ mod tests {
         let refused = Player::try_new(
             identity(Role::Jungle),
             vec![],
-            competencies(RoleSkill::Laning(score(40))),
-            state(),
+            Some(competencies(RoleSkill::Laning(score(40)))),
+            Some(state()),
             vec![],
             vec![],
         );
@@ -250,11 +252,11 @@ mod tests {
         let accepted = Player::try_new(
             identity(Role::Jungle),
             vec![PoolEntry {
-                champion: ChampionId(9),
+                champion: ChampionId(uuid::Uuid::from_u128(9)),
                 mastery: score(70),
             }],
-            competencies(RoleSkill::Pathing(score(40))),
-            state(),
+            Some(competencies(RoleSkill::Pathing(score(40)))),
+            Some(state()),
             vec![Tag::Rookie],
             vec![
                 PlayerAspiration::new(
@@ -270,7 +272,7 @@ mod tests {
             ],
         )
         .unwrap();
-        assert!(accepted.competencies.role_skill.fits(Role::Jungle));
+        assert!(accepted.competencies.unwrap().role_skill.fits(Role::Jungle));
         assert_eq!(accepted.pool.len(), 1);
         assert_eq!(accepted.tags, vec![Tag::Rookie]);
     }
@@ -280,8 +282,8 @@ mod tests {
         let refused = Player::try_new(
             identity(Role::Mid),
             vec![],
-            competencies(RoleSkill::Pathing(score(55))),
-            state(),
+            Some(competencies(RoleSkill::Pathing(score(55)))),
+            Some(state()),
             vec![],
             vec![],
         );
@@ -299,8 +301,8 @@ mod tests {
         let player = Player::try_new(
             identity(Role::Mid),
             vec![],
-            competencies(RoleSkill::Laning(score(40))),
-            state(),
+            Some(competencies(RoleSkill::Laning(score(40)))),
+            Some(state()),
             vec![],
             vec![PlayerAspiration::new(AspirationType::RetirementAge, AspirationValue::Age(28)).unwrap()],
         )

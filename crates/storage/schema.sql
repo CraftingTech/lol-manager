@@ -1,12 +1,12 @@
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE champions (
-    id INTEGER PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL
 );
 
 CREATE TABLE leagues (
-    id INTEGER PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     region TEXT NOT NULL,
     tier TEXT NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE leagues (
 );
 
 CREATE TABLE league_seasons (
-    league_id INTEGER NOT NULL,
+    league_id TEXT NOT NULL,
     year INTEGER NOT NULL,
     team_count INTEGER,
     msi_slots INTEGER NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE league_seasons (
 );
 
 CREATE TABLE split_formats (
-    league_id INTEGER NOT NULL,
+    league_id TEXT NOT NULL,
     year INTEGER NOT NULL,
     position INTEGER NOT NULL,
     name TEXT NOT NULL,
@@ -36,60 +36,60 @@ CREATE TABLE split_formats (
 );
 
 CREATE TABLE organisations (
-    id INTEGER PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     region TEXT NOT NULL,
     history TEXT NOT NULL,
-    staff_seats INTEGER NOT NULL,
-    scrim_room INTEGER NOT NULL,
-    gaming_house INTEGER NOT NULL,
-    chef INTEGER NOT NULL,
-    jersey_name TEXT NOT NULL,
+    staff_seats INTEGER,
+    scrim_room INTEGER,
+    gaming_house INTEGER,
+    chef INTEGER,
+    jersey_name TEXT,
     budget INTEGER,
     wage_bill INTEGER,
     fan_count INTEGER,
-    fan_mood INTEGER NOT NULL
+    fan_mood INTEGER
 );
 
 CREATE TABLE teams (
-    id INTEGER PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
-    organisation_id INTEGER NOT NULL,
-    league_id INTEGER,
+    organisation_id TEXT NOT NULL,
+    league_id TEXT,
     season_year INTEGER,
     FOREIGN KEY (organisation_id) REFERENCES organisations (id)
 );
 
 CREATE TABLE organisation_teams (
-    organisation_id INTEGER NOT NULL,
+    organisation_id TEXT NOT NULL,
     position INTEGER NOT NULL,
-    team_id INTEGER NOT NULL,
+    team_id TEXT NOT NULL,
     PRIMARY KEY (organisation_id, position),
     FOREIGN KEY (organisation_id) REFERENCES organisations (id),
     FOREIGN KEY (team_id) REFERENCES teams (id)
 );
 
 CREATE TABLE players (
-    id INTEGER PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     role TEXT NOT NULL,
-    nationality TEXT NOT NULL,
-    age INTEGER NOT NULL,
-    mechanics INTEGER NOT NULL,
-    teamfight INTEGER NOT NULL,
-    map_awareness INTEGER NOT NULL,
-    objectives INTEGER NOT NULL,
-    tempo INTEGER NOT NULL,
-    mental INTEGER NOT NULL,
-    itemisation INTEGER NOT NULL,
-    phase_early INTEGER NOT NULL,
-    phase_mid INTEGER NOT NULL,
-    phase_late INTEGER NOT NULL,
-    shotcalling INTEGER NOT NULL,
-    role_skill_kind TEXT NOT NULL,
-    role_skill_score INTEGER NOT NULL,
-    form INTEGER NOT NULL,
-    fatigue INTEGER NOT NULL
+    nationality TEXT,
+    age INTEGER,
+    mechanics INTEGER,
+    teamfight INTEGER,
+    map_awareness INTEGER,
+    objectives INTEGER,
+    tempo INTEGER,
+    mental INTEGER,
+    itemisation INTEGER,
+    phase_early INTEGER,
+    phase_mid INTEGER,
+    phase_late INTEGER,
+    shotcalling INTEGER,
+    role_skill_kind TEXT,
+    role_skill_score INTEGER,
+    form INTEGER,
+    fatigue INTEGER
 );
 
 CREATE TABLE aspiration_types (
@@ -142,7 +142,7 @@ INSERT INTO aspiration_modifiers (aspiration_type, effect, impact) VALUES
     );
 
 CREATE TABLE player_aspirations (
-    player_id INTEGER NOT NULL,
+    player_id TEXT NOT NULL,
     aspiration_type TEXT NOT NULL,
     title TEXT,
     age INTEGER,
@@ -158,16 +158,16 @@ CREATE TABLE player_aspirations (
 );
 
 CREATE TABLE player_teams (
-    player_id INTEGER NOT NULL,
+    player_id TEXT NOT NULL,
     position INTEGER NOT NULL,
-    team_id INTEGER NOT NULL,
+    team_id TEXT NOT NULL,
     PRIMARY KEY (player_id, position),
     FOREIGN KEY (player_id) REFERENCES players (id),
     FOREIGN KEY (team_id) REFERENCES teams (id)
 );
 
 CREATE TABLE player_palmares (
-    player_id INTEGER NOT NULL,
+    player_id TEXT NOT NULL,
     position INTEGER NOT NULL,
     award TEXT NOT NULL,
     competition TEXT NOT NULL,
@@ -177,8 +177,8 @@ CREATE TABLE player_palmares (
 );
 
 CREATE TABLE player_pool (
-    player_id INTEGER NOT NULL,
-    champion_id INTEGER NOT NULL,
+    player_id TEXT NOT NULL,
+    champion_id TEXT NOT NULL,
     mastery INTEGER NOT NULL,
     PRIMARY KEY (player_id, champion_id),
     FOREIGN KEY (player_id) REFERENCES players (id),
@@ -186,23 +186,23 @@ CREATE TABLE player_pool (
 );
 
 CREATE TABLE player_tags (
-    player_id INTEGER NOT NULL,
+    player_id TEXT NOT NULL,
     tag TEXT NOT NULL,
     PRIMARY KEY (player_id, tag),
     FOREIGN KEY (player_id) REFERENCES players (id)
 );
 
 CREATE TABLE roster_players (
-    team_id INTEGER NOT NULL,
+    team_id TEXT NOT NULL,
     position INTEGER NOT NULL,
-    player_id INTEGER NOT NULL,
+    player_id TEXT NOT NULL,
     PRIMARY KEY (team_id, position),
     FOREIGN KEY (team_id) REFERENCES teams (id),
     FOREIGN KEY (player_id) REFERENCES players (id)
 );
 
 CREATE TABLE head_coaches (
-    id INTEGER PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     nationality TEXT NOT NULL,
     age INTEGER NOT NULL,
@@ -215,16 +215,16 @@ CREATE TABLE head_coaches (
 );
 
 CREATE TABLE coach_teams (
-    coach_id INTEGER NOT NULL,
+    coach_id TEXT NOT NULL,
     position INTEGER NOT NULL,
-    team_id INTEGER NOT NULL,
+    team_id TEXT NOT NULL,
     PRIMARY KEY (coach_id, position),
     FOREIGN KEY (coach_id) REFERENCES head_coaches (id),
     FOREIGN KEY (team_id) REFERENCES teams (id)
 );
 
 CREATE TABLE coach_palmares (
-    coach_id INTEGER NOT NULL,
+    coach_id TEXT NOT NULL,
     position INTEGER NOT NULL,
     award TEXT NOT NULL,
     competition TEXT NOT NULL,
@@ -234,8 +234,8 @@ CREATE TABLE coach_palmares (
 );
 
 CREATE TABLE sponsors (
-    id INTEGER PRIMARY KEY,
-    organisation_id INTEGER NOT NULL,
+    id TEXT PRIMARY KEY,
+    organisation_id TEXT NOT NULL,
     payer TEXT NOT NULL,
     amount INTEGER,
     duration_years INTEGER,
@@ -244,8 +244,8 @@ CREATE TABLE sponsors (
 );
 
 CREATE TABLE influencer_contracts (
-    id INTEGER PRIMARY KEY,
-    organisation_id INTEGER NOT NULL,
+    id TEXT PRIMARY KEY,
+    organisation_id TEXT NOT NULL,
     streamer TEXT NOT NULL,
     duration_years INTEGER,
     stream_revenue INTEGER,
@@ -253,7 +253,7 @@ CREATE TABLE influencer_contracts (
 );
 
 CREATE TABLE staff_members (
-    id INTEGER PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     role TEXT NOT NULL,
     positional_role TEXT,
@@ -265,22 +265,22 @@ CREATE TABLE staff_members (
 );
 
 CREATE TABLE prestas (
-    player_id INTEGER NOT NULL,
-    champion_id INTEGER NOT NULL,
+    player_id TEXT NOT NULL,
+    champion_id TEXT NOT NULL,
     PRIMARY KEY (player_id, champion_id),
     FOREIGN KEY (player_id) REFERENCES players (id),
     FOREIGN KEY (champion_id) REFERENCES champions (id)
 );
 
 CREATE TABLE patches (
-    id INTEGER PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     version TEXT NOT NULL,
     date TEXT NOT NULL
 );
 
 CREATE TABLE champion_on_patch (
-    patch_id INTEGER NOT NULL,
-    champion_id INTEGER NOT NULL,
+    patch_id TEXT NOT NULL,
+    champion_id TEXT NOT NULL,
     top INTEGER,
     jungle INTEGER,
     mid INTEGER,
@@ -298,7 +298,7 @@ CREATE TABLE champion_on_patch (
 );
 
 CREATE TABLE objective_events (
-    patch_id INTEGER NOT NULL,
+    patch_id TEXT NOT NULL,
     position INTEGER NOT NULL,
     name TEXT NOT NULL,
     reward TEXT,
@@ -307,7 +307,7 @@ CREATE TABLE objective_events (
 );
 
 CREATE TABLE objective_unlocks (
-    patch_id INTEGER NOT NULL,
+    patch_id TEXT NOT NULL,
     objective_position INTEGER NOT NULL,
     unlock_position INTEGER NOT NULL,
     name TEXT NOT NULL,
