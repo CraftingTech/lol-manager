@@ -5,26 +5,28 @@ use std::path::{Path, PathBuf};
 
 use browser::{Browser, Catalog};
 use domain::{LeagueId, OrganisationId, TeamId};
-use gpui::{px, prelude::*, size, App, Application, Bounds, WindowBounds, WindowOptions};
+use gpui::{px, prelude::*, size, App, Application, Bounds, TitlebarOptions, WindowBounds, WindowOptions};
 use storage::Store;
 
 fn main() {
     let path = database_path();
     let assets = path.parent().map(Path::to_path_buf).unwrap_or_else(|| PathBuf::from("data"));
     let catalog = load_catalog(&path);
-    let title = path.display().to_string();
 
     Application::new().run(move |cx: &mut App| {
         let bounds = Bounds::centered(None, size(px(1280.0), px(800.0)), cx);
         let catalog = catalog.clone();
-        let title = title.clone();
         let assets = assets.clone();
         cx.open_window(
             WindowOptions {
-                window_bounds: Some(WindowBounds::Windowed(bounds)),
+                window_bounds: Some(WindowBounds::Fullscreen(bounds)),
+                titlebar: Some(TitlebarOptions {
+                    title: Some("LoL Manager".into()),
+                    ..Default::default()
+                }),
                 ..Default::default()
             },
-            move |_, cx| cx.new(|_| Browser::new(catalog.clone(), title.clone(), assets.clone())),
+            move |_, cx| cx.new(|_| Browser::new(catalog.clone(), assets.clone())),
         )
         .unwrap();
         cx.activate(true);

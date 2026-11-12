@@ -5,7 +5,12 @@ use domain::{
     CalendarDate, Champion, ChampionOnPatch, League, LeagueId, LeagueSeason, LeagueTier, Organisation,
     OrganisationId, Patch, Player, Role, RoleSkill, Score, SeasonPresence, Team, TeamId,
 };
-use gpui::{div, img, prelude::*, px, rgb, MouseButton, Window};
+use std::ops::Range;
+
+use gpui::{
+    div, img, point, prelude::*, px, rgb, uniform_list, ListHorizontalSizingBehavior, MouseButton,
+    UniformListScrollHandle, Window,
+};
 
 const CANVAS: u32 = 0x12141a;
 const SIDEBAR: u32 = 0x1b1e27;
@@ -112,24 +117,34 @@ impl Section {
             Self::Organisations,
         ]
     }
+
+    fn index(self) -> usize {
+        match self {
+            Self::Champions => 0,
+            Self::Teams => 1,
+            Self::Players => 2,
+            Self::Leagues => 3,
+            Self::Organisations => 4,
+        }
+    }
 }
 
 pub struct Browser {
     catalog: Result<Catalog, String>,
-    source: String,
     assets: PathBuf,
     section: Section,
     selected: Option<usize>,
+    scroll: UniformListScrollHandle,
 }
 
 impl Browser {
-    pub fn new(catalog: Result<Catalog, String>, source: String, assets: PathBuf) -> Self {
+    pub fn new(catalog: Result<Catalog, String>, assets: PathBuf) -> Self {
         Self {
             catalog,
-            source,
             assets,
             section: Section::Players,
             selected: None,
+            scroll: UniformListScrollHandle::new(),
         }
     }
 
@@ -151,6 +166,7 @@ impl Render for Browser {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let mut sidebar = div()
             .w(px(220.0))
+            .flex_none()
             .h_full()
             .flex()
             .flex_col()
@@ -183,177 +199,229 @@ impl Render for Browser {
                         cx.listener(move |this, _, _, cx| {
                             this.section = section;
                             this.selected = None;
+                            this.scroll
+                                .0
+                                .borrow()
+                                .base_handle
+                                .set_offset(point(px(0.0), px(0.0)));
                             cx.notify();
                         }),
                     ),
             );
         }
 
-        sidebar = sidebar.child(div().flex_1()).child(label(&self.source, MUTED, false));
-
-        div()
+        let mut screen = div()
+            .relative()
             .size_full()
+            .overflow_hidden()
             .flex()
             .bg(rgb(CANVAS))
             .text_color(rgb(TEXT))
             .child(sidebar)
-            .child(self.table(cx))
-            .child(self.detail())
+            .child(self.table(cx));
+        if self.selected.is_some() {
+            screen = screen.child(self.detail(cx));
+        }
+        screen
     }
 }
 
 impl Browser {
     fn table(&self, cx: &mut Context<Self>) -> impl IntoElement {
-        let mut sheet = div().id("roster").flex_1().overflow_scroll().flex().flex_col();
-        sheet = sheet.child(
-            div()
-                .px_4()
-                .h(px(36.0))
-                .flex()
-                .items_center()
-                .gap_4()
-                .bg(rgb(PANEL))
-                .border_b_1()
-                .border_color(rgb(LINE))
-                .child(headed(self.section.headers())),
-        );
-        match &self.catalog {
-            Err(error) => {
-                sheet = sheet.child(div().p_4().child(label(error, MUTED, false)));
-            }
-            Ok(catalog) => {
-                let rows = self.rows(catalog);
-                for (index, cells) in rows.into_iter().enumerate() {
-                    let selected = self.selected == Some(index);
-                    sheet = sheet.child(
+        let section = self.section;
+        let width = sheet_width(section.headers());
+        let scroll_x = self.scroll.0.borrow().base_handle.offset().x;
+        let mut frame = div()
+            .flex_1()
+            .min_w_0()
+            .min_h_0()
+            .h_full()
+            .overflow_hidden()
+            .flex()
+            .flex_col();
+        if self.selected.is_some() {
+            frame = frame.pr(px(340.0));
+        }
+        frame
+            .child(
+                div()
+                    .h(px(36.0))
+                    .w_full()
+                    .flex_shrink_0()
+                    .overflow_hidden()
+                    .bg(rgb(PANEL))
+                    .border_b_1()
+                    .border_color(rgb(LINE))
+                    .child(
                         div()
-                            .px_4()
-                            .h(px(32.0))
+                            .ml(scroll_x)
+                            .h_full()
+                            .w_full()
+                            .min_w(px(width))
+                            .px(px(16.0))
                             .flex()
                             .items_center()
-                            .gap_4()
-                            .bg(rgb(if selected { SELECTED } else if index % 2 == 0 { ROW } else { CANVAS }))
-                            .children(cells.into_iter().enumerate().zip(self.section.headers()).map(
-                                |(cell, (_, width))| {
-                                    let (cell_index, value) = cell;
-                                    let mut slot = div().w(px(*width)).h(px(28.0)).flex().items_center().gap_2();
-                                    if cell_index == 0 {
-                                        if let Some(path) = self.portrait_file(index) {
-                                            slot = slot.child(img(path).w(px(24.0)).h(px(24.0)));
-                                        }
-                                    }
-                                    slot.child(cell_text(value))
-                                },
-                            ))
-                            .on_mouse_down(
-                                MouseButton::Left,
-                                cx.listener(move |this, _, _, cx| {
-                                    this.selected = Some(index);
-                                    cx.notify();
-                                }),
-                            ),
-                    );
-                }
+                            .child(headed(section.headers())),
+                    ),
+            )
+            .child(match &self.catalog {
+                Err(error) => div().p_4().child(label(error, MUTED, false)).into_any_element(),
+                Ok(_) => uniform_list(
+                    ("roster", section.index()),
+                    self.count(section),
+                    cx.processor(|this, range: Range<usize>, _, cx| {
+                        range.map(|index| this.line(index, cx)).collect::<Vec<_>>()
+                    }),
+                )
+                .track_scroll(self.scroll.clone())
+                .with_horizontal_sizing_behavior(ListHorizontalSizingBehavior::Unconstrained)
+                .flex_1()
+                .w_full()
+                .into_any_element(),
+            })
+    }
+
+    fn line(&self, index: usize, cx: &mut Context<Self>) -> impl IntoElement {
+        let selected = self.selected == Some(index);
+        let cells = self.line_cells(index);
+        div()
+            .id(("row", index))
+            .h(px(32.0))
+            .w_full()
+            .min_w(px(sheet_width(self.section.headers())))
+            .px(px(16.0))
+            .flex()
+            .flex_shrink_0()
+            .items_center()
+            .bg(rgb(if selected { SELECTED } else if index % 2 == 0 { ROW } else { CANVAS }))
+            .children(cells.into_iter().enumerate().zip(self.section.headers()).map(
+                |(cell, (_, width))| {
+                    let (cell_index, value) = cell;
+                    let mut slot = div()
+                        .w(px(*width))
+                        .flex_shrink_0()
+                        .h(px(28.0))
+                        .overflow_hidden()
+                        .flex()
+                        .items_center()
+                        .gap(px(8.0));
+                    if cell_index == 0 {
+                        if let Some(path) = self.portrait_file(index) {
+                            slot = slot.child(img(path).w(px(24.0)).h(px(24.0)));
+                        }
+                    }
+                    if cell_index + 1 < self.section.headers().len() {
+                        slot = slot.mr(px(16.0));
+                    }
+                    slot.child(cell_text(value))
+                },
+            ))
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(move |this, _, _, cx| {
+                    this.selected = Some(index);
+                    cx.notify();
+                }),
+            )
+    }
+
+    fn line_cells(&self, index: usize) -> Vec<String> {
+        let Ok(catalog) = &self.catalog else {
+            return Vec::new();
+        };
+        match self.section {
+            Section::Champions => {
+                let Some(champion) = catalog.champions.get(index) else {
+                    return Vec::new();
+                };
+                let mut cells = vec![champion.name.clone()];
+                cells.extend(champion_sliders(kit(catalog, champion.id)));
+                cells
+            }
+            Section::Teams => {
+                let Some(team) = catalog.teams.get(index) else {
+                    return Vec::new();
+                };
+                let organisation = catalog
+                    .organisation_names
+                    .get(&team.organisation)
+                    .cloned()
+                    .unwrap_or_else(|| "—".into());
+                let league = team
+                    .registration
+                    .and_then(|registration| catalog.league_names.get(&registration.league))
+                    .cloned()
+                    .unwrap_or_else(|| "—".into());
+                vec![
+                    team.name.clone(),
+                    organisation,
+                    organisation_region(catalog, team.organisation),
+                    league,
+                    players_of(catalog, team.id).len().to_string(),
+                ]
+            }
+            Section::Players => {
+                let Some(player) = catalog.players.get(index) else {
+                    return Vec::new();
+                };
+                let team = player
+                    .identity
+                    .teams
+                    .first()
+                    .and_then(|id| catalog.team_names.get(id))
+                    .cloned()
+                    .unwrap_or_else(|| "—".into());
+                vec![
+                    player.identity.name.clone(),
+                    role_label(player.identity.role).into(),
+                    blank(player.identity.nationality.as_deref()),
+                    shown_age(player),
+                    team,
+                ]
+                .into_iter()
+                .chain(player_sliders(player))
+                .collect()
+            }
+            Section::Leagues => {
+                let Some(league) = catalog.leagues.get(index) else {
+                    return Vec::new();
+                };
+                vec![
+                    league.name.clone(),
+                    blank(some_text(&league.region)),
+                    match league.tier {
+                        LeagueTier::Primary => "Principale".into(),
+                        LeagueTier::Secondary => "Secondaire".into(),
+                    },
+                    match league.presence {
+                        SeasonPresence::Playable => "Jouable".into(),
+                        SeasonPresence::InWorld => "Dans le monde".into(),
+                    },
+                ]
+            }
+            Section::Organisations => {
+                let Some(org) = catalog.organisations.get(index) else {
+                    return Vec::new();
+                };
+                vec![
+                    org.name.clone(),
+                    blank(some_text(&org.region)),
+                    org.teams.len().to_string(),
+                ]
             }
         }
-
-        div().flex_1().h_full().flex().flex_col().child(sheet)
     }
 
-    fn rows(&self, catalog: &Catalog) -> Vec<Vec<String>> {
-        match self.section {
-            Section::Champions => catalog
-                .champions
-                .iter()
-                .map(|champion| {
-                    let mut cells = vec![champion.name.clone()];
-                    cells.extend(champion_sliders(kit(catalog, champion.id)));
-                    cells
-                })
-                .collect(),
-            Section::Teams => catalog
-                .teams
-                .iter()
-                .map(|team| {
-                    let organisation = catalog
-                        .organisation_names
-                        .get(&team.organisation)
-                        .cloned()
-                        .unwrap_or_else(|| "—".into());
-                    let league = team
-                        .registration
-                        .and_then(|registration| catalog.league_names.get(&registration.league))
-                        .cloned()
-                        .unwrap_or_else(|| "—".into());
-                    vec![
-                        team.name.clone(),
-                        organisation,
-                        organisation_region(catalog, team.organisation),
-                        league,
-                        players_of(catalog, team.id).len().to_string(),
-                    ]
-                })
-                .collect(),
-            Section::Players => catalog
-                .players
-                .iter()
-                .map(|player| {
-                    let team = player
-                        .identity
-                        .teams
-                        .first()
-                        .and_then(|id| catalog.team_names.get(id))
-                        .cloned()
-                        .unwrap_or_else(|| "—".into());
-                    vec![
-                        player.identity.name.clone(),
-                        role_label(player.identity.role).into(),
-                        blank(player.identity.nationality.as_deref()),
-                        shown_age(player),
-                        team,
-                    ]
-                    .into_iter()
-                    .chain(player_sliders(player))
-                    .collect()
-                })
-                .collect(),
-            Section::Leagues => catalog
-                .leagues
-                .iter()
-                .map(|league| {
-                    vec![
-                        league.name.clone(),
-                        blank(some_text(&league.region)),
-                        match league.tier {
-                            LeagueTier::Primary => "Principale".into(),
-                            LeagueTier::Secondary => "Secondaire".into(),
-                        },
-                        match league.presence {
-                            SeasonPresence::Playable => "Jouable".into(),
-                            SeasonPresence::InWorld => "Dans le monde".into(),
-                        },
-                    ]
-                })
-                .collect(),
-            Section::Organisations => catalog
-                .organisations
-                .iter()
-                .map(|org| {
-                    vec![
-                        org.name.clone(),
-                        blank(some_text(&org.region)),
-                        org.teams.len().to_string(),
-                    ]
-                })
-                .collect(),
-        }
-    }
-
-    fn detail(&self) -> impl IntoElement {
+    fn detail(&self, cx: &mut Context<Self>) -> impl IntoElement {
         let lines = self.detail_lines();
         let mut panel = div()
+            .absolute()
+            .top_0()
+            .right_0()
+            .bottom_0()
             .w(px(340.0))
-            .h_full()
+            .max_w_full()
+            .flex_none()
             .flex()
             .flex_col()
             .bg(rgb(PANEL))
@@ -364,7 +432,28 @@ impl Browser {
             .gap_2()
             .id("fiche")
             .overflow_y_scroll()
-            .child(label("Fiche", GOLD, true));
+            .child(
+                div()
+                    .flex()
+                    .justify_between()
+                    .items_center()
+                    .child(label("Fiche", GOLD, true))
+                    .child(
+                        div()
+                            .id("close-fiche")
+                            .px_2()
+                            .py_1()
+                            .cursor_pointer()
+                            .child(label("Fermer", MUTED, false))
+                            .on_mouse_down(
+                                MouseButton::Left,
+                                cx.listener(|this, _, _, cx| {
+                                    this.selected = None;
+                                    cx.notify();
+                                }),
+                            ),
+                    ),
+            );
         if let Some(path) = self.selected.and_then(|index| self.portrait_file(index)) {
             panel = panel.child(img(path).w(px(72.0)).h(px(72.0)));
         }
@@ -532,9 +621,18 @@ impl Browser {
     }
 }
 
+fn sheet_width(headers: &[(&str, f32)]) -> f32 {
+    let columns: f32 = headers.iter().map(|(_, width)| *width).sum();
+    32.0 + columns + 16.0 * headers.len().saturating_sub(1) as f32
+}
+
 fn headed(titles: &[(&str, f32)]) -> impl IntoElement {
-    div().flex().gap_4().children(titles.iter().copied().map(|(title, width)| {
-        div().w(px(width)).child(label(title, MUTED, false))
+    div().flex().flex_shrink_0().children(titles.iter().copied().enumerate().map(|(index, (title, width))| {
+        let mut cell = div().w(px(width)).flex_shrink_0().overflow_hidden();
+        if index + 1 < titles.len() {
+            cell = cell.mr(px(16.0));
+        }
+        cell.child(label(title, MUTED, false))
     }))
 }
 

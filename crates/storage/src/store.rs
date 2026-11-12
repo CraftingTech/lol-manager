@@ -1521,10 +1521,10 @@ mod tests {
         store.apply_script(include_str!("../seed/2014.sql")).unwrap();
         assert_eq!(store.count("champions").unwrap(), 123);
         assert_eq!(store.list_champions().unwrap().len(), 123);
-        assert_eq!(store.list_players().unwrap().len(), 728);
-        assert_eq!(store.list_teams().unwrap().len(), 149);
+        assert_eq!(store.list_players().unwrap().len(), 761);
+        assert_eq!(store.list_teams().unwrap().len(), 142);
         assert_eq!(store.list_leagues().unwrap().len(), 13);
-        assert_eq!(store.list_organisations().unwrap().len(), 149);
+        assert_eq!(store.list_organisations().unwrap().len(), 140);
         assert!(store.list_patches().unwrap().is_empty());
         let yasuo = ChampionId(store.id_named("champions", "Yasuo").unwrap());
         assert_eq!(store.load_champion(yasuo).unwrap().name, "Yasuo");
@@ -1627,6 +1627,52 @@ mod tests {
             store.load_team(TeamId(store.id_named("teams", "Cloud9 Eclipse").unwrap())).unwrap().portrait.as_deref(),
             Some("portraits/wiki/Cloud9_Eclipselogo_profile.png")
         );
+        let complexity = OrganisationId(store.id_named("organisations", "compLexity Gaming").unwrap());
+        for name in ["compLexity.Black", "compLexity.Red", "compLexity Academy"] {
+            assert_eq!(
+                store.load_team(TeamId(store.id_named("teams", name).unwrap())).unwrap().organisation,
+                complexity
+            );
+        }
+        assert_eq!(
+            store.load_team(TeamId(store.id_named("teams", "compLexity.Black").unwrap())).unwrap().portrait.as_deref(),
+            Some("portraits/wiki/CoLBlack.png")
+        );
+        let vvv = OrganisationId(store.id_named("organisations", "vVv Gaming").unwrap());
+        let white = store.load_team(TeamId(store.id_named("teams", "vVv Gaming White").unwrap())).unwrap();
+        assert_eq!(white.organisation, vvv);
+        assert_eq!(white.portrait.as_deref(), Some("portraits/wiki/VVv_Gaminglogo_square.png"));
+        let ndd = store.load_player(PlayerId(store.id_named("players", "NdD").unwrap())).unwrap();
+        assert_eq!(ndd.identity.role, Role::Jungle);
+        assert_eq!(ndd.identity.teams, vec![TeamId(store.id_named("teams", "Bangkok Titans").unwrap())]);
+        let robert = store.load_player(PlayerId(store.id_named("players", "RobertxLee").unwrap())).unwrap();
+        assert_eq!(robert.identity.role, Role::Adc);
+        assert_eq!(robert.identity.teams, vec![TeamId(store.id_named("teams", "compLexity.Black").unwrap())]);
+        assert_eq!(
+            store.load_player(PlayerId(store.id_named("players", "Porky").unwrap())).unwrap().identity.teams,
+            vec![TeamId(store.id_named("teams", "Lyon Gaming").unwrap())]
+        );
+        assert_eq!(
+            store.load_player(PlayerId(store.id_named("players", "nukeduck").unwrap())).unwrap().identity.teams,
+            vec![TeamId(store.id_named("teams", "Ninjas in Pyjamas").unwrap())]
+        );
+        assert_eq!(
+            store.load_player(PlayerId(store.id_named("players", "goldenglue").unwrap())).unwrap().identity.teams,
+            vec![TeamId(store.id_named("teams", "compLexity.Red").unwrap())]
+        );
+        assert_eq!(
+            store.load_player(PlayerId(store.id_named("players", "4zeer0").unwrap())).unwrap().identity.teams,
+            vec![TeamId(store.id_named("teams", "BrawL eSports").unwrap())]
+        );
+        assert_eq!(
+            store.load_player(PlayerId(store.id_named("players", "BunnyFuFuu").unwrap())).unwrap().identity.teams,
+            vec![TeamId(store.id_named("teams", "Challenger8").unwrap())]
+        );
+        let koukin = store.load_player(PlayerId(store.id_named("players", "Koukin").unwrap())).unwrap();
+        assert_eq!(koukin.identity.role, Role::Adc);
+        assert_eq!(koukin.identity.nationality.as_deref(), Some("EC"));
+        assert_eq!(koukin.identity.birth_date, None);
+        assert_eq!(koukin.identity.teams, vec![TeamId(store.id_named("teams", "Tesla Gaming").unwrap())]);
         assert_ne!(
             store.id_named("players", "NaMei").unwrap(),
             store.id_named("players", "NaMe1").unwrap()

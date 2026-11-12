@@ -1102,15 +1102,13 @@ INSERT INTO organisations (id, name, region, history, staff_seats, scrim_room, g
     ('ba088a5f-efca-4a9f-a436-11347a3af709', 'Tick Trick and Duck', 'EU', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('02a29549-3683-4a61-b616-9754f4e54ae7', 'Cloud9 Tempest', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('9980cf8e-b89a-4f04-902f-7e54ac3ab710', 'COGnitive Gaming', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-    ('d8b474db-808d-4b7d-a0e6-c519c64f1a33', 'compLexity.Black', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-    ('3b842610-df1a-4f54-abe8-d6a2d594fdc5', 'compLexity.Red', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('d8b474db-808d-4b7d-a0e6-c519c64f1a33', 'compLexity Gaming', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('70b16f22-2473-4394-b09e-c4b558429b52', 'Curse Academy', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('eb331307-2a92-4bfa-8666-a694bb003592', 'LMQ', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-    ('2d0301de-410a-4188-bd0b-1f2e12ba114a', 'vVv Gaming White', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('2d0301de-410a-4188-bd0b-1f2e12ba114a', 'vVv Gaming', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('0e799ef7-a77e-471a-9e89-1b9f9b6b286b', 'y so E-Sports', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('128520c2-5158-44f8-827d-4da2e6633018', 'Challenger8', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('3340c980-18c6-4a65-846b-6f8d2fdcd33e', 'COGnitive Gaming Forge', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-    ('0a643263-ff3a-4478-a67a-8b0fe5810002', 'compLexity Academy', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('48bcaecd-5710-4a99-98ca-854f571698b8', 'Crossover eSports', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('e82572d1-6e7d-4f9d-87ea-fb422a1a47e7', 'Girlfriends', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('2eac2aab-5223-426f-99c2-ebff28c3db33', 'Jet Fuel', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
@@ -1121,7 +1119,6 @@ INSERT INTO organisations (id, name, region, history, staff_seats, scrim_room, g
     ('73e7b621-94cb-4dab-aef7-55298bf97e98', 'Team LoLPro', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('637f33ec-6c8e-4b0b-b744-2ee8e3df68d6', 'Team Tempest', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('1fb3f89b-1799-495f-9ecd-5fcd9c9d6ba4', 'TINT Gaming', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-    ('6ba47520-b36a-4788-b98f-a9e9fa4f9baf', 'vVv Gaming Red', 'NA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('0b07755d-1ef5-467e-9c9f-220fbb7ec00c', 'AcFun e-Sports Club', 'CN', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('3306d116-1516-4f47-aa75-e19de6edf06c', 'EP.The One', 'CN', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('08d4d9af-4fbb-4e59-9381-a881de3a5c3c', 'Gamefy', 'CN', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
@@ -1177,7 +1174,6 @@ INSERT INTO organisations (id, name, region, history, staff_seats, scrim_room, g
     ('bfb6fbbe-4bec-449c-a0db-649103ad34d3', 'Lyon Gaming', 'LAT', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('7fb71e50-e0a9-4eb0-a53e-1da6958944eb', 'Isurus', 'LAT', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('d45d3a43-cbcd-44d6-a7ec-6b154566ca7c', 'Renegades of Hell', 'LAT', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-    ('c7a1d77c-ff43-4e57-8b0c-fed5e32ea9fc', 'PEX Team', 'LAT', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('b967f858-0f8b-446b-959b-bfa298eda8ee', 'Bencheados de KLG', 'LAT', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('37dd44d6-eb7c-45c8-af13-ce612e1b46b5', 'BrawL eSports', 'LAT', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('1312155b-89a5-4c30-9276-b1db884e77de', 'Satori', 'LAT', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
@@ -1213,14 +1209,14 @@ INSERT INTO teams (id, name, organisation_id, league_id, season_year, portrait) 
     ('c9652800-4bdf-4d32-a133-a4b116ac31d1', 'Cloud9 Tempest', '02a29549-3683-4a61-b616-9754f4e54ae7', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('77f27be0-86f4-4094-bd07-b87841f007e5', 'COGnitive Gaming', '9980cf8e-b89a-4f04-902f-7e54ac3ab710', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('847311ca-a6c0-4f79-a717-f77fc7e0b1db', 'compLexity.Black', 'd8b474db-808d-4b7d-a0e6-c519c64f1a33', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
-    ('eff22c5a-fa9e-4e93-ad1f-520c8ea88eae', 'compLexity.Red', '3b842610-df1a-4f54-abe8-d6a2d594fdc5', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
+    ('eff22c5a-fa9e-4e93-ad1f-520c8ea88eae', 'compLexity.Red', 'd8b474db-808d-4b7d-a0e6-c519c64f1a33', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('3a46ce7d-5032-4455-885f-105355777a58', 'Curse Academy', '70b16f22-2473-4394-b09e-c4b558429b52', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('bd913d3d-806f-4500-8c0e-60f57a065fd7', 'LMQ', 'eb331307-2a92-4bfa-8666-a694bb003592', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('ffcc2752-c61f-431e-8e25-bb4a73433b6b', 'vVv Gaming White', '2d0301de-410a-4188-bd0b-1f2e12ba114a', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('c0ae4083-77c9-404b-aea4-2988fb9443c5', 'y so E-Sports', '0e799ef7-a77e-471a-9e89-1b9f9b6b286b', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('b152ab80-622e-4167-9abe-897f2b9a8e5c', 'Challenger8', '128520c2-5158-44f8-827d-4da2e6633018', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('87e646e9-2408-4224-8a24-6a6770c51bf8', 'COGnitive Gaming Forge', '3340c980-18c6-4a65-846b-6f8d2fdcd33e', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
-    ('d572ef5d-18b6-446d-a29c-e385f2dcc86d', 'compLexity Academy', '0a643263-ff3a-4478-a67a-8b0fe5810002', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
+    ('d572ef5d-18b6-446d-a29c-e385f2dcc86d', 'compLexity Academy', 'd8b474db-808d-4b7d-a0e6-c519c64f1a33', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('3f2a69f1-6510-4e51-be50-f7f616e4e2e1', 'Crossover eSports', '48bcaecd-5710-4a99-98ca-854f571698b8', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('058cb905-3ee3-4c23-97ab-7eeb4ffc7783', 'Girlfriends', 'e82572d1-6e7d-4f9d-87ea-fb422a1a47e7', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('e59a1de0-8100-4d9f-a803-6981da957be4', 'Jet Fuel', '2eac2aab-5223-426f-99c2-ebff28c3db33', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
@@ -1231,7 +1227,7 @@ INSERT INTO teams (id, name, organisation_id, league_id, season_year, portrait) 
     ('0322e9f4-52ed-4388-91d1-105030e5e287', 'Team LoLPro', '73e7b621-94cb-4dab-aef7-55298bf97e98', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('846207e6-3c39-47d8-bc1d-c50d5296c010', 'Team Tempest', '637f33ec-6c8e-4b0b-b744-2ee8e3df68d6', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('9797d2e6-4d12-4d1d-872d-a9eb5a332357', 'TINT Gaming', '1fb3f89b-1799-495f-9ecd-5fcd9c9d6ba4', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
-    ('003475ee-3175-4af6-9a8b-bc954662e074', 'vVv Gaming Red', '6ba47520-b36a-4788-b98f-a9e9fa4f9baf', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
+    ('003475ee-3175-4af6-9a8b-bc954662e074', 'vVv Gaming Red', '2d0301de-410a-4188-bd0b-1f2e12ba114a', '6cd490ac-10bd-4dbb-9d3f-0ad55277b71d', 2014, NULL),
     ('467c6a53-a751-4429-8ebc-7e2833670986', 'AcFun e-Sports Club', '0b07755d-1ef5-467e-9c9f-220fbb7ec00c', 'bb744890-8f94-42d0-bca4-8cfa772784ca', 2014, NULL),
     ('94ddd53a-08b3-42bf-b88a-3d7c7c8f1afb', 'EP.The One', '3306d116-1516-4f47-aa75-e19de6edf06c', 'bb744890-8f94-42d0-bca4-8cfa772784ca', 2014, NULL),
     ('f4c1dd56-199f-41aa-8e5e-7f3046f3787d', 'Gamefy', '08d4d9af-4fbb-4e59-9381-a881de3a5c3c', 'bb744890-8f94-42d0-bca4-8cfa772784ca', 2014, NULL),
@@ -1287,7 +1283,6 @@ INSERT INTO teams (id, name, organisation_id, league_id, season_year, portrait) 
     ('85b09923-7805-42dc-a241-d175a09729e7', 'Lyon Gaming', 'bfb6fbbe-4bec-449c-a0db-649103ad34d3', 'e289a5db-db2a-43ce-ba5a-2db886cd742d', 2014, NULL),
     ('b43f21db-401d-442e-9cb8-9d7903705249', 'Isurus', '7fb71e50-e0a9-4eb0-a53e-1da6958944eb', 'e289a5db-db2a-43ce-ba5a-2db886cd742d', 2014, NULL),
     ('974ed496-c4a8-4758-97e6-63a6f1153d27', 'Renegades of Hell', 'd45d3a43-cbcd-44d6-a7ec-6b154566ca7c', 'e289a5db-db2a-43ce-ba5a-2db886cd742d', 2014, NULL),
-    ('5409bff6-afe4-46dc-9892-ef5d8f838a5c', 'PEX Team', 'c7a1d77c-ff43-4e57-8b0c-fed5e32ea9fc', 'e289a5db-db2a-43ce-ba5a-2db886cd742d', 2014, NULL),
     ('24b9c7ec-9d98-4967-8711-419338f7d020', 'Bencheados de KLG', 'b967f858-0f8b-446b-959b-bfa298eda8ee', 'e289a5db-db2a-43ce-ba5a-2db886cd742d', 2014, NULL),
     ('4acbad7f-01d2-4801-aa77-02f41b748196', 'BrawL eSports', '37dd44d6-eb7c-45c8-af13-ce612e1b46b5', 'e289a5db-db2a-43ce-ba5a-2db886cd742d', 2014, NULL),
     ('8120a9f5-0324-4dbc-bf68-31fff4d41148', 'Satori', '1312155b-89a5-4c30-9276-b1db884e77de', 'e289a5db-db2a-43ce-ba5a-2db886cd742d', 2014, NULL),
@@ -1323,14 +1318,14 @@ INSERT INTO organisation_teams (organisation_id, position, team_id) VALUES
     ('02a29549-3683-4a61-b616-9754f4e54ae7', 0, 'c9652800-4bdf-4d32-a133-a4b116ac31d1'),
     ('9980cf8e-b89a-4f04-902f-7e54ac3ab710', 0, '77f27be0-86f4-4094-bd07-b87841f007e5'),
     ('d8b474db-808d-4b7d-a0e6-c519c64f1a33', 0, '847311ca-a6c0-4f79-a717-f77fc7e0b1db'),
-    ('3b842610-df1a-4f54-abe8-d6a2d594fdc5', 0, 'eff22c5a-fa9e-4e93-ad1f-520c8ea88eae'),
+    ('d8b474db-808d-4b7d-a0e6-c519c64f1a33', 1, 'eff22c5a-fa9e-4e93-ad1f-520c8ea88eae'),
     ('70b16f22-2473-4394-b09e-c4b558429b52', 0, '3a46ce7d-5032-4455-885f-105355777a58'),
     ('eb331307-2a92-4bfa-8666-a694bb003592', 0, 'bd913d3d-806f-4500-8c0e-60f57a065fd7'),
     ('2d0301de-410a-4188-bd0b-1f2e12ba114a', 0, 'ffcc2752-c61f-431e-8e25-bb4a73433b6b'),
     ('0e799ef7-a77e-471a-9e89-1b9f9b6b286b', 0, 'c0ae4083-77c9-404b-aea4-2988fb9443c5'),
     ('128520c2-5158-44f8-827d-4da2e6633018', 0, 'b152ab80-622e-4167-9abe-897f2b9a8e5c'),
     ('3340c980-18c6-4a65-846b-6f8d2fdcd33e', 0, '87e646e9-2408-4224-8a24-6a6770c51bf8'),
-    ('0a643263-ff3a-4478-a67a-8b0fe5810002', 0, 'd572ef5d-18b6-446d-a29c-e385f2dcc86d'),
+    ('d8b474db-808d-4b7d-a0e6-c519c64f1a33', 2, 'd572ef5d-18b6-446d-a29c-e385f2dcc86d'),
     ('48bcaecd-5710-4a99-98ca-854f571698b8', 0, '3f2a69f1-6510-4e51-be50-f7f616e4e2e1'),
     ('e82572d1-6e7d-4f9d-87ea-fb422a1a47e7', 0, '058cb905-3ee3-4c23-97ab-7eeb4ffc7783'),
     ('2eac2aab-5223-426f-99c2-ebff28c3db33', 0, 'e59a1de0-8100-4d9f-a803-6981da957be4'),
@@ -1341,7 +1336,7 @@ INSERT INTO organisation_teams (organisation_id, position, team_id) VALUES
     ('73e7b621-94cb-4dab-aef7-55298bf97e98', 0, '0322e9f4-52ed-4388-91d1-105030e5e287'),
     ('637f33ec-6c8e-4b0b-b744-2ee8e3df68d6', 0, '846207e6-3c39-47d8-bc1d-c50d5296c010'),
     ('1fb3f89b-1799-495f-9ecd-5fcd9c9d6ba4', 0, '9797d2e6-4d12-4d1d-872d-a9eb5a332357'),
-    ('6ba47520-b36a-4788-b98f-a9e9fa4f9baf', 0, '003475ee-3175-4af6-9a8b-bc954662e074'),
+    ('2d0301de-410a-4188-bd0b-1f2e12ba114a', 1, '003475ee-3175-4af6-9a8b-bc954662e074'),
     ('0b07755d-1ef5-467e-9c9f-220fbb7ec00c', 0, '467c6a53-a751-4429-8ebc-7e2833670986'),
     ('3306d116-1516-4f47-aa75-e19de6edf06c', 0, '94ddd53a-08b3-42bf-b88a-3d7c7c8f1afb'),
     ('08d4d9af-4fbb-4e59-9381-a881de3a5c3c', 0, 'f4c1dd56-199f-41aa-8e5e-7f3046f3787d'),
@@ -1397,7 +1392,6 @@ INSERT INTO organisation_teams (organisation_id, position, team_id) VALUES
     ('bfb6fbbe-4bec-449c-a0db-649103ad34d3', 0, '85b09923-7805-42dc-a241-d175a09729e7'),
     ('7fb71e50-e0a9-4eb0-a53e-1da6958944eb', 0, 'b43f21db-401d-442e-9cb8-9d7903705249'),
     ('d45d3a43-cbcd-44d6-a7ec-6b154566ca7c', 0, '974ed496-c4a8-4758-97e6-63a6f1153d27'),
-    ('c7a1d77c-ff43-4e57-8b0c-fed5e32ea9fc', 0, '5409bff6-afe4-46dc-9892-ef5d8f838a5c'),
     ('b967f858-0f8b-446b-959b-bfa298eda8ee', 0, '24b9c7ec-9d98-4967-8711-419338f7d020'),
     ('37dd44d6-eb7c-45c8-af13-ce612e1b46b5', 0, '4acbad7f-01d2-4801-aa77-02f41b748196'),
     ('1312155b-89a5-4c30-9276-b1db884e77de', 0, '8120a9f5-0324-4dbc-bf68-31fff4d41148'),
@@ -2814,8 +2808,6 @@ UPDATE organisations SET portrait = 'portraits/wiki/Logo-E-corp-big.png' WHERE n
 UPDATE teams SET portrait = 'portraits/wiki/Logo-E-corp-big.png' WHERE name = 'OX';
 UPDATE organisations SET portrait = 'portraits/wiki/Logo-E-corp-big.png' WHERE name = 'Optic Snipers';
 UPDATE teams SET portrait = 'portraits/wiki/Logo-E-corp-big.png' WHERE name = 'Optic Snipers';
-UPDATE organisations SET portrait = 'portraits/wiki/PEX_Teamlogo_square.png' WHERE name = 'PEX Team';
-UPDATE teams SET portrait = 'portraits/wiki/PEX_Teamlogo_square.png' WHERE name = 'PEX Team';
 UPDATE organisations SET portrait = 'portraits/wiki/Pineapple_Expresslogo_square.png' WHERE name = 'Pineapple Express';
 UPDATE teams SET portrait = 'portraits/wiki/Pineapple_Expresslogo_square.png' WHERE name = 'Pineapple Express';
 UPDATE organisations SET portrait = 'portraits/wiki/Pink_Pwnyslogo_square.png' WHERE name = 'Pink Pwnys';
@@ -2913,3 +2905,155 @@ UPDATE leagues SET portrait = 'portraits/wiki/CBLOL.png' WHERE name = 'CBLOL';
 UPDATE leagues SET portrait = 'portraits/wiki/Copa_LatinAm_logo.png' WHERE name = 'Latin America Cup';
 UPDATE leagues SET portrait = 'portraits/wiki/Logo_0_0.png' WHERE name = 'TCL';
 UPDATE leagues SET portrait = 'portraits/wiki/OR_Autumn_logo.png' WHERE name = 'Oceanic Regional Tournament';
+
+-- compLexity Black, Red and Academy are squads of one organisation.
+UPDATE organisations SET portrait = 'portraits/wiki/Col_logo.png' WHERE name = 'compLexity Gaming';
+UPDATE teams SET portrait = 'portraits/wiki/CoLBlack.png' WHERE name = 'compLexity.Black';
+UPDATE teams SET portrait = 'portraits/wiki/Col_logo.png' WHERE name = 'compLexity.Red';
+UPDATE teams SET portrait = 'portraits/wiki/CompLexity_Gaminglogo_square.png' WHERE name = 'compLexity Academy';
+
+-- vVv Gaming White and Red are squads of one organisation and share its logo.
+-- https://lol.fandom.com/wiki/VVv_Gaming_White
+UPDATE organisations SET portrait = 'portraits/wiki/VVv_Gaminglogo_square.png' WHERE name = 'vVv Gaming';
+UPDATE teams SET portrait = 'portraits/wiki/VVv_Gaminglogo_square.png' WHERE name IN ('vVv Gaming White', 'vVv Gaming Red');
+
+
+-- Players listed with role1 rather than role were left out of the opening rosters. The first role is kept.
+INSERT INTO organisations (id, name, region, history, staff_seats, scrim_room, gaming_house, chef, jersey_name, budget, wage_bill, fan_count, fan_mood, portrait) VALUES
+    ('9d2bbeb1-1023-4f3c-9a14-28065e842866', 'Full Louis', 'SEA', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO teams (id, name, organisation_id, league_id, season_year, portrait) VALUES
+    ('ad32d9fb-ebfd-456a-9c59-bba99de2c6ba', 'Full Louis', '9d2bbeb1-1023-4f3c-9a14-28065e842866', '2b171fa1-5597-43b0-9a32-fafcb2ec6915', 2014, NULL);
+INSERT INTO organisation_teams (organisation_id, position, team_id) VALUES
+    ('9d2bbeb1-1023-4f3c-9a14-28065e842866', 0, 'ad32d9fb-ebfd-456a-9c59-bba99de2c6ba');
+INSERT INTO players (id, name, portrait, role, nationality, birth_date, mechanics, teamfight, map_awareness, objectives, tempo, mental, itemisation, phase_early, phase_mid, phase_late, shotcalling, role_skill_kind, role_skill_score, form, fatigue) VALUES
+    ('f2232b79-39fc-4876-85c4-d0636f173d15', 'WarL0cK', NULL, 'top', 'TH', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('a897eb70-2a6e-44a9-8048-e10e42ebd94c', 'NdD', NULL, 'jungle', 'TH', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('bd73e613-5689-4cdd-9d89-90d7e705793c', 'Hero', NULL, 'top', 'PH', '1996-04-24', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('e8cddd07-9300-45d7-9dbb-138afd1a5a1f', 'Rebengga', NULL, 'jungle', 'PH', '1992-09-21', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('40040165-226b-48b6-815e-66b8859ca48c', 'Yukz', NULL, 'top', 'PH', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('74967a3a-7074-44e9-800e-95e95b00fbe9', 'H4T3', NULL, 'adc', 'PH', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('72b05c52-4a71-4c9e-b76d-9821bf8e8374', 'Mountain', NULL, 'jungle', 'TW', '1995-02-22', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('901ad404-0bba-44c8-99e9-507fc2aba60a', 'REFRA1N', NULL, 'mid', 'TW', '1993-10-19', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('17e8cd71-48fe-4e06-90c0-c1d66298f734', 'MeW', NULL, 'top', 'VN', '1991-11-12', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('3354cda7-f8fe-4c42-813a-fd01f3fb17cf', 'SofM', NULL, 'jungle', 'VN', '1998-02-05', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('4ca49036-3512-4c25-9e47-c64777993de0', 'Starfall', NULL, 'mid', 'VN', '1993-12-25', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('1e0b0492-96f0-4c83-9aa3-d3a07225000e', 'Shyn', NULL, 'adc', 'VN', '1994-03-09', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('2ac606d7-78c0-4ea6-bb68-85f0e25feea0', 'Violet (Ngô Mạnh Quyền)', NULL, 'support', 'VN', '1987-01-07', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('415bf75d-b389-45a2-84f2-d30c216c205a', 'x1Aolong', NULL, 'top', 'CN', '1995-11-01', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('c9cf0ecc-e28a-40d4-a559-10efcf1b5421', 'Wind', NULL, 'jungle', 'CN', '1997-09-09', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('a509d48e-d1fd-44b1-9860-07fcc93aa9a8', 'sanxin', NULL, 'mid', 'CN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('6f0de2ed-78b9-4f0a-b411-30f2136329be', 'sAviOr', NULL, 'support', 'CN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('ddddb159-b563-4078-b50d-f57b2fe3b363', 'Myuseru', NULL, 'jungle', 'CN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('71f42128-c51e-4cd0-8a5d-84b021d5e711', 'qixi', NULL, 'mid', 'CN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('cc15d1fd-6d17-4646-b956-513b2a080648', 'Trn', NULL, 'adc', 'CN', '1998-01-20', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('50a0622c-3ec1-4e64-9051-ae970ebb4a06', 'Rui (Lyu Rui)', NULL, 'top', 'CN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('88096918-7aa3-440f-9a9e-bcba376a1692', 'TK', NULL, 'jungle', 'CN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('3bc976f5-216a-484f-b040-6b84d3556b62', '12345', NULL, 'jungle', 'CN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('45c0bd7f-9420-40ec-9a4f-bc32d2e1a175', 'XuaN', NULL, 'mid', 'CN', '1997-10-22', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('86631624-c674-426b-bde4-4135a23ef0f0', 'Yi', NULL, 'top', 'CN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('b01de81b-3e0e-4226-b295-5cd3930b03c4', 'YanSir', NULL, 'support', 'CN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('151422b3-f883-4710-aa20-ae5852040d05', 'Ominator', NULL, 'support', 'CL', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('b82a80e0-54c6-411d-8f60-7f945dc73e10', 'K For Kimchi', NULL, 'top', 'CA', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO player_teams (player_id, position, team_id) VALUES
+    ('f2232b79-39fc-4876-85c4-d0636f173d15', 0, 'f3be8875-305b-477a-b1b4-7b5a0402e6ab'),
+    ('a897eb70-2a6e-44a9-8048-e10e42ebd94c', 0, 'f3be8875-305b-477a-b1b4-7b5a0402e6ab'),
+    ('bd73e613-5689-4cdd-9d89-90d7e705793c', 0, '03fba709-2391-4e93-9fc2-528dd0243e37'),
+    ('e8cddd07-9300-45d7-9dbb-138afd1a5a1f', 0, '03fba709-2391-4e93-9fc2-528dd0243e37'),
+    ('40040165-226b-48b6-815e-66b8859ca48c', 0, '3ef9d373-a6ca-4519-acec-37fc07accbbb'),
+    ('74967a3a-7074-44e9-800e-95e95b00fbe9', 0, '3ef9d373-a6ca-4519-acec-37fc07accbbb'),
+    ('72b05c52-4a71-4c9e-b76d-9821bf8e8374', 0, '0efb8078-2108-4217-97c4-a60497b5e7b3'),
+    ('901ad404-0bba-44c8-99e9-507fc2aba60a', 0, '0efb8078-2108-4217-97c4-a60497b5e7b3'),
+    ('17e8cd71-48fe-4e06-90c0-c1d66298f734', 0, 'ad32d9fb-ebfd-456a-9c59-bba99de2c6ba'),
+    ('3354cda7-f8fe-4c42-813a-fd01f3fb17cf', 0, 'ad32d9fb-ebfd-456a-9c59-bba99de2c6ba'),
+    ('4ca49036-3512-4c25-9e47-c64777993de0', 0, 'ad32d9fb-ebfd-456a-9c59-bba99de2c6ba'),
+    ('1e0b0492-96f0-4c83-9aa3-d3a07225000e', 0, 'ad32d9fb-ebfd-456a-9c59-bba99de2c6ba'),
+    ('2ac606d7-78c0-4ea6-bb68-85f0e25feea0', 0, 'ad32d9fb-ebfd-456a-9c59-bba99de2c6ba'),
+    ('415bf75d-b389-45a2-84f2-d30c216c205a', 0, 'f4c1dd56-199f-41aa-8e5e-7f3046f3787d'),
+    ('c9cf0ecc-e28a-40d4-a559-10efcf1b5421', 0, 'f4c1dd56-199f-41aa-8e5e-7f3046f3787d'),
+    ('a509d48e-d1fd-44b1-9860-07fcc93aa9a8', 0, 'f4c1dd56-199f-41aa-8e5e-7f3046f3787d'),
+    ('6f0de2ed-78b9-4f0a-b411-30f2136329be', 0, 'f4c1dd56-199f-41aa-8e5e-7f3046f3787d'),
+    ('ddddb159-b563-4078-b50d-f57b2fe3b363', 0, 'd4497457-5af7-4678-bc66-50ad29adc696'),
+    ('71f42128-c51e-4cd0-8a5d-84b021d5e711', 0, 'd4497457-5af7-4678-bc66-50ad29adc696'),
+    ('cc15d1fd-6d17-4646-b956-513b2a080648', 0, 'd4497457-5af7-4678-bc66-50ad29adc696'),
+    ('50a0622c-3ec1-4e64-9051-ae970ebb4a06', 0, '9f513f87-e8e7-4533-82c2-34f5daaf7788'),
+    ('88096918-7aa3-440f-9a9e-bcba376a1692', 0, '9f513f87-e8e7-4533-82c2-34f5daaf7788'),
+    ('3bc976f5-216a-484f-b040-6b84d3556b62', 0, '9f513f87-e8e7-4533-82c2-34f5daaf7788'),
+    ('45c0bd7f-9420-40ec-9a4f-bc32d2e1a175', 0, '9f513f87-e8e7-4533-82c2-34f5daaf7788'),
+    ('86631624-c674-426b-bde4-4135a23ef0f0', 0, 'd72d39fa-8895-4b04-9a54-1c0f308545e5'),
+    ('b01de81b-3e0e-4226-b295-5cd3930b03c4', 0, 'c7fc6f36-a10f-47b9-9c0e-eb1a393a2133'),
+    ('151422b3-f883-4710-aa20-ae5852040d05', 0, '24b9c7ec-9d98-4967-8711-419338f7d020'),
+    ('b82a80e0-54c6-411d-8f60-7f945dc73e10', 0, '8a6220a4-4e35-41b0-922a-8df981262634');
+
+-- Fifth players whose short name collided with someone else, or who were simply skipped.
+-- PEX Team is the same squad as Pineapple Express, so that empty team is not kept.
+INSERT INTO players (id, name, portrait, role, nationality, birth_date, mechanics, teamfight, map_awareness, objectives, tempo, mental, itemisation, phase_early, phase_mid, phase_late, shotcalling, role_skill_kind, role_skill_score, form, fatigue) VALUES
+    ('746d2c84-fe75-4f5a-9205-b635cf130d08', 'RobertxLee', NULL, 'adc', 'US', '1992-06-24', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('9ca3de69-0705-4233-a51e-1abc373f7817', 'Diamond (David Bérubé)', NULL, 'adc', 'CA', '1996-02-08', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('60701273-3ac7-47ff-abfb-53b07607b9b9', 'Sheep (Jamie Gallagher)', NULL, 'support', 'CA', '1992-06-12', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('33890ef7-bc88-4ed2-9f28-06853388355c', 'Star (Pu Hao)', NULL, 'adc', 'CN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO player_teams (player_id, position, team_id) VALUES
+    ('746d2c84-fe75-4f5a-9205-b635cf130d08', 0, '847311ca-a6c0-4f79-a717-f77fc7e0b1db'),
+    ('9ca3de69-0705-4233-a51e-1abc373f7817', 0, '87e646e9-2408-4224-8a24-6a6770c51bf8'),
+    ('60701273-3ac7-47ff-abfb-53b07607b9b9', 0, '3a46ce7d-5032-4455-885f-105355777a58'),
+    ('33890ef7-bc88-4ed2-9f28-06853388355c', 0, 'ba4009ed-b0c1-4c42-bd77-290635d22c5a');
+
+-- Mexico season 1 names five teams that never published a roster.
+DELETE FROM organisation_teams WHERE team_id IN (
+    'b6556dce-d5de-487c-9fb4-619b859fac39',
+    '9be714fe-edbd-44a1-80ee-db544e54bc6f',
+    'd725049d-10a8-4828-8afe-090efa21a137',
+    'aeaa6b6c-9cbb-46d3-a818-2cee77377dd9',
+    '219fb6b1-dbf2-4e2d-9fbf-32ad566bf8d1'
+);
+DELETE FROM teams WHERE id IN (
+    'b6556dce-d5de-487c-9fb4-619b859fac39',
+    '9be714fe-edbd-44a1-80ee-db544e54bc6f',
+    'd725049d-10a8-4828-8afe-090efa21a137',
+    'aeaa6b6c-9cbb-46d3-a818-2cee77377dd9',
+    '219fb6b1-dbf2-4e2d-9fbf-32ad566bf8d1'
+);
+DELETE FROM organisations WHERE id IN (
+    '43e55eac-a075-40c1-b762-aed671ea9093',
+    'b4d926f8-3660-4f44-9cf9-cef0316d33ae',
+    '524feff0-4e3f-47bf-a8ed-2a8c3a55e5a7',
+    '82e7cbff-e94c-45ac-8fb2-7c9cf014b720',
+    '6ac2f007-441c-4b35-ad2d-4ec06af773f9'
+);
+
+-- Lyon Gaming's former-roster table: on 2014-01-01 the squad is Porky, Thyak, Seiya and NerzhuL.
+-- 1an joins on 2014-02-03. All five leave for Seven Wars Lyon on 2014-02-15.
+-- The career opens while they are still Lyon Gaming, so that later name is not a second team.
+-- FraGio leaves on 2013-06-10. h4ckerv2 leaves on 2013-09-08.
+-- https://lol.fandom.com/wiki/Lyon_Gaming_(2013_Latin_American_Team)
+UPDATE player_teams SET team_id = '85b09923-7805-42dc-a241-d175a09729e7'
+WHERE team_id = 'f7b6fa6c-addc-4fcc-884a-bbc80b18f246';
+DELETE FROM organisation_teams WHERE team_id = 'f7b6fa6c-addc-4fcc-884a-bbc80b18f246';
+DELETE FROM teams WHERE id = 'f7b6fa6c-addc-4fcc-884a-bbc80b18f246';
+DELETE FROM organisations WHERE id = 'b2673fd6-526c-4f19-96b0-bdba501a272a';
+
+-- Former rosters, keeping the stint that covers the 2014 spring snapshot.
+-- Zorozero and nukeduck stay on Ninjas in Pyjamas until 2014-05-01. Gambit is only 2014-02-20 to 2014-02-22.
+UPDATE player_teams SET team_id = '07ebcbcc-43a1-467f-a02e-e311dd728acb'
+WHERE player_id IN ('795fbf31-99d9-4f73-a047-4c95e2a3b8d9', 'cac85be0-7fe9-4352-96d9-98a2e1bf99ad');
+-- goldenglue stays on compLexity.Red from 2014-02-04 to 2014-03-25, then joins Dignitas as a sub.
+UPDATE player_teams SET team_id = 'eff22c5a-fa9e-4e93-ad1f-520c8ea88eae'
+WHERE player_id = '9c5c49b8-c257-44e4-888a-9b06bdb9b444';
+-- 4zeer0 stays on BrawL eSports until 2014-04-05 and joins Tesla Gaming on 2014-04-24.
+UPDATE player_teams SET team_id = '4acbad7f-01d2-4801-aa77-02f41b748196'
+WHERE player_id = '9ddf40a7-5abc-4763-bb8d-9dc511bd9560';
+-- Bunny FuFuu joins Team Curse as a sub on 2014-03-06. Challenger8 has no team page; the spring roster lists him.
+UPDATE player_teams SET team_id = 'b152ab80-622e-4167-9abe-897f2b9a8e5c'
+WHERE player_id = '51be46b7-167b-4f76-be91-aac3ffce042c';
+-- Koukin is Tesla Gaming's bot from 2014-02-01 to 2014-06-10. No birth date on the player page.
+-- https://lol.fandom.com/wiki/Koukin
+INSERT INTO players VALUES (
+    'ef168eb0-c6a3-4df2-87f1-f8fb169bdf5f', 'Koukin', NULL, 'adc', 'EC', NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+);
+INSERT INTO player_teams (player_id, position, team_id) VALUES
+    ('ef168eb0-c6a3-4df2-87f1-f8fb169bdf5f', 0, 'dc362476-afdc-4771-8816-afc79bd0ecc6');
+
+-- vVv Gaming Red's former roster is four players, 2014-01-05 to 2014-01-18. The team is not kept.
+DELETE FROM player_teams WHERE team_id = '003475ee-3175-4af6-9a8b-bc954662e074';
+DELETE FROM organisation_teams WHERE team_id = '003475ee-3175-4af6-9a8b-bc954662e074';
+DELETE FROM teams WHERE id = '003475ee-3175-4af6-9a8b-bc954662e074';
