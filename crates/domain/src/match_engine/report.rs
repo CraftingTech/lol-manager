@@ -3,6 +3,11 @@ use super::rift::{Building, Rift, Side, StructureState};
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum EventKind {
     Invade,
+    Trade(String),
+    Gank(String),
+    Vision,
+    Catch,
+    Trap,
     Objective(String),
     Structures,
 }
@@ -11,7 +16,12 @@ impl EventKind {
     pub fn label(&self) -> String {
         match self {
             Self::Invade => "Invade".into(),
-            Self::Structures => "Combat de structures".into(),
+            Self::Trade(lane) => format!("Trade {lane}"),
+            Self::Gank(lane) => format!("Gank {lane}"),
+            Self::Vision => "Contrôle de vision".into(),
+            Self::Catch => "Catch en rotation".into(),
+            Self::Trap => "Trap".into(),
+            Self::Structures => "Siège".into(),
             Self::Objective(name) => name.clone(),
         }
     }

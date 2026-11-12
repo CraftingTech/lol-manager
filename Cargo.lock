@@ -3028,6 +3028,7 @@ dependencies = [
  "domain",
  "gpui",
  "storage",
+ "uuid",
 ]
 
 [[package]]

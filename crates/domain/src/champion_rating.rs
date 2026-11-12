@@ -280,10 +280,15 @@ fn along(base: f64, per_level: f64, cap: f64) -> Score {
     score(nearest(100.0 * grown / cap))
 }
 
+pub fn phase_powers(kit: &OfficialKit) -> [f64; 3] {
+    PHASES.map(|snapshot| phase_power(kit, &snapshot))
+}
+
 fn phase_scores(kit: &OfficialKit) -> PhaseScores {
-    let scores: Vec<u8> = PHASES
-        .iter()
-        .map(|snapshot| nearest(100.0 * phase_power(kit, snapshot) / snapshot.cap))
+    let scores: Vec<u8> = phase_powers(kit)
+        .into_iter()
+        .zip(PHASES)
+        .map(|(power, snapshot)| nearest(100.0 * power / snapshot.cap))
         .collect();
     PhaseScores {
         early: score(scores[0]),

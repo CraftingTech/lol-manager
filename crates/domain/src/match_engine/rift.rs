@@ -172,7 +172,23 @@ impl Rift {
         self.nexus == StructureState::Destroyed
     }
 
+    fn inhibitor_is_down(&self) -> bool {
+        self.lanes
+            .iter()
+            .any(|lane| lane.inhibitor.state == StructureState::Destroyed)
+    }
+
     pub fn next_available(&self) -> Option<Building> {
+        if self.inhibitor_is_down() {
+            for side in [NexusSide::Left, NexusSide::Right] {
+                if self.state(Building::NexusTurret(side)) == StructureState::Standing {
+                    return Some(Building::NexusTurret(side));
+                }
+            }
+            if self.nexus == StructureState::Standing {
+                return Some(Building::Nexus);
+            }
+        }
         for lane in [Lane::Mid, Lane::Top, Lane::Bot] {
             for building in lane_chain(lane) {
                 match self.state(building) {
@@ -422,6 +438,22 @@ mod tests {
         );
         assert_eq!(rift.state(Building::Nexus), StructureState::Locked);
         assert!(!rift.nexus_fallen());
+    }
+
+    #[test]
+    fn an_open_inhibitor_sends_the_siege_to_the_nexus() {
+        let mut rift = Rift::new();
+        rift.take(4);
+        let (taken, _) = rift.take(3);
+        assert_eq!(
+            taken,
+            vec![
+                Building::NexusTurret(NexusSide::Left),
+                Building::NexusTurret(NexusSide::Right),
+                Building::Nexus,
+            ]
+        );
+        assert!(rift.nexus_fallen());
     }
 
     #[test]

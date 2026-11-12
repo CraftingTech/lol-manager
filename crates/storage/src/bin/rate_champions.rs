@@ -1,7 +1,8 @@
 //! Turns a Data Dragon `championFull.json` into the `champion_on_patch` rows.
 //!
-//! The numbers come from `domain::rate_patch`. Edit the lane table and
-//! `REFERENCE_LEVEL` there, then run this again.
+//! The numbers come from `domain::rate_patch`. Phase scores then pass through
+//! `domain::balance_roster`. Edit the lane table and `REFERENCE_LEVEL` in the
+//! rating module, or the phase band in the balance module, then run this again.
 //!
 //! ```text
 //! cargo run -p storage --bin rate_champions -- /path/to/championFull.json
@@ -15,8 +16,8 @@ use std::fs;
 use std::process::ExitCode;
 
 use domain::{
-    counts_as_true_damage, rate_patch, stacked_maximum_health, ChampionClass, OfficialKit,
-    SpellLine,
+    balance_roster, counts_as_true_damage, rate_patch, stacked_maximum_health, ChampionClass,
+    OfficialKit, SpellLine,
 };
 
 const PATCH_ID: &str = "b7e0c1a4-6d28-4f5a-9c33-1a8e2f04d6b0";
@@ -70,10 +71,18 @@ fn main() -> ExitCode {
             return ExitCode::from(1);
         }
     };
+    let rated = match balance_roster(&kits, &rated) {
+        Ok(rated) => rated,
+        Err(error) => {
+            eprintln!("balance failed: {error:?}");
+            return ExitCode::from(1);
+        }
+    };
 
     println!("-- Champion ratings on patch {PATCH_VERSION}.");
     println!("-- Source: https://ddragon.leagueoflegends.com/cdn/{PATCH_VERSION}/data/en_US/championFull.json");
     println!("-- Method: crates/domain/src/champion_rating.rs");
+    println!("-- Phases: crates/domain/src/champion_balance.rs");
     println!("-- The date stays empty: this file does not carry a calendar day.");
     println!(
         "INSERT INTO patches (id, version, date) VALUES ('{PATCH_ID}', '{PATCH_VERSION}', '');"

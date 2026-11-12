@@ -31,51 +31,64 @@ pub fn play(input: MatchInput, seed: u64) -> PlayedMatch {
     let mut world = World::new(input);
     let mut rng = Rng::new(seed);
     let mut log = Vec::new();
-    if world.winner.is_none() && world.live(Side::Blue).input.plan.invade {
+    if let Some(side) = level_one(&world, &mut rng) {
         contest(
             &mut world,
-            Side::Blue,
-            10,
-            false,
-            Contest::Invade,
-            None,
+            side,
+            1,
+            true,
+            invade_setup(),
             &mut log,
             &mut rng,
         );
     }
-    if world.winner.is_none() && world.live(Side::Red).input.plan.invade {
-        contest(
-            &mut world,
-            Side::Red,
-            10,
-            false,
-            Contest::Invade,
-            None,
-            &mut log,
-            &mut rng,
-        );
-    }
+    let beats = beats(rng.roll());
     let objectives = world.objectives.clone();
-    for objective in objectives {
+    let mut offered = false;
+    for beat in beats {
         if world.winner.is_some() {
             break;
         }
-        offer_objective(&mut world, objective, &mut log, &mut rng);
+        if !offered && beat.minute >= 20 {
+            offer_patch_objectives(&mut world, &objectives, &mut log, &mut rng);
+            offered = true;
+        }
+        if world.winner.is_some() {
+            break;
+        }
+        let attacker = match beat.side {
+            Aggressor::Ahead => stronger(&world, beat.minute),
+            Aggressor::Behind => stronger(&world, beat.minute).enemy(),
+        };
+        if beat.needs_deficit && world.live(attacker).gold >= world.live(attacker.enemy()).gold {
+            continue;
+        }
+        contest(
+            &mut world,
+            attacker,
+            beat.minute,
+            true,
+            beat.setup,
+            &mut log,
+            &mut rng,
+        );
     }
-    let mut minute = 35;
-    while world.winner.is_none() && minute <= 200 {
+    if !offered && world.winner.is_none() {
+        offer_patch_objectives(&mut world, &objectives, &mut log, &mut rng);
+    }
+    let mut minute = 36;
+    while world.winner.is_none() && minute <= 48 {
         let attacker = stronger(&world, minute);
         contest(
             &mut world,
             attacker,
             minute,
             true,
-            Contest::Structures,
-            None,
+            siege_setup(minute),
             &mut log,
             &mut rng,
         );
-        minute = minute.saturating_add(5);
+        minute = minute.saturating_add(4);
     }
     PlayedMatch {
         winner: world.winner.expect("a match closes when a nexus falls"),
@@ -85,10 +98,205 @@ pub fn play(input: MatchInput, seed: u64) -> PlayedMatch {
     }
 }
 
-enum Contest {
-    Invade,
-    Structures,
-    Objective(PatchObjective),
+fn level_one(world: &World, rng: &mut Rng) -> Option<Side> {
+    let blue = world.live(Side::Blue).input.plan.invade;
+    let red = world.live(Side::Red).input.plan.invade;
+    if !blue && !red {
+        return None;
+    }
+    if rng.roll() >= 40 {
+        return None;
+    }
+    if blue && red {
+        if rng.roll() % 2 == 0 {
+            Some(Side::Blue)
+        } else {
+            Some(Side::Red)
+        }
+    } else if blue {
+        Some(Side::Blue)
+    } else {
+        Some(Side::Red)
+    }
+}
+
+struct Beat {
+    minute: u16,
+    side: Aggressor,
+    needs_deficit: bool,
+    setup: Setup,
+}
+
+enum Aggressor {
+    Ahead,
+    Behind,
+}
+
+fn beats(lane: u8) -> Vec<Beat> {
+    let (first_name, first_lane) = lane_of(lane);
+    let (second_name, second_lane) = lane_of(lane.wrapping_add(1));
+    let bot = roles(&[3, 4]);
+    let brush = roles(&[1, 4]);
+    let pit = roles(&[1, 3, 4]);
+    vec![
+        Beat {
+            minute: 4,
+            side: Aggressor::Ahead,
+            needs_deficit: false,
+            setup: skirmish(EventKind::Trade("bot".into()), bot, bot),
+        },
+        Beat {
+            minute: 6,
+            side: Aggressor::Ahead,
+            needs_deficit: false,
+            setup: gank(first_name, first_lane),
+        },
+        Beat {
+            minute: 8,
+            side: Aggressor::Ahead,
+            needs_deficit: false,
+            setup: skirmish(EventKind::Vision, brush, brush),
+        },
+        Beat {
+            minute: 10,
+            side: Aggressor::Ahead,
+            needs_deficit: false,
+            setup: skirmish(EventKind::Trade("mid".into()), roles(&[2]), roles(&[2])),
+        },
+        Beat {
+            minute: 12,
+            side: Aggressor::Ahead,
+            needs_deficit: false,
+            setup: objective("dragon", pit),
+        },
+        Beat {
+            minute: 14,
+            side: Aggressor::Ahead,
+            needs_deficit: false,
+            setup: gank(second_name, second_lane),
+        },
+        Beat {
+            minute: 17,
+            side: Aggressor::Ahead,
+            needs_deficit: false,
+            setup: skirmish(EventKind::Catch, roles(&[1, 2]), roles(&[3, 4])),
+        },
+        Beat {
+            minute: 20,
+            side: Aggressor::Behind,
+            needs_deficit: true,
+            setup: skirmish(EventKind::Trap, roles(&[1, 2, 4]), roles(&[2])),
+        },
+        Beat {
+            minute: 22,
+            side: Aggressor::Ahead,
+            needs_deficit: false,
+            setup: objective("baron", [true; 5]),
+        },
+        Beat {
+            minute: 25,
+            side: Aggressor::Ahead,
+            needs_deficit: false,
+            setup: gank("top", roles(&[0])),
+        },
+        Beat {
+            minute: 28,
+            side: Aggressor::Ahead,
+            needs_deficit: false,
+            setup: siege_setup(28),
+        },
+        Beat {
+            minute: 32,
+            side: Aggressor::Ahead,
+            needs_deficit: false,
+            setup: siege_setup(32),
+        },
+    ]
+}
+
+fn lane_of(lane: u8) -> (&'static str, [bool; 5]) {
+    match lane % 3 {
+        0 => ("top", roles(&[0])),
+        1 => ("mid", roles(&[2])),
+        _ => ("bot", roles(&[3, 4])),
+    }
+}
+
+fn roles(indexes: &[usize]) -> [bool; 5] {
+    let mut mask = [false; 5];
+    for index in indexes {
+        mask[*index] = true;
+    }
+    mask
+}
+
+fn invade_setup() -> Setup {
+    let trio = roles(&[1, 2, 4]);
+    skirmish(EventKind::Invade, trio, trio)
+}
+
+fn gank(lane: &str, lane_roles: [bool; 5]) -> Setup {
+    let mut included = lane_roles;
+    included[1] = true;
+    skirmish(EventKind::Gank(lane.into()), included, lane_roles)
+}
+
+fn objective(name: &str, present: [bool; 5]) -> Setup {
+    skirmish(EventKind::Objective(name.into()), present, present)
+}
+
+fn siege_setup(minute: u16) -> Setup {
+    Setup {
+        kind: EventKind::Structures,
+        included: [true; 5],
+        present: [true; 5],
+        planned: true,
+        opens_structures: true,
+        conversion: minute >= 32,
+        priority: None,
+        reward: None,
+        named_unlocks: Vec::new(),
+    }
+}
+
+fn skirmish(kind: EventKind, included: [bool; 5], present: [bool; 5]) -> Setup {
+    Setup {
+        kind,
+        included,
+        present,
+        planned: true,
+        opens_structures: false,
+        conversion: false,
+        priority: None,
+        reward: None,
+        named_unlocks: Vec::new(),
+    }
+}
+
+struct Setup {
+    kind: EventKind,
+    included: [bool; 5],
+    present: [bool; 5],
+    planned: bool,
+    opens_structures: bool,
+    conversion: bool,
+    priority: Option<String>,
+    reward: Option<String>,
+    named_unlocks: Vec<String>,
+}
+
+fn offer_patch_objectives(
+    world: &mut World,
+    objectives: &[PatchObjective],
+    log: &mut Vec<ReportLine>,
+    rng: &mut Rng,
+) {
+    for objective in objectives {
+        if world.winner.is_some() {
+            break;
+        }
+        offer_objective(world, objective.clone(), log, rng);
+    }
 }
 
 fn offer_objective(
@@ -98,6 +306,8 @@ fn offer_objective(
     rng: &mut Rng,
 ) {
     let minute = 20;
+    let reward = objective.reported_reward();
+    let named_unlocks = objective.unlocks.clone();
     let order = [stronger(world, minute), stronger(world, minute).enemy()];
     for attacker in order {
         if !world.live(attacker).input.plan.contest_objectives {
@@ -109,8 +319,17 @@ fn offer_objective(
             attacker,
             minute,
             false,
-            Contest::Objective(objective.clone()),
-            None,
+            Setup {
+                kind: EventKind::Objective(objective.name.clone()),
+                included: world.live(attacker).input.plan.push_with,
+                present: [true; 5],
+                planned: world.live(attacker).input.plan.contest_objectives,
+                opens_structures: false,
+                conversion: false,
+                priority: None,
+                reward: reward.clone(),
+                named_unlocks: named_unlocks.clone(),
+            },
             log,
             rng,
         );
@@ -128,8 +347,7 @@ fn contest(
     attacker: Side,
     minute: u16,
     force_start: bool,
-    contest: Contest,
-    _priority: Option<String>,
+    setup: Setup,
     log: &mut Vec<ReportLine>,
     rng: &mut Rng,
 ) {
@@ -142,45 +360,12 @@ fn contest(
     let attacker_gold = world.live(attacker).gold;
     let defender_gold = world.live(enemy).gold;
     let attacker_tempo = world.live(attacker).tempo;
-    let (kind, included, planned, priority, reward, named_unlocks) = match contest {
-        Contest::Invade => (
-            EventKind::Invade,
-            attackers.plan.invade_with,
-            attackers.plan.invade,
-            world
-                .objectives
-                .first()
-                .map(|objective| objective.name.clone()),
-            None,
-            Vec::new(),
-        ),
-        Contest::Structures => (
-            EventKind::Structures,
-            attackers.plan.push_with,
-            true,
-            None,
-            None,
-            Vec::new(),
-        ),
-        Contest::Objective(objective) => {
-            let reward = objective.reported_reward();
-            let named_unlocks = objective.unlocks.clone();
-            (
-                EventKind::Objective(objective.name),
-                attackers.plan.push_with,
-                attackers.plan.contest_objectives,
-                None,
-                reward,
-                named_unlocks,
-            )
-        }
-    };
     let elimination = world.elimination;
     let (attacker_base, defender_base) = world.bases(attacker);
     let outcome = resolve(
         FightSpec {
             minute,
-            kind,
+            kind: setup.kind,
             elimination,
             attacker,
             attackers: &attackers,
@@ -190,12 +375,15 @@ fn contest(
             attacker_gold,
             defender_gold,
             attacker_tempo,
-            included,
-            planned,
+            included: setup.included,
+            defender_present: setup.present,
+            opens_structures: setup.opens_structures,
+            conversion: setup.conversion,
+            planned: setup.planned,
             force_start,
-            priority,
-            reward,
-            named_unlocks,
+            priority: setup.priority,
+            reward: setup.reward,
+            named_unlocks: setup.named_unlocks,
             roll_start: rng.roll(),
             roll_success: rng.roll(),
         },
@@ -391,11 +579,17 @@ mod tests {
             .log
             .iter()
             .any(|line| line.taken.contains(&Building::Nexus)));
-        assert!(played.log.iter().all(|line| line.on_rift.len() == 10));
+        assert!(played.log.iter().all(|line| !line.on_rift.is_empty()));
+        assert!(played.log.iter().any(|line| line.on_rift.len() < 10));
         assert!(played
             .log
             .iter()
             .any(|line| !line.deaths.is_empty() && !line.taken.contains(&Building::Nexus)));
+        let minute = played.log.last().map(|line| line.minute).unwrap_or(0);
+        assert!(
+            (24..=47).contains(&minute),
+            "le match se termine à {minute} min"
+        );
     }
 
     #[test]
@@ -417,13 +611,19 @@ mod tests {
         );
         assert!(played.log.iter().all(|line| match &line.kind {
             EventKind::Objective(name) => {
-                assert_eq!(name, "dragon");
-                if line.status == EventStatus::Succeeded {
+                assert!(!name.contains("infernal"));
+                if name == "dragon" && line.status == EventStatus::Succeeded {
                     assert!(line.reward.is_none());
                 }
                 true
             }
-            EventKind::Invade | EventKind::Structures => true,
+            EventKind::Invade
+            | EventKind::Trade(_)
+            | EventKind::Gank(_)
+            | EventKind::Vision
+            | EventKind::Catch
+            | EventKind::Trap
+            | EventKind::Structures => true,
         }));
         let text = played
             .log
@@ -434,5 +634,42 @@ mod tests {
         assert!(!text.contains("infernal"));
         assert!(!text.contains("aîné"));
         assert!(!text.contains("dragon infernal"));
+    }
+
+    #[test]
+    fn a_match_is_a_sequence_of_different_fights_and_an_invade_is_not_guaranteed() {
+        let mut seen = 0;
+        let mut missed = 0;
+        for seed in 0..24 {
+            let played = play(input(Vec::new()), seed);
+            assert!(played.log_matches_the_result());
+            let invade = played
+                .log
+                .iter()
+                .find(|line| matches!(line.kind, EventKind::Invade));
+            match invade {
+                Some(line) => {
+                    assert_eq!(line.minute, 1);
+                    assert!(line.on_rift.len() < 10);
+                    seen += 1;
+                }
+                None => missed += 1,
+            }
+            assert!(played
+                .log
+                .iter()
+                .any(|line| matches!(line.kind, EventKind::Trade(_))));
+            assert!(played
+                .log
+                .iter()
+                .any(|line| matches!(line.kind, EventKind::Gank(_))));
+            assert!(played.log.iter().any(|line| match &line.kind {
+                EventKind::Objective(name) => name == "dragon" || name == "baron",
+                _ => false,
+            }));
+            assert!(played.log.iter().any(|line| line.on_rift.len() < 10));
+        }
+        assert!(seen > 0);
+        assert!(missed > 0);
     }
 }

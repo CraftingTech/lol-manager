@@ -19,6 +19,7 @@ use crate::codec::{
 use crate::error::StoreError;
 
 const SCHEMA: &str = include_str!("../schema.sql");
+const SCHEMA_VERSION: i64 = 2;
 
 pub struct Store {
     connection: Connection,
@@ -70,7 +71,12 @@ impl Store {
         let version: i64 = connection.query_row("PRAGMA user_version", [], |row| row.get(0))?;
         if version == 0 {
             connection.execute_batch(SCHEMA)?;
-            connection.pragma_update(None, "user_version", 1)?;
+            connection.pragma_update(None, "user_version", SCHEMA_VERSION)?;
+        } else if version < SCHEMA_VERSION {
+            if version < 2 {
+                connection.execute_batch("ALTER TABLE patches ADD COLUMN source_url TEXT;")?;
+            }
+            connection.pragma_update(None, "user_version", SCHEMA_VERSION)?;
         }
         Ok(Self { connection })
     }
@@ -997,7 +1003,8 @@ impl Store {
     fn organisation_ids(&self, sql: &str, owner: &str) -> Result<Vec<OrganisationId>, StoreError> {
         let mut statement = self.connection.prepare(sql)?;
         let rows = statement.query_map(params![owner], |row| row.get::<_, String>(0))?;
-        rows.map(|row| Ok(OrganisationId(parse_id(row?)?))).collect()
+        rows.map(|row| Ok(OrganisationId(parse_id(row?)?)))
+            .collect()
     }
 
     fn player_ids(&self, sql: &str, owner: &str) -> Result<Vec<PlayerId>, StoreError> {
@@ -1715,6 +1722,81 @@ mod tests {
     }
 
     #[test]
+    fn opening_a_version_one_file_still_lists_patches() {
+        let path = std::env::temp_dir().join(format!(
+            "lol-manager-v1-{}-{}.sqlite",
+            std::process::id(),
+            uuid::Uuid::from_u128(42)
+        ));
+        let _ = std::fs::remove_file(&path);
+        let patch_id = uuid::Uuid::from_u128(42);
+        {
+            let connection = rusqlite::Connection::open(&path).unwrap();
+            connection
+                .execute_batch(
+                    "CREATE TABLE patches (
+                        id TEXT PRIMARY KEY,
+                        version TEXT NOT NULL,
+                        date TEXT NOT NULL
+                    );
+                    CREATE TABLE champion_on_patch (
+                        patch_id TEXT NOT NULL,
+                        champion_id TEXT NOT NULL,
+                        top INTEGER,
+                        jungle INTEGER,
+                        mid INTEGER,
+                        adc INTEGER,
+                        support INTEGER,
+                        attack INTEGER,
+                        ability INTEGER,
+                        true_damage INTEGER,
+                        health INTEGER,
+                        armor INTEGER,
+                        magic_resist INTEGER,
+                        phase_early INTEGER,
+                        phase_mid INTEGER,
+                        phase_late INTEGER,
+                        PRIMARY KEY (patch_id, champion_id)
+                    );
+                    CREATE TABLE objective_events (
+                        patch_id TEXT NOT NULL,
+                        position INTEGER NOT NULL,
+                        name TEXT NOT NULL,
+                        reward TEXT,
+                        PRIMARY KEY (patch_id, position)
+                    );
+                    CREATE TABLE objective_unlocks (
+                        patch_id TEXT NOT NULL,
+                        objective_position INTEGER NOT NULL,
+                        unlock_position INTEGER NOT NULL,
+                        name TEXT NOT NULL,
+                        PRIMARY KEY (patch_id, objective_position, unlock_position)
+                    );",
+                )
+                .unwrap();
+            connection
+                .execute(
+                    "INSERT INTO patches (id, version, date) VALUES (?1, '4.21.5', '2014-12-10')",
+                    rusqlite::params![patch_id.to_string()],
+                )
+                .unwrap();
+            connection.pragma_update(None, "user_version", 1).unwrap();
+        }
+
+        let store = Store::open(&path).unwrap();
+        let patches = store.list_patches().unwrap();
+        assert_eq!(patches.len(), 1);
+        assert_eq!(patches[0].id, PatchId(patch_id));
+        assert_eq!(patches[0].version, "4.21.5");
+        assert_eq!(patches[0].date, "2014-12-10");
+        assert!(patches[0].source_url.is_none());
+        drop(store);
+        let _ = std::fs::remove_file(&path);
+        let _ = std::fs::remove_file(format!("{}-wal", path.display()));
+        let _ = std::fs::remove_file(format!("{}-shm", path.display()));
+    }
+
+    #[test]
     fn seed_2014_leaves_unknown_sheets_empty() {
         let store = Store::memory().unwrap();
         store
@@ -1772,7 +1854,11 @@ mod tests {
         );
         let phases = ahri.phases.unwrap();
         assert_eq!(
-            (phases.early.value(), phases.mid.value(), phases.late.value()),
+            (
+                phases.early.value(),
+                phases.mid.value(),
+                phases.late.value()
+            ),
             (24, 29, 35)
         );
         let yasuo = ChampionId(store.id_named("champions", "Yasuo").unwrap());

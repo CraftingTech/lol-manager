@@ -1,5 +1,6 @@
 mod calendar;
 mod champion;
+mod champion_balance;
 mod champion_rating;
 mod head_coach;
 mod ids;
@@ -16,6 +17,9 @@ mod team;
 
 pub use calendar::CalendarDate;
 pub use champion::{Champion, DamageSliders, KitProfile, MatchupPlan, TankinessSliders};
+pub use champion_balance::{
+    balance_roster, BalanceError, PHASE_CEILING, PHASE_CENTER, PHASE_FLOOR,
+};
 pub use champion_rating::{
     counts_as_true_damage, rate_patch, stacked_maximum_health, ChampionClass, OfficialKit,
     RatedChampion, RatingError, SpellLine, REFERENCE_LEVEL, TRUE_DAMAGE_PHRASE,

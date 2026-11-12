@@ -8,3 +8,6 @@ publish = false
 domain = { path = "../domain" }
 storage = { path = "../storage" }
 gpui = "0.2.2"
+
+[dev-dependencies]
+uuid = "1"

@@ -20,6 +20,9 @@ pub struct FightSpec<'a> {
     pub defender_gold: i32,
     pub attacker_tempo: i16,
     pub included: [bool; 5],
+    pub defender_present: [bool; 5],
+    pub opens_structures: bool,
+    pub conversion: bool,
     pub planned: bool,
     pub force_start: bool,
     pub priority: Option<String>,
@@ -49,7 +52,8 @@ pub fn resolve(spec: FightSpec<'_>, attacker_base: &mut Rift, defender_base: &mu
         spec.attacker_alive,
     );
     let start_chance = start_chance(&attackers, spec.planned, spec.force_start);
-    let (reaction_read, reaction_recalled) = reaction(&defenders, spec.defender_alive);
+    let (reaction_read, reaction_recalled) =
+        reaction(&defenders, spec.defender_alive, spec.defender_present);
     let success_chance = success_chance(
         &attackers,
         &actions,
@@ -58,7 +62,10 @@ pub fn resolve(spec: FightSpec<'_>, attacker_base: &mut Rift, defender_base: &mu
         spec.attacker_tempo,
         reaction_read && reaction_recalled,
     );
-    let on_rift = rift_names(spec.attackers, spec.defenders);
+    let on_rift = participants(spec.attackers, spec.included)
+        .into_iter()
+        .chain(participants(spec.defenders, spec.defender_present))
+        .collect();
     let weights = weights_of(spec.attackers, &attackers, &actions, spec.included);
     if !spec.force_start && spec.roll_start >= start_chance {
         return shell(
@@ -88,10 +95,15 @@ pub fn resolve(spec: FightSpec<'_>, attacker_base: &mut Rift, defender_base: &mu
         reaction_read,
     );
     let (dead_attackers, dead_defenders, beneficiary, base) = if success {
-        let dead = victims(&defenders, spec.defender_alive, kills);
+        let dead = victims(
+            &defenders,
+            spec.defender_alive,
+            spec.defender_present,
+            kills,
+        );
         (Vec::new(), dead, Some(spec.attacker), defender_base)
     } else if kills > 0 {
-        let dead = victims(&attackers, spec.attacker_alive, kills);
+        let dead = victims(&attackers, spec.attacker_alive, spec.included, kills);
         (dead, Vec::new(), Some(spec.attacker.enemy()), attacker_base)
     } else {
         (Vec::new(), Vec::new(), None, defender_base)
@@ -102,9 +114,24 @@ pub fn resolve(spec: FightSpec<'_>, attacker_base: &mut Rift, defender_base: &mu
         &dead_attackers,
         &dead_defenders,
     );
-    let gold = gold_from_kills(spec.minute, kills);
-    let (taken, mut unlocked) = if kills > 0 {
-        base.take(steps_from_deaths(spec.minute, kills))
+    let landed = u8::try_from(deaths.len()).unwrap_or(0);
+    let gold = gold_from_kills(spec.minute, landed);
+    let from_kills = if landed > 0 {
+        steps_from_deaths(spec.minute, landed)
+    } else {
+        0
+    };
+    let steps = if spec.conversion && success {
+        8
+    } else if spec.opens_structures {
+        from_kills
+            .saturating_add(u8::from(success))
+            .max(u8::from(success) * 4)
+    } else {
+        0
+    };
+    let (taken, mut unlocked) = if steps > 0 {
+        base.take(steps)
     } else {
         (Vec::new(), Vec::new())
     };
@@ -118,7 +145,7 @@ pub fn resolve(spec: FightSpec<'_>, attacker_base: &mut Rift, defender_base: &mu
     } else {
         (0, 0, -8, 0)
     };
-    let line_gold = if success || kills > 0 { gold } else { 0 };
+    let line_gold = if success || landed > 0 { gold } else { 0 };
     let mut outcome = shell(
         &spec,
         if success {
@@ -310,11 +337,11 @@ fn success_chance(
     chance_with_gold(chance.clamp(0, 100) as u8, own_gold, enemy_gold)
 }
 
-fn reaction(reads: &[ReadPlayer; 5], alive: [bool; 5]) -> (bool, bool) {
+fn reaction(reads: &[ReadPlayer; 5], alive: [bool; 5], present: [bool; 5]) -> (bool, bool) {
     let present: Vec<&ReadPlayer> = reads
         .iter()
         .enumerate()
-        .filter(|(index, _)| alive[*index])
+        .filter(|(index, _)| alive[*index] && present[*index])
         .map(|(_, read)| read)
         .collect();
     if present.is_empty() {
@@ -346,8 +373,10 @@ fn kill_count(minute: u16, success: bool, chance: u8, roll: u8, enemy_read: bool
     }
 }
 
-fn victims(reads: &[ReadPlayer; 5], alive: [bool; 5], count: u8) -> Vec<usize> {
-    let mut indexes: Vec<usize> = (0..5).filter(|index| alive[*index]).collect();
+fn victims(reads: &[ReadPlayer; 5], alive: [bool; 5], present: [bool; 5], count: u8) -> Vec<usize> {
+    let mut indexes: Vec<usize> = (0..5)
+        .filter(|index| alive[*index] && present[*index])
+        .collect();
     indexes.sort_by_key(|index| (reads[*index].mechanics, *index));
     indexes.truncate(usize::from(count));
     indexes
@@ -370,12 +399,12 @@ fn death_names(
         .collect()
 }
 
-fn rift_names(attackers: &SideInput, defenders: &SideInput) -> Vec<String> {
-    attackers
-        .players
+fn participants(side: &SideInput, present: [bool; 5]) -> Vec<String> {
+    side.players
         .iter()
-        .chain(defenders.players.iter())
-        .map(|player| player.name.clone())
+        .enumerate()
+        .filter(|(index, _)| present[*index])
+        .map(|(_, player)| player.name.clone())
         .collect()
 }
 
@@ -466,6 +495,9 @@ mod tests {
             defender_gold: 0,
             attacker_tempo: 0,
             included,
+            defender_present: [true; 5],
+            opens_structures: true,
+            conversion: false,
             planned: true,
             force_start: false,
             priority: Some("dragon".into()),

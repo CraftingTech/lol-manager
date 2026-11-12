@@ -1,4 +1,7 @@
 mod browser;
+mod draft;
+mod match_view;
+mod rift_map;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -31,7 +34,7 @@ fn main() {
                 }),
                 ..Default::default()
             },
-            move |_, cx| cx.new(|_| Browser::new(catalog.clone(), assets.clone())),
+            move |_, cx| cx.new(|cx| Browser::new(catalog.clone(), assets.clone(), cx)),
         )
         .unwrap();
         cx.activate(true);

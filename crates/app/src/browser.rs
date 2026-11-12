@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
+use crate::draft::MatchDesk;
+
 use domain::{
     CalendarDate, Champion, ChampionOnPatch, League, LeagueId, LeagueSeason, LeagueTier,
     Organisation, OrganisationId, Patch, Player, Role, RoleSkill, Score, SeasonPresence, Team,
@@ -9,19 +11,19 @@ use domain::{
 use std::ops::Range;
 
 use gpui::{
-    div, img, point, prelude::*, px, rgb, uniform_list, ListHorizontalSizingBehavior, MouseButton,
-    UniformListScrollHandle, Window,
+    div, img, point, prelude::*, px, rgb, uniform_list, FocusHandle, ListHorizontalSizingBehavior,
+    MouseButton, UniformListScrollHandle, Window,
 };
 
-const CANVAS: u32 = 0x12141a;
+pub(crate) const CANVAS: u32 = 0x12141a;
 const SIDEBAR: u32 = 0x1b1e27;
-const PANEL: u32 = 0x161922;
-const ROW: u32 = 0x1e2430;
-const SELECTED: u32 = 0x2c4060;
-const LINE: u32 = 0x2e3544;
-const TEXT: u32 = 0xe8e6e3;
-const MUTED: u32 = 0x8b93a7;
-const GOLD: u32 = 0xc8a15a;
+pub(crate) const PANEL: u32 = 0x161922;
+pub(crate) const ROW: u32 = 0x1e2430;
+pub(crate) const SELECTED: u32 = 0x2c4060;
+pub(crate) const LINE: u32 = 0x2e3544;
+pub(crate) const TEXT: u32 = 0xe8e6e3;
+pub(crate) const MUTED: u32 = 0x8b93a7;
+pub(crate) const GOLD: u32 = 0xc8a15a;
 
 #[derive(Clone)]
 pub struct Catalog {
@@ -44,6 +46,7 @@ enum Section {
     Players,
     Leagues,
     Organisations,
+    Match,
 }
 
 impl Section {
@@ -54,6 +57,7 @@ impl Section {
             Self::Players => "Joueurs",
             Self::Leagues => "Ligues",
             Self::Organisations => "Organisations",
+            Self::Match => "Match",
         }
     }
 
@@ -109,16 +113,18 @@ impl Section {
                 ("Présence", 120.0),
             ],
             Self::Organisations => &[("Nom", 200.0), ("Région", 70.0), ("Équipes", 70.0)],
+            Self::Match => &[],
         }
     }
 
-    fn all() -> [Self; 5] {
+    fn all() -> [Self; 6] {
         [
             Self::Champions,
             Self::Teams,
             Self::Players,
             Self::Leagues,
             Self::Organisations,
+            Self::Match,
         ]
     }
 
@@ -129,26 +135,49 @@ impl Section {
             Self::Players => 2,
             Self::Leagues => 3,
             Self::Organisations => 4,
+            Self::Match => 5,
         }
     }
 }
 
 pub struct Browser {
-    catalog: Result<Catalog, String>,
-    assets: PathBuf,
+    pub(crate) catalog: Result<Catalog, String>,
+    pub(crate) assets: PathBuf,
     section: Section,
     selected: Option<usize>,
     scroll: UniformListScrollHandle,
+    pub(crate) desk: MatchDesk,
+    pub(crate) blue_scroll: UniformListScrollHandle,
+    pub(crate) red_scroll: UniformListScrollHandle,
+    pub(crate) blue_query: String,
+    pub(crate) red_query: String,
+    pub(crate) champion_query: String,
+    pub(crate) blue_filter: FocusHandle,
+    pub(crate) red_filter: FocusHandle,
+    pub(crate) champion_filter: FocusHandle,
 }
 
 impl Browser {
-    pub fn new(catalog: Result<Catalog, String>, assets: PathBuf) -> Self {
+    pub fn new(catalog: Result<Catalog, String>, assets: PathBuf, cx: &mut Context<Self>) -> Self {
         Self {
             catalog,
             assets,
             section: Section::Players,
             selected: None,
             scroll: UniformListScrollHandle::new(),
+            desk: {
+                let mut desk = MatchDesk::new();
+                desk.human = Some(crate::draft::DraftSide::Blue);
+                desk
+            },
+            blue_scroll: UniformListScrollHandle::new(),
+            red_scroll: UniformListScrollHandle::new(),
+            blue_query: String::new(),
+            red_query: String::new(),
+            champion_query: String::new(),
+            blue_filter: cx.focus_handle(),
+            red_filter: cx.focus_handle(),
+            champion_filter: cx.focus_handle(),
         }
     }
 
@@ -162,12 +191,13 @@ impl Browser {
             Section::Players => catalog.players.len(),
             Section::Leagues => catalog.leagues.len(),
             Section::Organisations => catalog.organisations.len(),
+            Section::Match => 0,
         }
     }
 }
 
 impl Render for Browser {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let mut sidebar = div()
             .w(px(220.0))
             .flex_none()
@@ -186,36 +216,39 @@ impl Render for Browser {
         for section in Section::all() {
             let active = self.section == section;
             let count = self.count(section);
-            sidebar = sidebar.child(
-                div()
-                    .mt_1()
-                    .px_2()
-                    .py_1()
-                    .rounded_md()
-                    .bg(rgb(if active { SELECTED } else { SIDEBAR }))
-                    .flex()
-                    .justify_between()
-                    .items_center()
-                    .child(label(
-                        section.label(),
-                        if active { TEXT } else { MUTED },
-                        active,
-                    ))
-                    .child(label(count.to_string(), MUTED, false))
-                    .on_mouse_down(
-                        MouseButton::Left,
-                        cx.listener(move |this, _, _, cx| {
-                            this.section = section;
-                            this.selected = None;
-                            this.scroll
-                                .0
-                                .borrow()
-                                .base_handle
-                                .set_offset(point(px(0.0), px(0.0)));
-                            cx.notify();
-                        }),
-                    ),
-            );
+            if section == Section::Match {
+                sidebar = sidebar.child(div().mt_3().h(px(1.0)).bg(rgb(LINE)));
+            }
+            let mut row = div()
+                .mt_1()
+                .px_2()
+                .py_1()
+                .rounded_md()
+                .bg(rgb(if active { SELECTED } else { SIDEBAR }))
+                .flex()
+                .justify_between()
+                .items_center()
+                .child(label(
+                    section.label(),
+                    if active { TEXT } else { MUTED },
+                    active,
+                ));
+            if section != Section::Match {
+                row = row.child(label(count.to_string(), MUTED, false));
+            }
+            sidebar = sidebar.child(row.on_mouse_down(
+                MouseButton::Left,
+                cx.listener(move |this, _, _, cx| {
+                    this.section = section;
+                    this.selected = None;
+                    this.scroll
+                        .0
+                        .borrow()
+                        .base_handle
+                        .set_offset(point(px(0.0), px(0.0)));
+                    cx.notify();
+                }),
+            ));
         }
 
         let mut screen = div()
@@ -225,10 +258,14 @@ impl Render for Browser {
             .flex()
             .bg(rgb(CANVAS))
             .text_color(rgb(TEXT))
-            .child(sidebar)
-            .child(self.table(cx));
-        if self.selected.is_some() {
-            screen = screen.child(self.detail(cx));
+            .child(sidebar);
+        if self.section == Section::Match {
+            screen = screen.child(crate::match_view::screen(self, window, cx));
+        } else {
+            screen = screen.child(self.table(cx));
+            if self.selected.is_some() {
+                screen = screen.child(self.detail(cx));
+            }
         }
         screen
     }
@@ -430,6 +467,7 @@ impl Browser {
                     org.teams.len().to_string(),
                 ]
             }
+            Section::Match => Vec::new(),
         }
     }
 
@@ -499,6 +537,7 @@ impl Browser {
             Section::Teams => catalog.teams.get(index)?.portrait.clone(),
             Section::Leagues => catalog.leagues.get(index)?.portrait.clone(),
             Section::Organisations => catalog.organisations.get(index)?.portrait.clone(),
+            Section::Match => None,
         }?;
         let path = self.assets.join(relative);
         path.is_file().then_some(path)
@@ -659,6 +698,7 @@ impl Browser {
                     ("Identifiant", org.id.0.to_string()),
                 ]
             }
+            Section::Match => Vec::new(),
         }
     }
 }
