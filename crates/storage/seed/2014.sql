@@ -3062,7 +3062,12 @@ DELETE FROM teams WHERE id = '003475ee-3175-4af6-9a8b-bc954662e074';
 -- Source: https://ddragon.leagueoflegends.com/cdn/4.21.5/data/en_US/championFull.json
 -- Method: crates/domain/src/champion_rating.rs
 -- The date stays empty: this file does not carry a calendar day.
-INSERT INTO patches (id, version, date) VALUES ('b7e0c1a4-6d28-4f5a-9c33-1a8e2f04d6b0', '4.21.5', '');
+INSERT INTO patches (id, version, date, source_url) VALUES (
+    'b7e0c1a4-6d28-4f5a-9c33-1a8e2f04d6b0',
+    '4.21.5',
+    '2014-12-10',
+    'https://wiki.leagueoflegends.com/en-us/V4.21'
+);
 INSERT INTO champion_on_patch (patch_id, champion_id, top, jungle, mid, adc, support, attack, ability, true_damage, health, armor, magic_resist, phase_early, phase_mid, phase_late) SELECT 'b7e0c1a4-6d28-4f5a-9c33-1a8e2f04d6b0', id, 83, 60, 18, 3, 30, 80, 30, 0, 67, 89, 53, 39, 48, 58 FROM champions WHERE name = 'Aatrox';
 INSERT INTO champion_on_patch (patch_id, champion_id, top, jungle, mid, adc, support, attack, ability, true_damage, health, armor, magic_resist, phase_early, phase_mid, phase_late) SELECT 'b7e0c1a4-6d28-4f5a-9c33-1a8e2f04d6b0', id, 28, 43, 80, 8, 25, 30, 80, 40, 57, 80, 30, 24, 29, 35 FROM champions WHERE name = 'Ahri';
 INSERT INTO champion_on_patch (patch_id, champion_id, top, jungle, mid, adc, support, attack, ability, true_damage, health, armor, magic_resist, phase_early, phase_mid, phase_late) SELECT 'b7e0c1a4-6d28-4f5a-9c33-1a8e2f04d6b0', id, 35, 70, 75, 5, 10, 50, 80, 0, 68, 86, 53, 27, 35, 44 FROM champions WHERE name = 'Akali';
@@ -3186,3 +3191,100 @@ INSERT INTO champion_on_patch (patch_id, champion_id, top, jungle, mid, adc, sup
 INSERT INTO champion_on_patch (patch_id, champion_id, top, jungle, mid, adc, support, attack, ability, true_damage, health, armor, magic_resist, phase_early, phase_mid, phase_late) SELECT 'b7e0c1a4-6d28-4f5a-9c33-1a8e2f04d6b0', id, 20, 15, 85, 10, 40, 20, 90, 0, 57, 78, 30, 40, 46, 53 FROM champions WHERE name = 'Ziggs';
 INSERT INTO champion_on_patch (patch_id, champion_id, top, jungle, mid, adc, support, attack, ability, true_damage, health, armor, magic_resist, phase_early, phase_mid, phase_late) SELECT 'b7e0c1a4-6d28-4f5a-9c33-1a8e2f04d6b0', id, 18, 18, 55, 10, 65, 20, 80, 0, 52, 82, 30, 14, 26, 39 FROM champions WHERE name = 'Zilean';
 INSERT INTO champion_on_patch (patch_id, champion_id, top, jungle, mid, adc, support, attack, ability, true_damage, health, armor, magic_resist, phase_early, phase_mid, phase_late) SELECT 'b7e0c1a4-6d28-4f5a-9c33-1a8e2f04d6b0', id, 18, 18, 55, 10, 65, 40, 80, 20, 51, 71, 30, 29, 37, 45 FROM champions WHERE name = 'Zyra';
+
+-- Opening roster is the squad already linked on player_teams, ordered by lane.
+INSERT INTO roster_players (team_id, position, player_id)
+SELECT team_id,
+       ROW_NUMBER() OVER (
+           PARTITION BY team_id
+           ORDER BY CASE players.role
+               WHEN 'top' THEN 0
+               WHEN 'jungle' THEN 1
+               WHEN 'mid' THEN 2
+               WHEN 'adc' THEN 3
+               WHEN 'support' THEN 4
+               ELSE 5
+           END,
+           players.name
+       ) - 1,
+       players.id
+FROM players
+JOIN player_teams ON player_teams.player_id = players.id;
+
+-- Sister teams of 2014 share one organisation.
+-- Samsung Galaxy: https://lol.fandom.com/wiki/Samsung_Galaxy
+-- SK Telecom T1: https://lol.fandom.com/wiki/SK_Telecom_T1
+-- CJ Entus: https://lol.fandom.com/wiki/CJ_Entus
+-- KT Rolster: https://lol.fandom.com/wiki/KT_Rolster
+-- NaJin e-mFire: https://lol.fandom.com/wiki/NaJin_e-mFire
+-- Incredible Miracle: https://lol.fandom.com/wiki/Incredible_Miracle
+-- Jin Air Green Wings: https://lol.fandom.com/wiki/Jin_Air_Green_Wings
+INSERT INTO organisations (
+    id, name, region, history, staff_seats, scrim_room, gaming_house, chef, jersey_name,
+    budget, wage_bill, fan_count, fan_mood, portrait
+) VALUES
+    ('f3c8a1d0-6b24-4e1a-9c77-2d5e8f01a4b6', 'Samsung Galaxy', 'KR', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('c4d91e20-7a15-4b88-8e33-1f6a0c92d7e4', 'SK Telecom T1', 'KR', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('b8e2c514-3f90-4d6a-a1c8-9e7b4d05f2a1', 'CJ Entus', 'KR', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('d0a6f783-2c41-4e9b-b5d2-8a3c1e70f6b9', 'KT Rolster', 'KR', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('e7b1d294-5a38-4c0f-9e66-3b8d2a41c5f0', 'NaJin e-mFire', 'KR', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('9c4e7a12-8d60-4f3b-a2e5-6c1b0d93e8a7', 'Incredible Miracle', 'KR', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('1f5a8c36-4b72-4d9e-8a01-7e2c6b4d5f83', 'Jin Air Green Wings', 'KR', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+UPDATE teams SET organisation_id = 'f3c8a1d0-6b24-4e1a-9c77-2d5e8f01a4b6' WHERE name IN ('Samsung Blue', 'Samsung Ozone');
+UPDATE teams SET organisation_id = 'c4d91e20-7a15-4b88-8e33-1f6a0c92d7e4' WHERE name IN ('SK Telecom T1 K', 'SK Telecom T1 S');
+UPDATE teams SET organisation_id = 'b8e2c514-3f90-4d6a-a1c8-9e7b4d05f2a1' WHERE name IN ('CJ Entus Blaze', 'CJ Entus Frost');
+UPDATE teams SET organisation_id = 'd0a6f783-2c41-4e9b-b5d2-8a3c1e70f6b9' WHERE name IN ('KT Rolster Bullets', 'KT Rolster Arrows');
+UPDATE teams SET organisation_id = 'e7b1d294-5a38-4c0f-9e66-3b8d2a41c5f0' WHERE name IN ('NaJin White Shield', 'NaJin Black Sword');
+UPDATE teams SET organisation_id = '9c4e7a12-8d60-4f3b-a2e5-6c1b0d93e8a7' WHERE name IN ('Incredible Miracle 1', 'Incredible Miracle 2');
+UPDATE teams SET organisation_id = '1f5a8c36-4b72-4d9e-8a01-7e2c6b4d5f83' WHERE name IN ('Jin Air Falcons', 'Jin Air Stealths');
+
+DELETE FROM organisation_teams WHERE team_id IN (
+    SELECT id FROM teams WHERE organisation_id IN (
+        'f3c8a1d0-6b24-4e1a-9c77-2d5e8f01a4b6',
+        'c4d91e20-7a15-4b88-8e33-1f6a0c92d7e4',
+        'b8e2c514-3f90-4d6a-a1c8-9e7b4d05f2a1',
+        'd0a6f783-2c41-4e9b-b5d2-8a3c1e70f6b9',
+        'e7b1d294-5a38-4c0f-9e66-3b8d2a41c5f0',
+        '9c4e7a12-8d60-4f3b-a2e5-6c1b0d93e8a7',
+        '1f5a8c36-4b72-4d9e-8a01-7e2c6b4d5f83'
+    )
+);
+INSERT INTO organisation_teams (organisation_id, position, team_id)
+SELECT organisation_id,
+       ROW_NUMBER() OVER (PARTITION BY organisation_id ORDER BY name) - 1,
+       id
+FROM teams
+WHERE organisation_id IN (
+    'f3c8a1d0-6b24-4e1a-9c77-2d5e8f01a4b6',
+    'c4d91e20-7a15-4b88-8e33-1f6a0c92d7e4',
+    'b8e2c514-3f90-4d6a-a1c8-9e7b4d05f2a1',
+    'd0a6f783-2c41-4e9b-b5d2-8a3c1e70f6b9',
+    'e7b1d294-5a38-4c0f-9e66-3b8d2a41c5f0',
+    '9c4e7a12-8d60-4f3b-a2e5-6c1b0d93e8a7',
+    '1f5a8c36-4b72-4d9e-8a01-7e2c6b4d5f83'
+);
+DELETE FROM organisations WHERE name IN (
+    'Samsung Blue', 'Samsung Ozone',
+    'SK Telecom T1 K', 'SK Telecom T1 S',
+    'CJ Entus Blaze', 'CJ Entus Frost',
+    'KT Rolster Bullets', 'KT Rolster Arrows',
+    'NaJin White Shield', 'NaJin Black Sword',
+    'Incredible Miracle 1', 'Incredible Miracle 2',
+    'Jin Air Falcons', 'Jin Air Stealths'
+);
+
+-- Formats written in issue 9. Champions stays without a series length: the issue does not give one for the whole tournament.
+INSERT INTO split_formats (league_id, year, position, name, series) VALUES
+    ('166cd91e-7856-4cf3-abcc-64aee51f8623', 2014, 0, 'Spring', 'single_game'),
+    ('166cd91e-7856-4cf3-abcc-64aee51f8623', 2014, 1, 'Spring playoffs', 'first_to_three'),
+    ('166cd91e-7856-4cf3-abcc-64aee51f8623', 2014, 2, 'Summer', 'single_game'),
+    ('166cd91e-7856-4cf3-abcc-64aee51f8623', 2014, 3, 'Summer playoffs', 'first_to_three'),
+    ('9c6da7b4-c421-47ba-8b2c-34910daecfb9', 2014, 0, 'Spring', 'single_game'),
+    ('9c6da7b4-c421-47ba-8b2c-34910daecfb9', 2014, 1, 'Spring playoffs', 'first_to_three'),
+    ('9c6da7b4-c421-47ba-8b2c-34910daecfb9', 2014, 2, 'Summer', 'single_game'),
+    ('9c6da7b4-c421-47ba-8b2c-34910daecfb9', 2014, 3, 'Summer playoffs', 'first_to_three'),
+    ('23c166ad-27a9-4513-9f8a-82372a0e5d8e', 2014, 0, 'Spring', 'two_games'),
+    ('23c166ad-27a9-4513-9f8a-82372a0e5d8e', 2014, 1, 'Summer', 'two_games'),
+    ('23c166ad-27a9-4513-9f8a-82372a0e5d8e', 2014, 2, 'Summer playoffs', 'first_to_three');
+

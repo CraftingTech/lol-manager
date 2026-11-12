@@ -752,13 +752,17 @@ impl Store {
     pub fn save_staff(&self, member: &StaffMember) -> Result<(), StoreError> {
         let (role, positional) = staff_role_to_sql(member.role);
         let competencies = &member.competencies;
-        self.connection.execute(
+        let id = sql_id(member.id.0);
+        let tx = self.connection.unchecked_transaction()?;
+        tx.execute(
             "INSERT OR REPLACE INTO staff_members (
-                id, name, role, positional_role, draft, training, mental, macro_play, media
-             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
+                id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media
+             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
             params![
-                sql_id(member.id.0),
+                id,
                 member.name,
+                member.nationality,
+                member.age.map(i64::from),
                 role,
                 positional,
                 i64::from(competencies.draft.value()),
@@ -768,37 +772,68 @@ impl Store {
                 i64::from(competencies.media.value()),
             ],
         )?;
+        tx.execute(
+            "DELETE FROM staff_organisations WHERE staff_id = ?1",
+            params![id],
+        )?;
+        for (position, organisation) in member.organisations.iter().enumerate() {
+            tx.execute(
+                "INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES (?1, ?2, ?3)",
+                params![id, position as i64, sql_id(organisation.0)],
+            )?;
+        }
+        tx.commit()?;
         Ok(())
     }
 
     pub fn load_staff(&self, id: StaffId) -> Result<StaffMember, StoreError> {
-        self.connection
+        let staff_id = sql_id(id.0);
+        let row = self
+            .connection
             .query_row(
-                "SELECT name, role, positional_role, draft, training, mental, macro_play, media
+                "SELECT name, nationality, age, role, positional_role, draft, training, mental, macro_play, media
                  FROM staff_members WHERE id = ?1",
-                params![sql_id(id.0)],
+                params![staff_id],
                 |row| {
-                    let role = staff_role_from_sql(
-                        &row.get::<_, String>(1)?,
-                        row.get::<_, Option<String>>(2)?,
-                    )
-                    .map_err(store_to_sql)?;
-                    Ok(StaffMember {
-                        id,
-                        name: row.get(0)?,
-                        role,
-                        competencies: CoachCompetencies {
-                            draft: score_from(row.get(3)?).map_err(store_to_sql)?,
-                            training: score_from(row.get(4)?).map_err(store_to_sql)?,
-                            mental: score_from(row.get(5)?).map_err(store_to_sql)?,
-                            macro_play: score_from(row.get(6)?).map_err(store_to_sql)?,
-                            media: score_from(row.get(7)?).map_err(store_to_sql)?,
-                        },
-                    })
+                    Ok((
+                        row.get::<_, String>(0)?,
+                        row.get::<_, Option<String>>(1)?,
+                        row.get::<_, Option<i64>>(2)?,
+                        row.get::<_, String>(3)?,
+                        row.get::<_, Option<String>>(4)?,
+                        row.get::<_, i64>(5)?,
+                        row.get::<_, i64>(6)?,
+                        row.get::<_, i64>(7)?,
+                        row.get::<_, i64>(8)?,
+                        row.get::<_, i64>(9)?,
+                    ))
                 },
             )
             .optional()?
-            .ok_or(StoreError::NotFound)
+            .ok_or(StoreError::NotFound)?;
+        let role = staff_role_from_sql(&row.3, row.4)?;
+        let age = match row.2 {
+            None => None,
+            Some(value) => Some(u8_from(value)?),
+        };
+        Ok(StaffMember {
+            id,
+            name: row.0,
+            nationality: row.1,
+            age,
+            organisations: self.organisation_ids(
+                "SELECT organisation_id FROM staff_organisations WHERE staff_id = ?1 ORDER BY position",
+                &staff_id,
+            )?,
+            role,
+            competencies: CoachCompetencies {
+                draft: score_from(row.5)?,
+                training: score_from(row.6)?,
+                mental: score_from(row.7)?,
+                macro_play: score_from(row.8)?,
+                media: score_from(row.9)?,
+            },
+        })
     }
 
     pub fn save_presta(&self, presta: &Presta) -> Result<(), StoreError> {
@@ -835,8 +870,8 @@ impl Store {
         let id = sql_id(patch.id.0);
         let tx = self.connection.unchecked_transaction()?;
         tx.execute(
-            "INSERT OR REPLACE INTO patches (id, version, date) VALUES (?1, ?2, ?3)",
-            params![id, patch.version, patch.date],
+            "INSERT OR REPLACE INTO patches (id, version, date, source_url) VALUES (?1, ?2, ?3, ?4)",
+            params![id, patch.version, patch.date, patch.source_url],
         )?;
         tx.execute(
             "DELETE FROM objective_unlocks WHERE patch_id = ?1",
@@ -900,12 +935,18 @@ impl Store {
 
     pub fn load_patch(&self, id: PatchId) -> Result<Patch, StoreError> {
         let patch_id = sql_id(id.0);
-        let (version, date) = self
+        let (version, date, source_url) = self
             .connection
             .query_row(
-                "SELECT version, date FROM patches WHERE id = ?1",
+                "SELECT version, date, source_url FROM patches WHERE id = ?1",
                 params![patch_id],
-                |row| Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)),
+                |row| {
+                    Ok((
+                        row.get::<_, String>(0)?,
+                        row.get::<_, String>(1)?,
+                        row.get::<_, Option<String>>(2)?,
+                    ))
+                },
             )
             .optional()?
             .ok_or(StoreError::NotFound)?;
@@ -913,6 +954,7 @@ impl Store {
             id,
             version,
             date,
+            source_url,
             champions: self.load_champions_on_patch(&patch_id)?,
             objectives: self.load_objectives(&patch_id)?,
         })
@@ -922,6 +964,12 @@ impl Store {
         let mut statement = self.connection.prepare(sql)?;
         let rows = statement.query_map(params![owner], |row| row.get::<_, String>(0))?;
         rows.map(|row| Ok(TeamId(parse_id(row?)?))).collect()
+    }
+
+    fn organisation_ids(&self, sql: &str, owner: &str) -> Result<Vec<OrganisationId>, StoreError> {
+        let mut statement = self.connection.prepare(sql)?;
+        let rows = statement.query_map(params![owner], |row| row.get::<_, String>(0))?;
+        rows.map(|row| Ok(OrganisationId(parse_id(row?)?))).collect()
     }
 
     fn player_ids(&self, sql: &str, owner: &str) -> Result<Vec<PlayerId>, StoreError> {
@@ -1515,6 +1563,9 @@ mod tests {
         let staff = StaffMember {
             id: StaffId(uuid::Uuid::from_u128(1)),
             name: "Analyst".into(),
+            nationality: Some("KR".into()),
+            age: Some(31),
+            organisations: vec![organisation.id],
             role: StaffRole::Positional(domain::PositionalCoach { role: Role::Mid }),
             competencies: coach.competencies,
         };
@@ -1526,6 +1577,7 @@ mod tests {
             id: PatchId(uuid::Uuid::from_u128(1)),
             version: "4.1".into(),
             date: "2014-01-15".into(),
+            source_url: None,
             champions: vec![ChampionOnPatch {
                 champion: champion.id,
                 roles: Some(RoleScores {
@@ -1643,11 +1695,15 @@ mod tests {
         assert_eq!(store.list_players().unwrap().len(), 761);
         assert_eq!(store.list_teams().unwrap().len(), 142);
         assert_eq!(store.list_leagues().unwrap().len(), 13);
-        assert_eq!(store.list_organisations().unwrap().len(), 140);
+        assert_eq!(store.list_organisations().unwrap().len(), 133);
         let patches = store.list_patches().unwrap();
         assert_eq!(patches.len(), 1);
         assert_eq!(patches[0].version, "4.21.5");
-        assert!(patches[0].date.is_empty());
+        assert_eq!(patches[0].date, "2014-12-10");
+        assert_eq!(
+            patches[0].source_url.as_deref(),
+            Some("https://wiki.leagueoflegends.com/en-us/V4.21")
+        );
         assert_eq!(patches[0].champions.len(), 123);
         let ahri_id = ChampionId(store.id_named("champions", "Ahri").unwrap());
         let ahri = patches[0]
@@ -1712,7 +1768,7 @@ mod tests {
         assert_eq!(
             store
                 .load_organisation(OrganisationId(
-                    store.id_named("organisations", "SK Telecom T1 K").unwrap()
+                    store.id_named("organisations", "SK Telecom T1").unwrap()
                 ))
                 .unwrap()
                 .region,
@@ -1724,6 +1780,11 @@ mod tests {
         assert_eq!(
             fnatic.portrait.as_deref(),
             Some("portraits/wiki/Fnatic_original_logo.png")
+        );
+        assert_eq!(fnatic.roster.players.len(), 5);
+        assert_eq!(
+            fnatic.roster.players[0],
+            PlayerId(store.id_named("players", "sOAZ").unwrap())
         );
         assert_eq!(
             store
@@ -1905,6 +1966,28 @@ mod tests {
                 .as_deref(),
             Some("portraits/wiki/Cloud9_Eclipselogo_profile.png")
         );
+        let samsung = OrganisationId(store.id_named("organisations", "Samsung Galaxy").unwrap());
+        for name in ["Samsung Blue", "Samsung Ozone"] {
+            let team = store
+                .load_team(TeamId(store.id_named("teams", name).unwrap()))
+                .unwrap();
+            assert_eq!(team.organisation, samsung);
+            assert_eq!(
+                team.registration.map(|registration| registration.league),
+                Some(champions.id)
+            );
+        }
+        assert_eq!(store.load_organisation(samsung).unwrap().teams.len(), 2);
+        assert!(store
+            .load_organisation(samsung)
+            .unwrap()
+            .sponsors
+            .is_empty());
+        let eu_splits = store.load_league_season(eu, 2014).unwrap().splits;
+        assert_eq!(eu_splits.len(), 4);
+        assert_eq!(eu_splits[0].name, "Spring");
+        assert_eq!(eu_splits[0].series, SeriesLength::SingleGame);
+        assert_eq!(eu_splits[1].series, SeriesLength::FirstToThree);
         let complexity = OrganisationId(
             store
                 .id_named("organisations", "compLexity Gaming")

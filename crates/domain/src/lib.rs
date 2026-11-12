@@ -14,12 +14,12 @@ mod tag;
 mod team;
 
 pub use calendar::CalendarDate;
-pub use champion::{Champion, DamageSliders, TankinessSliders};
+pub use champion::{Champion, DamageSliders, KitProfile, MatchupPlan, TankinessSliders};
 pub use champion_rating::{
     counts_as_true_damage, rate_patch, stacked_maximum_health, ChampionClass, OfficialKit,
     RatedChampion, RatingError, SpellLine, REFERENCE_LEVEL, TRUE_DAMAGE_PHRASE,
 };
-pub use head_coach::{CoachCompetencies, HeadCoach, HeadCoachIdentity};
+pub use head_coach::{Address, AddressEffect, CoachCompetencies, HeadCoach, HeadCoachIdentity};
 pub use ids::{
     ChampionId, CoachId, InfluencerContractId, LeagueId, OrganisationId, PatchId, PlayerId,
     SponsorId, StaffId, TeamId,

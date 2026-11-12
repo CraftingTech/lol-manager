@@ -260,6 +260,8 @@ CREATE TABLE influencer_contracts (
 CREATE TABLE staff_members (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
+    nationality TEXT,
+    age INTEGER,
     role TEXT NOT NULL,
     positional_role TEXT,
     draft INTEGER NOT NULL,
@@ -267,6 +269,15 @@ CREATE TABLE staff_members (
     mental INTEGER NOT NULL,
     macro_play INTEGER NOT NULL,
     media INTEGER NOT NULL
+);
+
+CREATE TABLE staff_organisations (
+    staff_id TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    organisation_id TEXT NOT NULL,
+    PRIMARY KEY (staff_id, position),
+    FOREIGN KEY (staff_id) REFERENCES staff_members (id),
+    FOREIGN KEY (organisation_id) REFERENCES organisations (id)
 );
 
 CREATE TABLE prestas (
@@ -280,7 +291,8 @@ CREATE TABLE prestas (
 CREATE TABLE patches (
     id TEXT PRIMARY KEY,
     version TEXT NOT NULL,
-    date TEXT NOT NULL
+    date TEXT NOT NULL,
+    source_url TEXT
 );
 
 CREATE TABLE champion_on_patch (

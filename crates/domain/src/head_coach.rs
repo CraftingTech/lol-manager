@@ -28,9 +28,41 @@ pub struct HeadCoach {
     pub reputation: Score,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Address {
+    Reassure,
+    Pressure,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct AddressEffect {
+    pub form: Score,
+    pub fan_mood: Score,
+}
+
+impl HeadCoach {
+    /// An ambitious player joins when the coach's reputation meets the aspiration.
+    pub fn attracts(&self, aspiration: Score) -> bool {
+        self.reputation.value() >= aspiration.value()
+    }
+}
+
+impl Address {
+    pub fn apply(self, form: Score, fan_mood: Score) -> AddressEffect {
+        let (form_delta, mood_delta) = match self {
+            Self::Reassure => (8, 5),
+            Self::Pressure => (-8, 4),
+        };
+        AddressEffect {
+            form: form.saturating_add(form_delta),
+            fan_mood: fan_mood.saturating_add(mood_delta),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{CoachCompetencies, HeadCoach, HeadCoachIdentity};
+    use super::{Address, CoachCompetencies, HeadCoach, HeadCoachIdentity};
     use crate::ids::{CoachId, TeamId};
     use crate::score::Score;
 
@@ -58,5 +90,19 @@ mod tests {
         assert_eq!(coach.identity.id, CoachId(uuid::Uuid::from_u128(1)));
         assert_eq!(coach.identity.teams, vec![TeamId(uuid::Uuid::from_u128(7))]);
         assert!(coach.identity.palmares.is_empty());
+        assert!(coach.attracts(Score::new(65).unwrap()));
+        assert!(!coach.attracts(Score::new(80).unwrap()));
+    }
+
+    #[test]
+    fn a_speech_moves_form_and_fan_mood() {
+        let form = Score::new(50).unwrap();
+        let mood = Score::new(40).unwrap();
+        let reassure = Address::Reassure.apply(form, mood);
+        let pressure = Address::Pressure.apply(form, mood);
+        assert!(reassure.form > form);
+        assert!(reassure.fan_mood > mood);
+        assert!(pressure.form < form);
+        assert!(pressure.fan_mood > mood);
     }
 }
