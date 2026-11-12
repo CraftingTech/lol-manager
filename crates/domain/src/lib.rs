@@ -1,3 +1,4 @@
+mod calendar;
 mod champion;
 mod head_coach;
 mod ids;
@@ -11,6 +12,7 @@ mod staff;
 mod tag;
 mod team;
 
+pub use calendar::CalendarDate;
 pub use champion::{Champion, DamageSliders, TankinessSliders};
 pub use head_coach::{CoachCompetencies, HeadCoach, HeadCoachIdentity};
 pub use ids::{

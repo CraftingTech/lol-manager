@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use domain::{
-    Champion, ChampionId, ChampionOnPatch, CoachCompetencies, CoachId, Competencies, DamageSliders,
+    CalendarDate, Champion, ChampionId, ChampionOnPatch, CoachCompetencies, CoachId, Competencies, DamageSliders,
     FanBase, Finances, HeadCoach, HeadCoachIdentity, InfluencerContract, InfluencerContractId, Jersey,
     League, LeagueId, LeagueSeason, Locaux, ObjectiveEvent, Organisation, OrganisationId, PalmaresEntry,
     Patch, PatchId, PhaseScores, Player, PlayerId, PlayerIdentity, PlayerState, PoolEntry, Presta,
@@ -75,8 +75,8 @@ impl Store {
 
     pub fn save_champion(&self, champion: &Champion) -> Result<(), StoreError> {
         self.connection.execute(
-            "INSERT OR REPLACE INTO champions (id, name) VALUES (?1, ?2)",
-            params![sql_id(champion.id.0), champion.name],
+            "INSERT OR REPLACE INTO champions (id, name, portrait) VALUES (?1, ?2, ?3)",
+            params![sql_id(champion.id.0), champion.name, champion.portrait],
         )?;
         Ok(())
     }
@@ -85,24 +85,25 @@ impl Store {
         let name = self
             .connection
             .query_row(
-                "SELECT name FROM champions WHERE id = ?1",
+                "SELECT name, portrait FROM champions WHERE id = ?1",
                 params![sql_id(id.0)],
-                |row| row.get(0),
+                |row| Ok((row.get::<_, String>(0)?, row.get::<_, Option<String>>(1)?)),
             )
             .optional()?
             .ok_or(StoreError::NotFound)?;
-        Ok(Champion { id, name })
+        Ok(Champion { id, name: name.0, portrait: name.1 })
     }
 
     pub fn save_league(&self, league: &League) -> Result<(), StoreError> {
         self.connection.execute(
-            "INSERT OR REPLACE INTO leagues (id, name, region, tier, presence) VALUES (?1, ?2, ?3, ?4, ?5)",
+            "INSERT OR REPLACE INTO leagues (id, name, region, tier, presence, portrait) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
             params![
                 sql_id(league.id.0),
                 league.name,
                 league.region,
                 tier_to_sql(league.tier),
                 presence_to_sql(league.presence),
+                league.portrait,
             ],
         )?;
         Ok(())
@@ -111,7 +112,7 @@ impl Store {
     pub fn load_league(&self, id: LeagueId) -> Result<League, StoreError> {
         self.connection
             .query_row(
-                "SELECT name, region, tier, presence FROM leagues WHERE id = ?1",
+                "SELECT name, region, tier, presence, portrait FROM leagues WHERE id = ?1",
                 params![sql_id(id.0)],
                 |row| {
                     Ok(League {
@@ -120,6 +121,7 @@ impl Store {
                         region: row.get(1)?,
                         tier: tier_from_sql(&row.get::<_, String>(2)?).map_err(store_to_sql)?,
                         presence: presence_from_sql(&row.get::<_, String>(3)?).map_err(store_to_sql)?,
+                        portrait: row.get(4)?,
                     })
                 },
             )
@@ -210,8 +212,8 @@ impl Store {
         tx.execute(
             "INSERT OR REPLACE INTO organisations (
                 id, name, region, history, staff_seats, scrim_room, gaming_house, chef, jersey_name,
-                budget, wage_bill, fan_count, fan_mood
-             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
+                budget, wage_bill, fan_count, fan_mood, portrait
+             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)",
             params![
                 id,
                 organisation.name,
@@ -226,6 +228,7 @@ impl Store {
                 organisation.finances.wage_bill,
                 organisation.fan_base.count.map(sql_count).transpose()?,
                 organisation.fan_base.mood.map(|mood| i64::from(mood.value())),
+                organisation.portrait,
             ],
         )?;
         tx.execute("DELETE FROM organisation_teams WHERE organisation_id = ?1", params![id])?;
@@ -277,7 +280,7 @@ impl Store {
             .connection
             .query_row(
                 "SELECT name, region, history, staff_seats, scrim_room, gaming_house, chef, jersey_name,
-                        budget, wage_bill, fan_count, fan_mood
+                        budget, wage_bill, fan_count, fan_mood, portrait
                  FROM organisations WHERE id = ?1",
                 params![org_id],
                 |row| {
@@ -294,6 +297,7 @@ impl Store {
                         row.get::<_, Option<i64>>(9)?,
                         row.get::<_, Option<i64>>(10)?,
                         row.get::<_, Option<i64>>(11)?,
+                        row.get::<_, Option<String>>(12)?,
                     ))
                 },
             )
@@ -329,6 +333,7 @@ impl Store {
                 count: optional_u64(row.10)?,
                 mood: row.11.map(score_from).transpose()?,
             },
+            portrait: row.12,
         })
     }
 
@@ -340,9 +345,9 @@ impl Store {
         };
         let tx = self.connection.unchecked_transaction()?;
         tx.execute(
-            "INSERT OR REPLACE INTO teams (id, name, organisation_id, league_id, season_year)
-             VALUES (?1, ?2, ?3, ?4, ?5)",
-            params![id, team.name, sql_id(team.organisation.0), league_id, season_year],
+            "INSERT OR REPLACE INTO teams (id, name, organisation_id, league_id, season_year, portrait)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+            params![id, team.name, sql_id(team.organisation.0), league_id, season_year, team.portrait],
         )?;
         tx.execute("DELETE FROM roster_players WHERE team_id = ?1", params![id])?;
         for (position, player) in team.roster.players.iter().enumerate() {
@@ -357,10 +362,10 @@ impl Store {
 
     pub fn load_team(&self, id: TeamId) -> Result<Team, StoreError> {
         let team_id = sql_id(id.0);
-        let (name, organisation, league_id, season_year) = self
+        let (name, organisation, league_id, season_year, portrait) = self
             .connection
             .query_row(
-                "SELECT name, organisation_id, league_id, season_year FROM teams WHERE id = ?1",
+                "SELECT name, organisation_id, league_id, season_year, portrait FROM teams WHERE id = ?1",
                 params![team_id],
                 |row| {
                     Ok((
@@ -368,6 +373,7 @@ impl Store {
                         row.get::<_, String>(1)?,
                         row.get::<_, Option<String>>(2)?,
                         row.get::<_, Option<i64>>(3)?,
+                        row.get::<_, Option<String>>(4)?,
                     ))
                 },
             )
@@ -392,6 +398,7 @@ impl Store {
                 )?,
             },
             registration,
+            portrait,
         })
     }
 
@@ -415,17 +422,17 @@ impl Store {
         let tx = self.connection.unchecked_transaction()?;
         tx.execute(
             "INSERT OR REPLACE INTO players (
-                id, name, role, nationality, age,
+                id, name, role, nationality, birth_date,
                 mechanics, teamfight, map_awareness, objectives, tempo, mental, itemisation,
                 phase_early, phase_mid, phase_late, shotcalling, role_skill_kind, role_skill_score,
-                form, fatigue
-             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20)",
+                form, fatigue, portrait
+             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21)",
             params![
                 id,
                 player.identity.name,
                 role_to_sql(player.identity.role),
                 player.identity.nationality,
-                player.identity.age.map(i64::from),
+                player.identity.birth_date.map(CalendarDate::to_iso),
                 competencies.map(|sheet| i64::from(sheet.mechanics.value())),
                 competencies.map(|sheet| i64::from(sheet.teamfight.value())),
                 competencies.map(|sheet| i64::from(sheet.map_awareness.value())),
@@ -441,6 +448,7 @@ impl Store {
                 role_skill_score,
                 form,
                 fatigue,
+                player.identity.portrait,
             ],
         )?;
         replace_ordered(&tx, "DELETE FROM player_teams WHERE player_id = ?1", &id)?;
@@ -493,10 +501,10 @@ impl Store {
         let row = self
             .connection
             .query_row(
-                "SELECT name, role, nationality, age,
+                "SELECT name, role, nationality, birth_date,
                         mechanics, teamfight, map_awareness, objectives, tempo, mental, itemisation,
                         phase_early, phase_mid, phase_late, shotcalling, role_skill_kind, role_skill_score,
-                        form, fatigue
+                        form, fatigue, portrait
                  FROM players WHERE id = ?1",
                 params![player_id],
                 |row| {
@@ -504,7 +512,7 @@ impl Store {
                         row.get::<_, String>(0)?,
                         row.get::<_, String>(1)?,
                         row.get::<_, Option<String>>(2)?,
-                        row.get::<_, Option<i64>>(3)?,
+                        row.get::<_, Option<String>>(3)?,
                         row.get::<_, Option<i64>>(4)?,
                         row.get::<_, Option<i64>>(5)?,
                         row.get::<_, Option<i64>>(6)?,
@@ -520,6 +528,7 @@ impl Store {
                         row.get::<_, Option<i64>>(16)?,
                         row.get::<_, Option<i64>>(17)?,
                         row.get::<_, Option<i64>>(18)?,
+                        row.get::<_, Option<String>>(19)?,
                     ))
                 },
             )
@@ -531,7 +540,8 @@ impl Store {
             name: row.0,
             role,
             nationality: row.2,
-            age: row.3.map(u8_from).transpose()?,
+            birth_date: birth_date_from(row.3)?,
+            portrait: row.19,
             teams: self.team_ids(
                 "SELECT team_id FROM player_teams WHERE player_id = ?1 ORDER BY position",
                 &player_id,
@@ -1062,6 +1072,56 @@ impl Store {
         let rows = statement.query_map(params![patch_id, position], |row| row.get::<_, String>(0))?;
         rows.collect::<Result<Vec<_>, _>>().map_err(StoreError::from)
     }
+
+    pub fn list_champions(&self) -> Result<Vec<Champion>, StoreError> {
+        self.ids_ordered("champions")?
+            .into_iter()
+            .map(|id| self.load_champion(ChampionId(id)))
+            .collect()
+    }
+
+    pub fn list_leagues(&self) -> Result<Vec<League>, StoreError> {
+        self.ids_ordered("leagues")?
+            .into_iter()
+            .map(|id| self.load_league(LeagueId(id)))
+            .collect()
+    }
+
+    pub fn list_organisations(&self) -> Result<Vec<Organisation>, StoreError> {
+        self.ids_ordered("organisations")?
+            .into_iter()
+            .map(|id| self.load_organisation(OrganisationId(id)))
+            .collect()
+    }
+
+    pub fn list_teams(&self) -> Result<Vec<Team>, StoreError> {
+        self.ids_ordered("teams")?
+            .into_iter()
+            .map(|id| self.load_team(TeamId(id)))
+            .collect()
+    }
+
+    pub fn list_players(&self) -> Result<Vec<Player>, StoreError> {
+        self.ids_ordered("players")?
+            .into_iter()
+            .map(|id| self.load_player(PlayerId(id)))
+            .collect()
+    }
+
+    pub fn list_patches(&self) -> Result<Vec<Patch>, StoreError> {
+        let mut statement = self
+            .connection
+            .prepare("SELECT id FROM patches ORDER BY date, version")?;
+        let rows = statement.query_map([], |row| row.get::<_, String>(0))?;
+        rows.map(|value| self.load_patch(PatchId(parse_id(value?)?))).collect()
+    }
+
+    fn ids_ordered(&self, table: &str) -> Result<Vec<uuid::Uuid>, StoreError> {
+        let sql = format!("SELECT id FROM {table} ORDER BY name");
+        let mut statement = self.connection.prepare(&sql)?;
+        let rows = statement.query_map([], |row| row.get::<_, String>(0))?;
+        rows.map(|value| parse_id(value?)).collect()
+    }
 }
 
 fn replace_ordered(connection: &Connection, sql: &str, id: &str) -> Result<(), StoreError> {
@@ -1087,6 +1147,15 @@ fn u64_from(value: i64) -> Result<u64, StoreError> {
 
 fn u8_from(value: i64) -> Result<u8, StoreError> {
     u8::try_from(value).map_err(|_| StoreError::InvalidValue("byte".into()))
+}
+
+fn birth_date_from(value: Option<String>) -> Result<Option<CalendarDate>, StoreError> {
+    match value {
+        None => Ok(None),
+        Some(text) => CalendarDate::parse(&text)
+            .map(Some)
+            .ok_or_else(|| StoreError::InvalidValue(text)),
+    }
 }
 
 fn optional_u8(value: Option<i64>) -> Result<Option<u8>, StoreError> {
@@ -1180,7 +1249,7 @@ fn tankiness_sliders(
 mod tests {
     use super::Store;
     use domain::{
-        Champion, ChampionId, ChampionOnPatch, CoachCompetencies, CoachId, Competencies,
+        CalendarDate, Champion, ChampionId, ChampionOnPatch, CoachCompetencies, CoachId, Competencies,
         DamageSliders, FanBase, Finances, HeadCoach, HeadCoachIdentity, InfluencerContract,
         InfluencerContractId, Jersey, League, LeagueId, LeagueSeason, LeagueTier, Locaux,
         ObjectiveEvent, Organisation, OrganisationId, PalmaresEntry, Patch, PatchId, PhaseScores,
@@ -1199,6 +1268,7 @@ mod tests {
         let champion = Champion {
             id: ChampionId(uuid::Uuid::from_u128(7)),
             name: "Ahri".into(),
+            portrait: Some("portraits/champions/Ahri.png".into()),
         };
         let league = League {
             id: LeagueId(uuid::Uuid::from_u128(1)),
@@ -1206,6 +1276,7 @@ mod tests {
             region: "EU".into(),
             tier: LeagueTier::Primary,
             presence: SeasonPresence::Playable,
+            portrait: Some("portraits/wiki/LCS_Europe_Logo.png".into()),
         };
         let season = LeagueSeason {
             league: league.id,
@@ -1224,6 +1295,7 @@ mod tests {
             name: "Org".into(),
             region: "EU".into(),
             history: String::new(),
+            portrait: Some("portraits/wiki/Fnatic_original_logo.png".into()),
             teams: vec![TeamId(uuid::Uuid::from_u128(1))],
             staff_seats: Some(1),
             locaux: Some(Locaux {
@@ -1260,7 +1332,8 @@ mod tests {
                 name: "Mid".into(),
                 role: Role::Mid,
                 nationality: Some("FR".into()),
-                age: Some(21),
+                birth_date: CalendarDate::parse("1993-04-24"),
+                portrait: None,
                 teams: vec![TeamId(uuid::Uuid::from_u128(1))],
                 palmares: vec![PalmaresEntry {
                     award: "MVP".into(),
@@ -1311,6 +1384,7 @@ mod tests {
                 league: league.id,
                 year: 2014,
             }),
+            portrait: Some("portraits/wiki/Fnatic_original_logo.png".into()),
         };
         let coach = HeadCoach {
             identity: HeadCoachIdentity {
@@ -1427,6 +1501,7 @@ mod tests {
         let champion = Champion {
             id: ChampionId(uuid::Uuid::from_u128(1)),
             name: "Ahri".into(),
+            portrait: None,
         };
         {
             let store = Store::open(&path).unwrap();
@@ -1445,24 +1520,128 @@ mod tests {
         let store = Store::memory().unwrap();
         store.apply_script(include_str!("../seed/2014.sql")).unwrap();
         assert_eq!(store.count("champions").unwrap(), 123);
+        assert_eq!(store.list_champions().unwrap().len(), 123);
+        assert_eq!(store.list_players().unwrap().len(), 728);
+        assert_eq!(store.list_teams().unwrap().len(), 149);
+        assert_eq!(store.list_leagues().unwrap().len(), 13);
+        assert_eq!(store.list_organisations().unwrap().len(), 149);
+        assert!(store.list_patches().unwrap().is_empty());
         let yasuo = ChampionId(store.id_named("champions", "Yasuo").unwrap());
         assert_eq!(store.load_champion(yasuo).unwrap().name, "Yasuo");
+        assert_eq!(
+            store.load_champion(yasuo).unwrap().portrait.as_deref(),
+            Some("portraits/champions/Yasuo.png")
+        );
+        let eu = LeagueId(store.id_named("leagues", "EU LCS").unwrap());
+        assert_eq!(
+            store.load_league(eu).unwrap().portrait.as_deref(),
+            Some("portraits/wiki/LCS_Europe_Logo.png")
+        );
+        assert_eq!(
+            store.load_organisation(OrganisationId(store.id_named("organisations", "Edward Gaming").unwrap())).unwrap().region,
+            "CN"
+        );
+        assert_eq!(
+            store.load_organisation(OrganisationId(store.id_named("organisations", "SK Telecom T1 K").unwrap())).unwrap().region,
+            "KR"
+        );
+        let fnatic = store.load_team(TeamId(store.id_named("teams", "Fnatic").unwrap())).unwrap();
+        assert_eq!(fnatic.portrait.as_deref(), Some("portraits/wiki/Fnatic_original_logo.png"));
+        assert_eq!(
+            store.load_player(PlayerId(store.id_named("players", "Faker").unwrap())).unwrap().identity.portrait.as_deref(),
+            Some("portraits/wiki/Faker2014.jpg")
+        );
 
         let sneaky = store.load_player(PlayerId(store.id_named("players", "Sneaky").unwrap())).unwrap();
         assert_eq!(sneaky.identity.name, "Sneaky");
         assert_eq!(sneaky.identity.role, Role::Adc);
-        assert!(sneaky.identity.nationality.is_none());
-        assert!(sneaky.identity.age.is_none());
+        assert_eq!(sneaky.identity.nationality.as_deref(), Some("US"));
+        assert_eq!(sneaky.identity.birth_date, CalendarDate::parse("1994-03-19"));
+        assert_eq!(sneaky.identity.age_on(CalendarDate::CAREER_OPENING), Some(19));
         assert!(sneaky.competencies.is_none());
         assert!(sneaky.state.is_none());
         assert!(sneaky.aspirations.is_empty());
 
         let faker = store.load_player(PlayerId(store.id_named("players", "Faker").unwrap())).unwrap();
         assert_eq!(faker.identity.nationality.as_deref(), Some("KR"));
+        assert_eq!(faker.identity.birth_date, CalendarDate::parse("1996-05-07"));
+        assert_eq!(faker.identity.age_on(CalendarDate::CAREER_OPENING), Some(17));
+        assert_eq!(
+            store.load_player(PlayerId(store.id_named("players", "FZZF").unwrap())).unwrap().identity.nationality.as_deref(),
+            Some("CN")
+        );
         assert_eq!(faker.identity.role, Role::Mid);
         assert_eq!(
             faker.identity.teams,
             vec![TeamId(store.id_named("teams", "SK Telecom T1 K").unwrap())]
+        );
+
+        let lpl = store.load_league(LeagueId(store.id_named("leagues", "LPL").unwrap())).unwrap();
+        assert_eq!(lpl.region, "CN");
+        assert_eq!(lpl.tier, LeagueTier::Primary);
+        assert_eq!(lpl.presence, SeasonPresence::Playable);
+        assert_eq!(store.load_league_season(lpl.id, 2014).unwrap().team_count, Some(8));
+        assert_eq!(store.load_league_season(lpl.id, 2014).unwrap().worlds_slots, Some(3));
+        let champions = store.load_league(LeagueId(store.id_named("leagues", "Champions").unwrap())).unwrap();
+        assert_eq!(champions.region, "KR");
+        assert_eq!(champions.presence, SeasonPresence::Playable);
+        assert_eq!(store.load_league_season(champions.id, 2014).unwrap().team_count, Some(16));
+        assert_eq!(store.load_league_season(champions.id, 2014).unwrap().worlds_slots, Some(3));
+        let challenger = store.load_league(LeagueId(store.id_named("leagues", "EU Challenger Series").unwrap())).unwrap();
+        assert_eq!(challenger.region, "EU");
+        assert_eq!(challenger.tier, LeagueTier::Secondary);
+        assert_eq!(challenger.presence, SeasonPresence::InWorld);
+        assert_eq!(challenger.portrait.as_deref(), Some("portraits/wiki/CS_EU_logo.png"));
+        let gpl = store.load_league(LeagueId(store.id_named("leagues", "GPL").unwrap())).unwrap();
+        assert_eq!(gpl.region, "SEA");
+        assert_eq!(gpl.presence, SeasonPresence::InWorld);
+        let gpl_season = store.load_league_season(gpl.id, 2014).unwrap();
+        assert_eq!(gpl_season.team_count, Some(12));
+        assert_eq!(gpl_season.worlds_slots, Some(2));
+        assert_eq!(gpl_season.msi_slots, 0);
+        assert_eq!(
+            store.load_team(TeamId(store.id_named("teams", "Edward Gaming").unwrap())).unwrap().registration,
+            Some(SeasonRegistration { league: lpl.id, year: 2014 })
+        );
+        assert_eq!(
+            store.load_team(TeamId(store.id_named("teams", "SK Telecom T1 K").unwrap())).unwrap().registration,
+            Some(SeasonRegistration { league: champions.id, year: 2014 })
+        );
+        let bjergsen = store.load_player(PlayerId(store.id_named("players", "Bjergsen").unwrap())).unwrap();
+        assert_eq!(bjergsen.identity.role, Role::Mid);
+        assert_eq!(bjergsen.identity.nationality.as_deref(), Some("DK"));
+        assert_eq!(bjergsen.identity.birth_date, CalendarDate::parse("1996-02-21"));
+        assert_eq!(bjergsen.identity.age_on(CalendarDate::CAREER_OPENING), Some(17));
+        assert!(bjergsen.competencies.is_none());
+        let ahq = store.load_team(TeamId(store.id_named("teams", "ahq eSports Club").unwrap())).unwrap();
+        assert_eq!(ahq.registration, Some(SeasonRegistration { league: gpl.id, year: 2014 }));
+        assert_eq!(store.load_organisation(ahq.organisation).unwrap().region, "SEA");
+        let odoamne = store.load_player(PlayerId(store.id_named("players", "Odoamne").unwrap())).unwrap();
+        assert_eq!(odoamne.identity.role, Role::Top);
+        assert_eq!(odoamne.identity.nationality.as_deref(), Some("RO"));
+        assert_eq!(odoamne.identity.birth_date, CalendarDate::parse("1995-01-18"));
+        assert_eq!(odoamne.identity.age_on(CalendarDate::CAREER_OPENING), Some(18));
+        assert!(odoamne.competencies.is_none());
+        assert_eq!(odoamne.identity.portrait.as_deref(), Some("portraits/wiki/H2K-Odaomne-2015spring.jpg"));
+        assert_eq!(
+            store.load_team(TeamId(store.id_named("teams", "Cloud9 Eclipse").unwrap())).unwrap().portrait.as_deref(),
+            Some("portraits/wiki/Cloud9_Eclipselogo_profile.png")
+        );
+        assert_ne!(
+            store.id_named("players", "NaMei").unwrap(),
+            store.id_named("players", "NaMe1").unwrap()
+        );
+        assert_eq!(
+            store.load_league(lpl.id).unwrap().portrait.as_deref(),
+            Some("portraits/wiki/LPL.jpg")
+        );
+        assert_eq!(
+            store.load_organisation(OrganisationId(store.id_named("organisations", "Alliance").unwrap())).unwrap().portrait.as_deref(),
+            Some("portraits/wiki/AllianceOldlogo_square.png")
+        );
+        assert_eq!(
+            store.load_player(PlayerId(store.id_named("players", "Froggen").unwrap())).unwrap().identity.portrait.as_deref(),
+            Some("portraits/wiki/FroggenALL2014.png")
         );
     }
 }

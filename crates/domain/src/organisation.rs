@@ -48,6 +48,7 @@ pub struct Organisation {
     pub name: String,
     pub region: String,
     pub history: String,
+    pub portrait: Option<String>,
     pub teams: Vec<TeamId>,
     pub staff_seats: Option<u8>,
     pub locaux: Option<Locaux>,
@@ -71,6 +72,7 @@ mod tests {
             name: "Org".to_string(),
             region: "EU".to_string(),
             history: String::new(),
+            portrait: None,
             teams: vec![TeamId(uuid::Uuid::from_u128(1)), TeamId(uuid::Uuid::from_u128(2))],
             staff_seats: Some(3),
             locaux: Some(Locaux {

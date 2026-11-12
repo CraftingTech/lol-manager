@@ -1,0 +1,10 @@
+[package]
+name = "lol-manager"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+domain = { path = "../domain" }
+storage = { path = "../storage" }
+gpui = "0.2.2"

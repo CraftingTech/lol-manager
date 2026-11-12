@@ -2,7 +2,8 @@ PRAGMA foreign_keys = ON;
 
 CREATE TABLE champions (
     id TEXT PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    portrait TEXT
 );
 
 CREATE TABLE leagues (
@@ -10,7 +11,8 @@ CREATE TABLE leagues (
     name TEXT NOT NULL,
     region TEXT NOT NULL,
     tier TEXT NOT NULL,
-    presence TEXT NOT NULL
+    presence TEXT NOT NULL,
+    portrait TEXT
 );
 
 CREATE TABLE league_seasons (
@@ -48,7 +50,8 @@ CREATE TABLE organisations (
     budget INTEGER,
     wage_bill INTEGER,
     fan_count INTEGER,
-    fan_mood INTEGER
+    fan_mood INTEGER,
+    portrait TEXT
 );
 
 CREATE TABLE teams (
@@ -57,6 +60,7 @@ CREATE TABLE teams (
     organisation_id TEXT NOT NULL,
     league_id TEXT,
     season_year INTEGER,
+    portrait TEXT,
     FOREIGN KEY (organisation_id) REFERENCES organisations (id)
 );
 
@@ -72,9 +76,10 @@ CREATE TABLE organisation_teams (
 CREATE TABLE players (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
+    portrait TEXT,
     role TEXT NOT NULL,
     nationality TEXT,
-    age INTEGER,
+    birth_date TEXT,
     mechanics INTEGER,
     teamfight INTEGER,
     map_awareness INTEGER,

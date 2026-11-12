@@ -1,3 +1,4 @@
+use crate::calendar::CalendarDate;
 use crate::ids::{ChampionId, PlayerId, TeamId};
 use crate::role::{Role, RoleSkill};
 use crate::score::{PhaseScores, Score};
@@ -98,9 +99,16 @@ pub struct PlayerIdentity {
     pub name: String,
     pub role: Role,
     pub nationality: Option<String>,
-    pub age: Option<u8>,
+    pub birth_date: Option<CalendarDate>,
+    pub portrait: Option<String>,
     pub teams: Vec<TeamId>,
     pub palmares: Vec<PalmaresEntry>,
+}
+
+impl PlayerIdentity {
+    pub fn age_on(&self, on: CalendarDate) -> Option<u8> {
+        self.birth_date.and_then(|birth| birth.completed_years_until(on))
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -200,7 +208,8 @@ mod tests {
             name: "Jungler".into(),
             role,
             nationality: Some("KR".into()),
-            age: Some(20),
+            birth_date: None,
+            portrait: None,
             teams: vec![TeamId(uuid::Uuid::from_u128(1))],
             palmares: vec![PalmaresEntry {
                 award: "MVP".into(),

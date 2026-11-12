@@ -18,4 +18,5 @@ pub struct Team {
     pub organisation: OrganisationId,
     pub roster: Roster,
     pub registration: Option<SeasonRegistration>,
+    pub portrait: Option<String>,
 }

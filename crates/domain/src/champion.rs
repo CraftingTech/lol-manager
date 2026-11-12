@@ -5,6 +5,7 @@ use crate::score::Score;
 pub struct Champion {
     pub id: ChampionId,
     pub name: String,
+    pub portrait: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -32,9 +33,11 @@ mod tests {
         let champion = Champion {
             id: ChampionId(uuid::Uuid::from_u128(12)),
             name: "Ahri".into(),
+            portrait: None,
         };
         assert_eq!(champion.id, ChampionId(uuid::Uuid::from_u128(12)));
         assert_eq!(champion.name, "Ahri");
+        assert!(champion.portrait.is_none());
     }
 
     #[test]

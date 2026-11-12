@@ -38,6 +38,7 @@ pub struct League {
     pub region: String,
     pub tier: LeagueTier,
     pub presence: SeasonPresence,
+    pub portrait: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
