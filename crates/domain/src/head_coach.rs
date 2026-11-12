@@ -15,8 +15,10 @@ pub struct CoachCompetencies {
 pub struct HeadCoachIdentity {
     pub id: CoachId,
     pub name: String,
-    pub nationality: String,
-    pub age: u8,
+    pub nationality: Option<String>,
+    pub age: Option<u8>,
+    pub portrait: Option<String>,
+    pub source_url: Option<String>,
     pub teams: Vec<TeamId>,
     pub palmares: Vec<PalmaresEntry>,
 }
@@ -24,8 +26,8 @@ pub struct HeadCoachIdentity {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HeadCoach {
     pub identity: HeadCoachIdentity,
-    pub competencies: CoachCompetencies,
-    pub reputation: Score,
+    pub competencies: Option<CoachCompetencies>,
+    pub reputation: Option<Score>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -41,9 +43,10 @@ pub struct AddressEffect {
 }
 
 impl HeadCoach {
-    /// An ambitious player joins when the coach's reputation meets the aspiration.
+    /// An ambitious player joins when a known reputation meets the aspiration.
     pub fn attracts(&self, aspiration: Score) -> bool {
-        self.reputation.value() >= aspiration.value()
+        self.reputation
+            .is_some_and(|reputation| reputation.value() >= aspiration.value())
     }
 }
 
@@ -72,19 +75,21 @@ mod tests {
             identity: HeadCoachIdentity {
                 id: CoachId(uuid::Uuid::from_u128(1)),
                 name: "Coach".to_string(),
-                nationality: "KR".to_string(),
-                age: 35,
+                nationality: Some("KR".to_string()),
+                age: Some(35),
+                portrait: None,
+                source_url: None,
                 teams: vec![TeamId(uuid::Uuid::from_u128(7))],
                 palmares: Vec::new(),
             },
-            competencies: CoachCompetencies {
+            competencies: Some(CoachCompetencies {
                 draft: Score::new(80).unwrap(),
                 training: Score::new(70).unwrap(),
                 mental: Score::new(60).unwrap(),
                 macro_play: Score::new(75).unwrap(),
                 media: Score::new(50).unwrap(),
-            },
-            reputation: Score::new(65).unwrap(),
+            }),
+            reputation: Some(Score::new(65).unwrap()),
         };
 
         assert_eq!(coach.identity.id, CoachId(uuid::Uuid::from_u128(1)));
