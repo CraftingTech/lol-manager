@@ -170,8 +170,12 @@ pub fn staff_role_to_sql(role: StaffRole) -> (&'static str, Option<&'static str>
     match role {
         StaffRole::AssistantCoach => ("assistant_coach", None),
         StaffRole::Analyst => ("analyst", None),
+        StaffRole::HeadAnalyst => ("head_analyst", None),
+        StaffRole::StrategicCoach => ("strategic_coach", None),
         StaffRole::MentalCoach => ("mental_coach", None),
         StaffRole::Positional(coach) => ("positional", Some(role_to_sql(coach.role))),
+        StaffRole::Manager => ("manager", None),
+        StaffRole::GeneralManager => ("general_manager", None),
     }
 }
 
@@ -182,7 +186,11 @@ pub fn staff_role_from_sql(
     match role {
         "assistant_coach" => Ok(StaffRole::AssistantCoach),
         "analyst" => Ok(StaffRole::Analyst),
+        "head_analyst" => Ok(StaffRole::HeadAnalyst),
+        "strategic_coach" => Ok(StaffRole::StrategicCoach),
         "mental_coach" => Ok(StaffRole::MentalCoach),
+        "manager" => Ok(StaffRole::Manager),
+        "general_manager" => Ok(StaffRole::GeneralManager),
         "positional" => {
             let value = positional.ok_or_else(|| StoreError::InvalidValue("positional".into()))?;
             Ok(StaffRole::Positional(domain::PositionalCoach {

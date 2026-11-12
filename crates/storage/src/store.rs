@@ -659,23 +659,34 @@ impl Store {
 
     pub fn save_head_coach(&self, coach: &HeadCoach) -> Result<(), StoreError> {
         let id = sql_id(coach.identity.id.0);
-        let competencies = &coach.competencies;
-        let tx = self.connection.unchecked_transaction()?;
-        tx.execute(
-            "INSERT OR REPLACE INTO head_coaches (
-                id, name, nationality, age, reputation, draft, training, mental, macro_play, media
-             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
-            params![
-                id,
-                coach.identity.name,
-                coach.identity.nationality,
-                i64::from(coach.identity.age),
-                i64::from(coach.reputation.value()),
+        let scores = coach.competencies.map(|competencies| {
+            (
                 i64::from(competencies.draft.value()),
                 i64::from(competencies.training.value()),
                 i64::from(competencies.mental.value()),
                 i64::from(competencies.macro_play.value()),
                 i64::from(competencies.media.value()),
+            )
+        });
+        let tx = self.connection.unchecked_transaction()?;
+        tx.execute(
+            "INSERT OR REPLACE INTO head_coaches (
+                id, name, nationality, age, portrait, source_url, reputation,
+                draft, training, mental, macro_play, media
+             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
+            params![
+                id,
+                coach.identity.name,
+                coach.identity.nationality,
+                coach.identity.age.map(i64::from),
+                coach.identity.portrait,
+                coach.identity.source_url,
+                coach.reputation.map(|score| i64::from(score.value())),
+                scores.map(|row| row.0),
+                scores.map(|row| row.1),
+                scores.map(|row| row.2),
+                scores.map(|row| row.3),
+                scores.map(|row| row.4),
             ],
         )?;
         tx.execute("DELETE FROM coach_teams WHERE coach_id = ?1", params![id])?;
@@ -704,31 +715,48 @@ impl Store {
         let row = self
             .connection
             .query_row(
-                "SELECT name, nationality, age, reputation, draft, training, mental, macro_play, media
+                "SELECT name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media
                  FROM head_coaches WHERE id = ?1",
                 params![coach_id],
                 |row| {
                     Ok((
                         row.get::<_, String>(0)?,
-                        row.get::<_, String>(1)?,
-                        row.get::<_, i64>(2)?,
-                        row.get::<_, i64>(3)?,
-                        row.get::<_, i64>(4)?,
-                        row.get::<_, i64>(5)?,
-                        row.get::<_, i64>(6)?,
-                        row.get::<_, i64>(7)?,
-                        row.get::<_, i64>(8)?,
+                        row.get::<_, Option<String>>(1)?,
+                        row.get::<_, Option<i64>>(2)?,
+                        row.get::<_, Option<String>>(3)?,
+                        row.get::<_, Option<String>>(4)?,
+                        row.get::<_, Option<i64>>(5)?,
+                        row.get::<_, Option<i64>>(6)?,
+                        row.get::<_, Option<i64>>(7)?,
+                        row.get::<_, Option<i64>>(8)?,
+                        row.get::<_, Option<i64>>(9)?,
+                        row.get::<_, Option<i64>>(10)?,
                     ))
                 },
             )
             .optional()?
             .ok_or(StoreError::NotFound)?;
+        let competencies = match (row.6, row.7, row.8, row.9, row.10) {
+            (Some(draft), Some(training), Some(mental), Some(macro_play), Some(media)) => {
+                Some(CoachCompetencies {
+                    draft: score_from(draft)?,
+                    training: score_from(training)?,
+                    mental: score_from(mental)?,
+                    macro_play: score_from(macro_play)?,
+                    media: score_from(media)?,
+                })
+            }
+            (None, None, None, None, None) => None,
+            _ => return Err(StoreError::InvalidValue("competencies".into())),
+        };
         Ok(HeadCoach {
             identity: HeadCoachIdentity {
                 id,
                 name: row.0,
                 nationality: row.1,
-                age: u8_from(row.2)?,
+                age: optional_u8(row.2)?,
+                portrait: row.3,
+                source_url: row.4,
                 teams: self.team_ids(
                     "SELECT team_id FROM coach_teams WHERE coach_id = ?1 ORDER BY position",
                     &coach_id,
@@ -738,20 +766,14 @@ impl Store {
                     &coach_id,
                 )?,
             },
-            competencies: CoachCompetencies {
-                draft: score_from(row.4)?,
-                training: score_from(row.5)?,
-                mental: score_from(row.6)?,
-                macro_play: score_from(row.7)?,
-                media: score_from(row.8)?,
-            },
-            reputation: score_from(row.3)?,
+            competencies,
+            reputation: row.5.map(score_from).transpose()?,
         })
     }
 
     pub fn save_staff(&self, member: &StaffMember) -> Result<(), StoreError> {
         let (role, positional) = staff_role_to_sql(member.role);
-        let competencies = &member.competencies;
+        let competencies = member.competencies.as_ref();
         let id = sql_id(member.id.0);
         let tx = self.connection.unchecked_transaction()?;
         tx.execute(
@@ -765,11 +787,11 @@ impl Store {
                 member.age.map(i64::from),
                 role,
                 positional,
-                i64::from(competencies.draft.value()),
-                i64::from(competencies.training.value()),
-                i64::from(competencies.mental.value()),
-                i64::from(competencies.macro_play.value()),
-                i64::from(competencies.media.value()),
+                competencies.map(|item| i64::from(item.draft.value())),
+                competencies.map(|item| i64::from(item.training.value())),
+                competencies.map(|item| i64::from(item.mental.value())),
+                competencies.map(|item| i64::from(item.macro_play.value())),
+                competencies.map(|item| i64::from(item.media.value())),
             ],
         )?;
         tx.execute(
@@ -801,11 +823,11 @@ impl Store {
                         row.get::<_, Option<i64>>(2)?,
                         row.get::<_, String>(3)?,
                         row.get::<_, Option<String>>(4)?,
-                        row.get::<_, i64>(5)?,
-                        row.get::<_, i64>(6)?,
-                        row.get::<_, i64>(7)?,
-                        row.get::<_, i64>(8)?,
-                        row.get::<_, i64>(9)?,
+                        row.get::<_, Option<i64>>(5)?,
+                        row.get::<_, Option<i64>>(6)?,
+                        row.get::<_, Option<i64>>(7)?,
+                        row.get::<_, Option<i64>>(8)?,
+                        row.get::<_, Option<i64>>(9)?,
                     ))
                 },
             )
@@ -826,12 +848,18 @@ impl Store {
                 &staff_id,
             )?,
             role,
-            competencies: CoachCompetencies {
-                draft: score_from(row.5)?,
-                training: score_from(row.6)?,
-                mental: score_from(row.7)?,
-                macro_play: score_from(row.8)?,
-                media: score_from(row.9)?,
+            competencies: match (row.5, row.6, row.7, row.8, row.9) {
+                (None, None, None, None, None) => None,
+                (Some(draft), Some(training), Some(mental), Some(macro_play), Some(media)) => {
+                    Some(CoachCompetencies {
+                        draft: score_from(draft)?,
+                        training: score_from(training)?,
+                        mental: score_from(mental)?,
+                        macro_play: score_from(macro_play)?,
+                        media: score_from(media)?,
+                    })
+                }
+                _ => return Err(StoreError::InvalidValue("competencies".into())),
             },
         })
     }
@@ -1546,19 +1574,21 @@ mod tests {
             identity: HeadCoachIdentity {
                 id: CoachId(uuid::Uuid::from_u128(1)),
                 name: "Coach".into(),
-                nationality: "FR".into(),
-                age: 35,
+                nationality: Some("FR".into()),
+                age: Some(35),
+                portrait: None,
+                source_url: None,
                 teams: vec![team.id],
                 palmares: vec![],
             },
-            competencies: CoachCompetencies {
+            competencies: Some(CoachCompetencies {
                 draft: score(40),
                 training: score(50),
                 mental: score(60),
                 macro_play: score(55),
                 media: score(30),
-            },
-            reputation: score(20),
+            }),
+            reputation: Some(score(20)),
         };
         let staff = StaffMember {
             id: StaffId(uuid::Uuid::from_u128(1)),

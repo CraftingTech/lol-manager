@@ -12,8 +12,12 @@ pub struct PositionalCoach {
 pub enum StaffRole {
     AssistantCoach,
     Analyst,
+    HeadAnalyst,
+    StrategicCoach,
     MentalCoach,
     Positional(PositionalCoach),
+    Manager,
+    GeneralManager,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -24,14 +28,21 @@ pub struct StaffMember {
     pub age: Option<u8>,
     pub organisations: Vec<OrganisationId>,
     pub role: StaffRole,
-    pub competencies: CoachCompetencies,
+    pub competencies: Option<CoachCompetencies>,
 }
 
 impl StaffRole {
     pub fn takes_seat(self) -> bool {
         matches!(
             self,
-            Self::AssistantCoach | Self::Analyst | Self::MentalCoach | Self::Positional(_)
+            Self::AssistantCoach
+                | Self::Analyst
+                | Self::HeadAnalyst
+                | Self::StrategicCoach
+                | Self::MentalCoach
+                | Self::Positional(_)
+                | Self::Manager
+                | Self::GeneralManager
         )
     }
 }
@@ -39,12 +50,19 @@ impl StaffRole {
 impl StaffMember {
     /// A positional coach moves only their lane. The other seats train every lane the same way.
     pub fn progression_for(&self, role: Role) -> Score {
+        let Some(competencies) = self.competencies else {
+            return Score::new(0).unwrap();
+        };
         match self.role {
-            StaffRole::Positional(coach) if coach.role == role => self.competencies.training,
+            StaffRole::Positional(coach) if coach.role == role => competencies.training,
             StaffRole::Positional(_) => Score::new(0).unwrap(),
-            StaffRole::AssistantCoach | StaffRole::Analyst | StaffRole::MentalCoach => {
-                self.competencies.training
-            }
+            StaffRole::AssistantCoach
+            | StaffRole::Analyst
+            | StaffRole::HeadAnalyst
+            | StaffRole::StrategicCoach
+            | StaffRole::MentalCoach
+            | StaffRole::Manager
+            | StaffRole::GeneralManager => competencies.training,
         }
     }
 }
@@ -88,13 +106,13 @@ mod tests {
             age: Some(30),
             organisations: vec![OrganisationId(uuid::Uuid::from_u128(3))],
             role: StaffRole::Analyst,
-            competencies: CoachCompetencies {
+            competencies: Some(CoachCompetencies {
                 draft: Score::new(10).unwrap(),
                 training: Score::new(20).unwrap(),
                 mental: Score::new(30).unwrap(),
                 macro_play: Score::new(40).unwrap(),
                 media: Score::new(50).unwrap(),
-            },
+            }),
         };
         let mid_coach = StaffMember {
             id: StaffId(uuid::Uuid::from_u128(2)),
@@ -116,7 +134,7 @@ mod tests {
         assert!(!presta.takes_seat());
         assert_eq!(
             mid_coach.progression_for(Role::Mid),
-            member.competencies.training
+            member.competencies.unwrap().training
         );
         assert_eq!(mid_coach.progression_for(Role::Adc).value(), 0);
         let mastery = Score::new(40).unwrap();

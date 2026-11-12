@@ -4,6 +4,7 @@ mod champion_rating;
 mod head_coach;
 mod ids;
 mod league;
+mod match_engine;
 mod organisation;
 mod patch;
 mod player;
@@ -26,6 +27,11 @@ pub use ids::{
 };
 pub use league::{
     League, LeagueSeason, LeagueTier, SalaryCap, SeasonPresence, SeriesLength, SplitFormat,
+};
+pub use match_engine::{
+    play, Building, EventKind, EventStatus, GamePlan, Lane, MatchError, MatchInput, NexusSide,
+    PatchObjective, Phase, PlayedMatch, PlayerAction, PlayerInput, ReportLine, Side, SideInput,
+    Stat, VERY_HIGH_SHOTCALLING,
 };
 pub use organisation::{
     FanBase, Finances, InfluencerContract, Jersey, Locaux, Organisation, SponsorContract,

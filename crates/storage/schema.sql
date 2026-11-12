@@ -209,14 +209,16 @@ CREATE TABLE roster_players (
 CREATE TABLE head_coaches (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
-    nationality TEXT NOT NULL,
-    age INTEGER NOT NULL,
-    reputation INTEGER NOT NULL,
-    draft INTEGER NOT NULL,
-    training INTEGER NOT NULL,
-    mental INTEGER NOT NULL,
-    macro_play INTEGER NOT NULL,
-    media INTEGER NOT NULL
+    nationality TEXT,
+    age INTEGER,
+    portrait TEXT,
+    source_url TEXT,
+    reputation INTEGER,
+    draft INTEGER,
+    training INTEGER,
+    mental INTEGER,
+    macro_play INTEGER,
+    media INTEGER
 );
 
 CREATE TABLE coach_teams (
@@ -264,11 +266,11 @@ CREATE TABLE staff_members (
     age INTEGER,
     role TEXT NOT NULL,
     positional_role TEXT,
-    draft INTEGER NOT NULL,
-    training INTEGER NOT NULL,
-    mental INTEGER NOT NULL,
-    macro_play INTEGER NOT NULL,
-    media INTEGER NOT NULL
+    draft INTEGER,
+    training INTEGER,
+    mental INTEGER,
+    macro_play INTEGER,
+    media INTEGER
 );
 
 CREATE TABLE staff_organisations (

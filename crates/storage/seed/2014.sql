@@ -3288,3 +3288,480 @@ INSERT INTO split_formats (league_id, year, position, name, series) VALUES
     ('23c166ad-27a9-4513-9f8a-82372a0e5d8e', 2014, 1, 'Summer', 'two_games'),
     ('23c166ad-27a9-4513-9f8a-82372a0e5d8e', 2014, 2, 'Summer playoffs', 'first_to_three');
 
+
+-- Head coaches named on the 2014 team pages. The coach in place at the start of the 2014 timeline. Scores stay empty.
+-- EP.The One: Helios (Coach) https://lol.fandom.com/wiki/EP.The_One
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('176032d2-389d-59a8-8e7f-6e26d7e69f95', 'Helios', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/EP.The_One', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('176032d2-389d-59a8-8e7f-6e26d7e69f95', 0, '94ddd53a-08b3-42bf-b88a-3d7c7c8f1afb');
+-- Team ROCCAT: Veggie (Coach) https://lol.fandom.com/wiki/Team_ROCCAT
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('752074f0-9347-5085-9890-2f13a757842c', 'Veggie', NULL, NULL, 'portraits/wiki/latest.png', 'https://lol.fandom.com/wiki/Team_ROCCAT', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('752074f0-9347-5085-9890-2f13a757842c', 0, '805f241d-ff2e-435a-a46b-da6af1a1e9a2');
+-- Fnatic: Araneae (Coach) https://lol.fandom.com/wiki/Fnatic
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('20733698-c726-51c5-9575-a16324342a63', 'Araneae', NULL, NULL, 'portraits/wiki/220.png', 'https://lol.fandom.com/wiki/Fnatic', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('20733698-c726-51c5-9575-a16324342a63', 0, '76548df6-d6fe-4ec3-9d37-49f2541b74e3');
+-- Cloud 9: Dan Dinh (Coach) https://lol.fandom.com/wiki/Cloud9
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('c8f1989d-85fb-58aa-992d-5a557f4a5267', 'Dan Dinh', NULL, NULL, 'portraits/wiki/Dan_Dinh_220.png', 'https://lol.fandom.com/wiki/Cloud9', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('c8f1989d-85fb-58aa-992d-5a557f4a5267', 0, 'fe3cb9f6-caaf-490b-9890-f6bdcd176de1');
+-- Edward Gaming: Aaron (Coach) https://lol.fandom.com/wiki/EDward_Gaming
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('914bd443-4a37-5a8c-850a-6e8bc2cadb49', 'Aaron', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/EDward_Gaming', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('914bd443-4a37-5a8c-850a-6e8bc2cadb49', 0, 'eb75c86e-b74a-4fc5-987b-55320acecbbf');
+-- Alliance: Leviathan (Coach) https://lol.fandom.com/wiki/Alliance
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('6c2f882c-0a2d-50c1-ab78-391e2b23e898', 'Leviathan', NULL, NULL, 'portraits/wiki/Leviathan__Jordan_Thwaites__220.png', 'https://lol.fandom.com/wiki/Alliance', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('6c2f882c-0a2d-50c1-ab78-391e2b23e898', 0, '078a00f3-74cb-471b-b31e-5085c13192ad');
+-- SK Gaming: Incarnati0n (Head Coach) https://lol.fandom.com/wiki/SK_Gaming
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('e59c44be-060d-5606-998f-3c063f386d97', 'Incarnati0n', NULL, NULL, 'portraits/wiki/Incarnati0n_220.png', 'https://lol.fandom.com/wiki/SK_Gaming', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('e59c44be-060d-5606-998f-3c063f386d97', 0, '3e3c2f1a-c424-411f-af1e-f74832810a40');
+-- CLG: MonteCristo (Head Coach) https://lol.fandom.com/wiki/CLG
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('016b964c-2154-511b-a006-91c617862096', 'MonteCristo', NULL, NULL, 'portraits/wiki/MonteCristo_220.png', 'https://lol.fandom.com/wiki/CLG', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('016b964c-2154-511b-a006-91c617862096', 0, '70149843-6597-49e3-8540-a4ff6fd66999');
+-- Team Coast: Chaox (Coach) https://lol.fandom.com/wiki/Team_Coast
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('c501fa68-002c-5f9e-afb3-7f080ef25d84', 'Chaox', NULL, NULL, 'portraits/wiki/Chaox_220.png', 'https://lol.fandom.com/wiki/Team_Coast', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('c501fa68-002c-5f9e-afb3-7f080ef25d84', 0, '05545e0c-6aed-4fb3-a19a-1481701f80e6');
+-- Team Curse: Saintvicious (Coach) https://lol.fandom.com/wiki/Team_Curse
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('f2c7e602-a945-58c8-a541-602c76d91ba1', 'Saintvicious', NULL, NULL, 'portraits/wiki/Saintvicious_220.png', 'https://lol.fandom.com/wiki/Team_Curse', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('f2c7e602-a945-58c8-a541-602c76d91ba1', 0, '68582452-5bcc-4233-b613-86a2da75ce22');
+-- Dignitas: scarra (Coach) https://lol.fandom.com/wiki/Dignitas
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('beacdf69-4334-5199-b773-17d22bcb3e34', 'scarra', NULL, NULL, 'portraits/wiki/Scarra_220.png', 'https://lol.fandom.com/wiki/Dignitas', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('beacdf69-4334-5199-b773-17d22bcb3e34', 0, 'c8f814d4-85d4-43ed-9f16-c45a9a5458bc');
+-- TSM: Reginald (Coach) https://lol.fandom.com/wiki/TSM
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('865b731b-4bb9-54a7-8184-0bb7907a1481', 'Reginald', NULL, NULL, 'portraits/wiki/220.png', 'https://lol.fandom.com/wiki/TSM', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('865b731b-4bb9-54a7-8184-0bb7907a1481', 0, '67804fca-bf60-4de6-8e28-1d1911bccbcd');
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('176032d2-389d-59a8-8e7f-6e26d7e69f95', 1, '5bd7a866-505c-4dda-924d-cb97126df450');
+-- Invictus Gaming: MaFa (Coach) https://lol.fandom.com/wiki/Invictus_Gaming
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('e63ef1bc-15b5-5f27-9a06-051ea29b9284', 'MaFa', NULL, NULL, 'portraits/wiki/MaFa_220.png', 'https://lol.fandom.com/wiki/Invictus_Gaming', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('e63ef1bc-15b5-5f27-9a06-051ea29b9284', 0, '961e9400-1df5-4ca3-b0f4-f651ee17e171');
+-- LGD Gaming: BSYY (Coach) https://lol.fandom.com/wiki/LGD_Gaming
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('7fea103b-aac7-5995-852f-85dbc63511a4', 'BSYY', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/LGD_Gaming', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('7fea103b-aac7-5995-852f-85dbc63511a4', 0, '9d786b2c-ca11-4b18-ae2e-cd87e3d7869c');
+-- Oh My God: Laden (Coach) https://lol.fandom.com/wiki/Oh_My_God
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('24dc6738-c31a-50f6-a4dd-894808956e33', 'Laden', NULL, NULL, 'portraits/wiki/Laden_220.png', 'https://lol.fandom.com/wiki/Oh_My_God', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('24dc6738-c31a-50f6-a4dd-894808956e33', 0, '4b0d4a88-c92f-4c77-88b4-3dd3cf660a62');
+-- Royal Club: VicaL (Coach) https://lol.fandom.com/wiki/Royal_Club
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('9896f527-79e1-516e-a620-89ac42b6bbef', 'VicaL', NULL, NULL, 'portraits/wiki/VicaL_220.png', 'https://lol.fandom.com/wiki/Royal_Club', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('9896f527-79e1-516e-a620-89ac42b6bbef', 0, '9e240f1d-e020-4752-8567-1825c1d47f6c');
+-- Team WE: Hiro (Head Coach) https://lol.fandom.com/wiki/Team_WE
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('2388735b-ca89-5231-980f-74430d2ce2d8', 'Hiro', NULL, NULL, 'portraits/wiki/Hiro__Lee_Woo-suk__220.png', 'https://lol.fandom.com/wiki/Team_WE', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('2388735b-ca89-5231-980f-74430d2ce2d8', 0, '3c838f63-65bc-47c7-8157-9d5f4b240dd7');
+-- MeetYourMakers: LS (Head Coach) https://lol.fandom.com/wiki/MeetYourMakers
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('a9e69eee-c8de-57da-9d50-b9db6bbdbc82', 'LS', NULL, NULL, 'portraits/wiki/LS_220.png', 'https://lol.fandom.com/wiki/MeetYourMakers', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('a9e69eee-c8de-57da-9d50-b9db6bbdbc82', 0, '553bc53d-fa85-4925-8a32-49b73570a98c');
+-- Ninjas in Pyjamas: Clement Chu (Head Coach) https://lol.fandom.com/wiki/Ninjas_in_Pyjamas
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('618dc103-6f6b-5f6c-a629-9f8321881da9', 'Clement Chu', NULL, NULL, 'portraits/wiki/Clement_Chu_220.png', 'https://lol.fandom.com/wiki/Ninjas_in_Pyjamas', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('618dc103-6f6b-5f6c-a629-9f8321881da9', 0, '07ebcbcc-43a1-467f-a02e-e311dd728acb');
+-- Bangkok Titans: Tinikun (Coach) https://lol.fandom.com/wiki/Bangkok_Titans
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('5f2ad307-b114-5331-ac14-7019be074e10', 'Tinikun', NULL, NULL, 'portraits/wiki/Tinikun_220.png', 'https://lol.fandom.com/wiki/Bangkok_Titans', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('5f2ad307-b114-5331-ac14-7019be074e10', 0, 'f3be8875-305b-477a-b1b4-7b5a0402e6ab');
+-- Taipei Assassins: Fluidwind (Coach) https://lol.fandom.com/wiki/Taipei_Assassins
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('8e2d253e-96dd-5f0e-a93e-763482616aca', 'Fluidwind', NULL, NULL, 'portraits/wiki/Chashao_220.png', 'https://lol.fandom.com/wiki/Taipei_Assassins', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('8e2d253e-96dd-5f0e-a93e-763482616aca', 0, 'fa43b53a-ec22-4222-a4d8-adb3b388d37a');
+-- yoe Flash Wolves: Fluidwind (Coach) https://lol.fandom.com/wiki/yoe_Flash_Wolves
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('5d787e4a-41fb-5204-8be0-9c41bdc05ea3', 'Fluidwind', NULL, NULL, 'portraits/wiki/220.png', 'https://lol.fandom.com/wiki/yoe_Flash_Wolves', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('5d787e4a-41fb-5204-8be0-9c41bdc05ea3', 0, '0efb8078-2108-4217-97c4-a60497b5e7b3');
+-- CNB e-Sports Club: Kalec (Coach) https://lol.fandom.com/wiki/CNB_e-Sports_Club
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('992f7219-9166-57a5-837b-087c895c6f50', 'Kalec', NULL, NULL, 'portraits/wiki/Kalec_220.png', 'https://lol.fandom.com/wiki/CNB_e-Sports_Club', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('992f7219-9166-57a5-837b-087c895c6f50', 0, 'c1be1ef9-c210-45cd-b5f7-98405e927142');
+-- KaBuM! Esports: esA (Coach) https://lol.fandom.com/wiki/KaBuM!_Esports
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('5c792497-6350-57ec-ba2c-06471a095675', 'esA', NULL, NULL, 'portraits/wiki/EsA_220.png', 'https://lol.fandom.com/wiki/KaBuM!_Esports', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('5c792497-6350-57ec-ba2c-06471a095675', 0, 'f8399689-59d6-4b3a-9048-7be73d7a8972');
+-- Keyd Stars: Philip (Coach) https://lol.fandom.com/wiki/Keyd_Stars
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('2204104a-3939-5cd8-9892-71770ec96722', 'Philip', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Keyd_Stars', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('2204104a-3939-5cd8-9892-71770ec96722', 0, '8168317a-5e0c-4b56-b76f-536e4d77ec26');
+-- paiN Gaming: Jukaah (Coach) https://lol.fandom.com/wiki/paiN_Gaming
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('5b636564-b4c0-5c0e-a4fa-8d14f233ae2a', 'Jukaah', NULL, NULL, 'portraits/wiki/Jukaah_220.png', 'https://lol.fandom.com/wiki/paiN_Gaming', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('5b636564-b4c0-5c0e-a4fa-8d14f233ae2a', 0, '8e21b79e-7dc6-4685-afa8-c63aa42a8404');
+-- Team United: Djokovic (Coach) https://lol.fandom.com/wiki/Team_United
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('e0eb1766-0fac-5351-a609-cca7b48b3569', 'Djokovic', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Team_United', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('e0eb1766-0fac-5351-a609-cca7b48b3569', 0, '2ce03fb1-117c-45f3-96dc-1269a5b0af98');
+-- Red Arrows Team: Macrophyre (Head Coach) https://lol.fandom.com/wiki/Red_Arrows_Team
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('2cef63e3-ff90-519e-bac2-191a2804bae4', 'Macrophyre', NULL, NULL, 'portraits/wiki/Macrophyre_220.png', 'https://lol.fandom.com/wiki/Red_Arrows_Team', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('2cef63e3-ff90-519e-bac2-191a2804bae4', 0, 'a389ce55-33f6-4eef-9cbd-de979facf485');
+-- Dash9 Gaming: Yeti (Coach) https://lol.fandom.com/wiki/Dash9_Gaming
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('235ca665-d2f8-5a40-87a2-c7fe7753a78c', 'Yeti', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Dash9_Gaming', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('235ca665-d2f8-5a40-87a2-c7fe7753a78c', 0, 'f479e115-137c-4a1c-a451-f039da55ff23');
+-- Isurus: CHELitw (Coach) https://lol.fandom.com/wiki/Isurus
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('9223a2ff-6933-50a1-b84f-a425ca44f033', 'CHELitw', NULL, NULL, 'portraits/wiki/Chelitw_220.png', 'https://lol.fandom.com/wiki/Isurus', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('9223a2ff-6933-50a1-b84f-a425ca44f033', 0, 'b43f21db-401d-442e-9cb8-9d7903705249');
+-- Dark Passage: TrieLBaenRe (Coach) https://lol.fandom.com/wiki/Dark_Passage
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('79cae09e-8f32-5bfd-90fe-c9f45b28ee84', 'TrieLBaenRe', NULL, NULL, 'portraits/wiki/TrieLBaenRe_220.png', 'https://lol.fandom.com/wiki/Dark_Passage', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('79cae09e-8f32-5bfd-90fe-c9f45b28ee84', 0, 'f192f408-1366-4599-a489-bf1fada760ec');
+-- Big Plays Incorporated: clink (Coach) https://lol.fandom.com/wiki/Big_Plays_Incorporated
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('c75d84fe-d230-5a6b-8550-bc9715b841de', 'clink', NULL, NULL, 'portraits/wiki/Clink_220.png', 'https://lol.fandom.com/wiki/Big_Plays_Incorporated', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('c75d84fe-d230-5a6b-8550-bc9715b841de', 0, 'ff622a1d-1d26-49bb-a64c-27db9b51e9a3');
+-- SK Telecom T1 K: L.i.E.S (Head Coach) https://lol.fandom.com/wiki/SK_Telecom_T1_K
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('f4f4ce6e-179a-5b6f-8ad5-e89c27b45920', 'L.i.E.S', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/SK_Telecom_T1_K', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('f4f4ce6e-179a-5b6f-8ad5-e89c27b45920', 0, 'ef47ab32-23cd-43ca-abc6-770b9b04369c');
+-- Millenium: Olly (Coach) https://lol.fandom.com/wiki/Millenium
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('6f4011d6-2e6c-5a22-a368-be8e6e58f95c', 'Olly', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Millenium', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('6f4011d6-2e6c-5a22-a368-be8e6e58f95c', 0, '3e1f8381-fcb7-4356-87dc-71dc9ac598f7');
+-- SUPA HOT CREW: Rnglol (Head Coach) https://lol.fandom.com/wiki/SUPA_HOT_CREW
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('002b2c3f-db28-5582-a802-55047d18c6ed', 'Rnglol', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/SUPA_HOT_CREW', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('002b2c3f-db28-5582-a802-55047d18c6ed', 0, '333e225a-e8b6-473b-9afc-d574d4d1f332');
+-- CJ Entus Blaze: Onair (Head Coach) https://lol.fandom.com/wiki/CJ_Entus_Blaze
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('6e359c39-cd6b-564a-8bee-b5dddbf134d2', 'Onair', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/CJ_Entus_Blaze', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('6e359c39-cd6b-564a-8bee-b5dddbf134d2', 0, 'dcb050b1-992d-4535-8218-3752340c77c0');
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('6e359c39-cd6b-564a-8bee-b5dddbf134d2', 1, 'ab864fae-262f-40b7-8a13-2202df7437eb');
+-- KT Rolster Bullets: Lee Ji-hoon (Head Coach) https://lol.fandom.com/wiki/KT_Rolster_Bullets
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('8b2d9720-6915-5964-9fac-bf591a6beb4a', 'Lee Ji-hoon', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/KT_Rolster_Bullets', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('8b2d9720-6915-5964-9fac-bf591a6beb4a', 0, 'd01c8443-2a77-4589-821c-c6c055ecfd24');
+-- NaJin White Shield: Reach (Head Coach) https://lol.fandom.com/wiki/NaJin_White_Shield
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('b5a1d3f9-f23e-57d3-a16b-ed7d05698351', 'Reach', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/NaJin_White_Shield', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('b5a1d3f9-f23e-57d3-a16b-ed7d05698351', 0, '52d4b112-4a87-4b0e-92e2-eef44bfd26cd');
+-- Samsung Blue: BanBazi (Coach) https://lol.fandom.com/wiki/Samsung_Blue
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('21817831-303e-5256-adb7-8bfa4ec877af', 'BanBazi', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Samsung_Blue', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('21817831-303e-5256-adb7-8bfa4ec877af', 0, 'e11b8a4e-9ed5-43a2-a953-89c06856e802');
+-- Samsung Ozone: Choi (Head Coach) https://lol.fandom.com/wiki/Samsung_Ozone
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('bd77613f-00d4-5988-82bf-79167db12b45', 'Choi', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Samsung_Ozone', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('bd77613f-00d4-5988-82bf-79167db12b45', 0, 'acacb87f-4aec-4565-9e4d-a5da31336753');
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('f4f4ce6e-179a-5b6f-8ad5-e89c27b45920', 1, '9039941a-1b1d-4d6b-95a8-10d9d0f67644');
+-- Midas FIO: Bigfafa (Head Coach) https://lol.fandom.com/wiki/Midas_FIO
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('170a3b77-2fd5-5347-b80f-3fa5c36c403c', 'Bigfafa', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Midas_FIO', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('170a3b77-2fd5-5347-b80f-3fa5c36c403c', 0, 'ee4e66dd-d330-40b1-825a-a3eeb787d6fc');
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('b5a1d3f9-f23e-57d3-a16b-ed7d05698351', 1, 'bbf8c69f-289d-4508-a57b-50124c029cab');
+-- Incredible Miracle 1: Hirai (Head Coach) https://lol.fandom.com/wiki/Incredible_Miracle_1
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('26fe8b55-3a61-59f2-8b39-08f9a2721093', 'Hirai', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Incredible_Miracle_1', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('26fe8b55-3a61-59f2-8b39-08f9a2721093', 0, 'c82ba779-7a5c-4794-9d85-dd2a3e1f99fd');
+-- Prime Optimus: Gerrard (Head Coach) https://lol.fandom.com/wiki/Prime_Optimus
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('e9a03389-aafe-5a94-a5b7-35697d7cf4b1', 'Gerrard', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Prime_Optimus', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('e9a03389-aafe-5a94-a5b7-35697d7cf4b1', 0, 'a920960c-d5e6-4f9b-a553-4df97c58dfe6');
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('8b2d9720-6915-5964-9fac-bf591a6beb4a', 1, 'b47ea394-bfc7-463f-ba50-2735b5c1b8f2');
+-- Jin Air Falcons: Han Sang-yong (Head Coach) https://lol.fandom.com/wiki/Jin_Air_Falcons
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('45962eed-42bc-59fb-a5e4-c840cc4e35a1', 'Han Sang-yong', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Jin_Air_Falcons', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('45962eed-42bc-59fb-a5e4-c840cc4e35a1', 0, '9b7261b5-e183-4666-aa78-0c313a71d0f6');
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('26fe8b55-3a61-59f2-8b39-08f9a2721093', 1, '17c7d024-6d05-41f2-b6bc-9e143ae18427');
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('170a3b77-2fd5-5347-b80f-3fa5c36c403c', 1, 'dfd43fc8-ecda-4f17-a9e0-341a94686e97');
+-- Pulse Esports: MenQ (Coach) https://lol.fandom.com/wiki/Pulse_Esports
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('797d1228-002c-5f01-9704-fa9190029364', 'MenQ', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Pulse_Esports', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('797d1228-002c-5f01-9704-fa9190029364', 0, 'a77584a8-5c69-45e0-8509-77bc2a83105b');
+-- COGnitive Gaming: Tails (Head Coach) https://lol.fandom.com/wiki/COGnitive_Gaming
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('a0d46a66-7946-5746-93f0-4b1167a70751', 'Tails', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/COGnitive_Gaming', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('a0d46a66-7946-5746-93f0-4b1167a70751', 0, '77f27be0-86f4-4094-bd07-b87841f007e5');
+-- compLexity.Black: Kubz (Coach) https://lol.fandom.com/wiki/CompLexity.Black
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('89f4de13-d902-5146-b8a3-06532a652b64', 'Kubz', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/CompLexity.Black', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('89f4de13-d902-5146-b8a3-06532a652b64', 0, '847311ca-a6c0-4f79-a717-f77fc7e0b1db');
+-- LMQ: PtotheD (Head Coach) https://lol.fandom.com/wiki/LMQ
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('1623f007-aba8-5cd6-be2f-8d8c116225b0', 'PtotheD', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/LMQ', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('1623f007-aba8-5cd6-be2f-8d8c116225b0', 0, 'bd913d3d-806f-4500-8c0e-60f57a065fd7');
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('45962eed-42bc-59fb-a5e4-c840cc4e35a1', 1, '620e3a7c-5f5f-4de4-a633-1770ef4a5bba');
+-- ahq eSports Club: Prydz (Coach) https://lol.fandom.com/wiki/ahq_eSports_Club
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('4c36f299-bde8-5433-ae8e-5d1bab3ed391', 'Prydz', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/ahq_eSports_Club', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('4c36f299-bde8-5433-ae8e-5d1bab3ed391', 0, '772b83e7-506d-4d7c-a0e8-ce908009b94f');
+-- Taipei Snipers: Lilballz (Coach) https://lol.fandom.com/wiki/Taipei_Snipers
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('7b8c646f-1d7b-5227-99c2-fb860f530370', 'Lilballz', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Taipei_Snipers', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('7b8c646f-1d7b-5227-99c2-fb860f530370', 0, '120e8397-e2d5-4d51-b688-7c0a1425006f');
+-- Singapore Sentinels: Kailing (Coach) https://lol.fandom.com/wiki/Singapore_Sentinels
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('fddab561-166c-5ef7-9774-accb2ae7ee4d', 'Kailing', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Singapore_Sentinels', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('fddab561-166c-5ef7-9774-accb2ae7ee4d', 0, '4e5fa6ed-27db-40f3-b286-9f48d5511f93');
+-- Bigfile Miracle: firebathero (Head Coach) https://lol.fandom.com/wiki/Bigfile_Miracle
+INSERT INTO head_coaches (id, name, nationality, age, portrait, source_url, reputation, draft, training, mental, macro_play, media) VALUES
+    ('fdce2628-fab4-5821-9d16-ab51e9e21630', 'firebathero', NULL, NULL, NULL, 'https://lol.fandom.com/wiki/Bigfile_Miracle', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO coach_teams (coach_id, position, team_id) VALUES
+    ('fdce2628-fab4-5821-9d16-ab51e9e21630', 0, '6dc21f2f-3c6e-46b0-bdec-dfdfbb397277');
+-- Staff named on the 2014 timeline. Scores stay empty.
+-- Full Louis: Jeff (Analyst), Tinikun (Analyst) https://lol.fandom.com/wiki/Full_Louis
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('ff7609ae-9895-51f0-b108-9945f1537e34', 'Jeff', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL),
+    ('5f2ad307-b114-5331-ac14-7019be074e10', 'Tinikun', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('ff7609ae-9895-51f0-b108-9945f1537e34', 0, '9d2bbeb1-1023-4f3c-9a14-28065e842866'),
+    ('5f2ad307-b114-5331-ac14-7019be074e10', 0, '9d2bbeb1-1023-4f3c-9a14-28065e842866');
+-- Cloud 9: Charlie (analyst) https://lol.fandom.com/wiki/Cloud9
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('258346d1-e752-5574-9456-9986f8c3c14e', 'Charlie', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('258346d1-e752-5574-9456-9986f8c3c14e', 0, 'ad454f44-1f27-4ec0-95b9-c0aad2d216f0');
+-- Millenium: Dreamz (manager) https://lol.fandom.com/wiki/Millenium
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('a50a6f16-826d-5b3f-b295-aed6dafde4a1', 'Dreamz', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('a50a6f16-826d-5b3f-b295-aed6dafde4a1', 0, '03e92d75-e4ef-4989-85cb-15fa933dbda0');
+-- Millenium: Joe (manager) https://lol.fandom.com/wiki/Millenium
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('1d3bd4f3-8653-585f-a421-cb2b41cf73be', 'Joe', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('1d3bd4f3-8653-585f-a421-cb2b41cf73be', 0, '03e92d75-e4ef-4989-85cb-15fa933dbda0');
+-- SK Gaming: InnerFlame (manager) https://lol.fandom.com/wiki/SK_Gaming
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('11c62238-fd31-5d64-97c3-e94a5e24f9d8', 'InnerFlame', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('11c62238-fd31-5d64-97c3-e94a5e24f9d8', 0, 'c7c9da3b-df86-4a21-800f-aa4f443cf7fb');
+-- SK Gaming: Arvindir (analyst) https://lol.fandom.com/wiki/SK_Gaming
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('08bbd563-41cf-543a-94ff-8b552b3049fe', 'Arvindir', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('08bbd563-41cf-543a-94ff-8b552b3049fe', 0, 'c7c9da3b-df86-4a21-800f-aa4f443cf7fb');
+-- SUPA HOT CREW: XJ9 (assistant_coach) https://lol.fandom.com/wiki/SUPA_HOT_CREW
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('fc8ebb86-57b6-5393-8914-9d6185567150', 'XJ9', NULL, NULL, 'assistant_coach', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('fc8ebb86-57b6-5393-8914-9d6185567150', 0, '4687877e-98d8-4e93-aee9-bcee1faa9254');
+-- Team ROCCAT: foo sharp (assistant_coach) https://lol.fandom.com/wiki/Team_ROCCAT
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('78d2dd3e-292b-5292-80dd-3164d9cb4749', 'foo sharp', NULL, NULL, 'assistant_coach', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('78d2dd3e-292b-5292-80dd-3164d9cb4749', 0, '44d57b69-e761-463b-b884-9601cd7c7448');
+-- CLG: Zikz (analyst) https://lol.fandom.com/wiki/CLG
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('621f625e-670b-55e4-aa54-3d155babc822', 'Zikz', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('621f625e-670b-55e4-aa54-3d155babc822', 0, '561ae13f-1c36-4de6-a110-5b6a7052e868');
+-- Team Coast: Alex Penn (analyst) https://lol.fandom.com/wiki/Team_Coast
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('0a74ef4b-c127-571b-958a-09aa58ed6d57', 'Alex Penn', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('0a74ef4b-c127-571b-958a-09aa58ed6d57', 0, '58aea862-9ba7-448d-b833-10a16430e63d');
+-- Team Curse: MarkZ (head_analyst) https://lol.fandom.com/wiki/Team_Curse
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('96a06f33-84f6-542b-a473-69d8ed26369c', 'MarkZ', NULL, NULL, 'head_analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('96a06f33-84f6-542b-a473-69d8ed26369c', 0, '1eea6004-f34d-4a7d-9bd4-75ba37de969e');
+-- Dignitas: Mylixia (manager) https://lol.fandom.com/wiki/Dignitas
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('cab65479-c800-51ba-8f48-e8bacbea09cd', 'Mylixia', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('cab65479-c800-51ba-8f48-e8bacbea09cd', 0, '5798d821-f117-446e-a17f-8e55ee9d7046');
+-- Dignitas: JoyLuck (analyst) https://lol.fandom.com/wiki/Dignitas
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('2fca057e-b23b-5bbe-b6c8-1dc64c69491a', 'JoyLuck', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('2fca057e-b23b-5bbe-b6c8-1dc64c69491a', 0, '5798d821-f117-446e-a17f-8e55ee9d7046');
+-- TSM: Parth (analyst) https://lol.fandom.com/wiki/TSM
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('1f2934f8-e659-593b-94f9-dc753bd762f2', 'Parth', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('1f2934f8-e659-593b-94f9-dc753bd762f2', 0, '8e6d7b54-278c-4ff9-9b12-637600f047e5');
+-- TSM: Dylan Falco (analyst) https://lol.fandom.com/wiki/TSM
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('e1c38974-ab31-5236-ba1d-71acb4488ea1', 'Dylan Falco', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('e1c38974-ab31-5236-ba1d-71acb4488ea1', 0, '8e6d7b54-278c-4ff9-9b12-637600f047e5');
+-- Xenics Storm: Jeong Ju-won (manager) https://lol.fandom.com/wiki/Xenics_Storm
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('02e5dea1-9037-59a9-a785-5dc0159a43b3', 'Jeong Ju-won', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('02e5dea1-9037-59a9-a785-5dc0159a43b3', 0, '127cbf49-55c2-4adb-9250-820d408bf2fc');
+-- Xenics Storm: YellOw (manager) https://lol.fandom.com/wiki/Xenics_Storm
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('f579070f-7e15-51c5-8107-e542db1649a9', 'YellOw', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('f579070f-7e15-51c5-8107-e542db1649a9', 0, '127cbf49-55c2-4adb-9250-820d408bf2fc');
+-- Ninjas in Pyjamas: Deficio (manager) https://lol.fandom.com/wiki/Ninjas_in_Pyjamas
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('6c7fad05-f886-5ab5-b11f-c3d562cb7a2d', 'Deficio', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('6c7fad05-f886-5ab5-b11f-c3d562cb7a2d', 0, '9e13a007-f77f-4c57-b4ee-0873420db581');
+-- Pulse Esports: MenQ (analyst) https://lol.fandom.com/wiki/Pulse_Esports
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('797d1228-002c-5f01-9704-fa9190029364', 'MenQ', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('797d1228-002c-5f01-9704-fa9190029364', 0, '5142bf7b-d0f1-40cb-be73-79673936df22');
+-- compLexity.Black: Leviathan (analyst) https://lol.fandom.com/wiki/CompLexity.Black
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('6c2f882c-0a2d-50c1-ab78-391e2b23e898', 'Leviathan', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('6c2f882c-0a2d-50c1-ab78-391e2b23e898', 0, 'd8b474db-808d-4b7d-a0e6-c519c64f1a33');
+-- LMQ: Sharon (manager) https://lol.fandom.com/wiki/LMQ
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('a51c5d54-887f-5c92-a63f-ea2c16942835', 'Sharon', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('a51c5d54-887f-5c92-a63f-ea2c16942835', 0, 'eb331307-2a92-4bfa-8666-a694bb003592');
+-- ahq eSports Club: Prydz (analyst) https://lol.fandom.com/wiki/ahq_eSports_Club
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('4c36f299-bde8-5433-ae8e-5d1bab3ed391', 'Prydz', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('4c36f299-bde8-5433-ae8e-5d1bab3ed391', 0, 'da16729d-77ef-46b0-b47b-c6ecca643f17');
+-- Taipei Snipers: Awei (assistant_coach) https://lol.fandom.com/wiki/Taipei_Snipers
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('be7c6220-001b-5ca5-9c0e-6cdfcc094bb4', 'Awei', NULL, NULL, 'assistant_coach', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('be7c6220-001b-5ca5-9c0e-6cdfcc094bb4', 0, '6dab4e31-6900-433f-9622-7ec1a1d826e3');
+-- Taipei Snipers: Lilballz (assistant_coach) https://lol.fandom.com/wiki/Taipei_Snipers
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('7b8c646f-1d7b-5227-99c2-fb860f530370', 'Lilballz', NULL, NULL, 'assistant_coach', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('7b8c646f-1d7b-5227-99c2-fb860f530370', 0, '6dab4e31-6900-433f-9622-7ec1a1d826e3');
+-- Keyd Stars: MiT (manager) https://lol.fandom.com/wiki/Keyd_Stars
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('4d49e9aa-f74e-5c30-8fc8-4a91b938a44b', 'MiT', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('4d49e9aa-f74e-5c30-8fc8-4a91b938a44b', 0, 'a509c789-44a2-49d0-8aaf-3edad207b536');
+-- Keyd Stars: Philip (manager) https://lol.fandom.com/wiki/Keyd_Stars
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('bf89e022-19dc-5aeb-bfb3-b8e26b3efd97', 'Philip', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('bf89e022-19dc-5aeb-bfb3-b8e26b3efd97', 0, 'a509c789-44a2-49d0-8aaf-3edad207b536');
+-- paiN Gaming: MakNooN (analyst) https://lol.fandom.com/wiki/paiN_Gaming
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('1589b294-0fac-5152-b280-0ed8cc3549b6', 'MakNooN', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('1589b294-0fac-5152-b280-0ed8cc3549b6', 0, '50219b75-6b05-4904-ab6f-a21b9ab3b745');
+-- Copenhagen Wolves: Angelas (head_analyst) https://lol.fandom.com/wiki/Copenhagen_Wolves
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('3775e6c2-1cd8-51bc-b4f7-bba956110629', 'Angelas', NULL, NULL, 'head_analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('3775e6c2-1cd8-51bc-b4f7-bba956110629', 0, '40ddadc5-1d66-4ac8-a2a0-78676c41cf9c');
+-- Gambit Gaming: Moo (manager) https://lol.fandom.com/wiki/Gambit_Gaming
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('7068d655-04c4-5465-95a7-2731ac6d8927', 'Moo', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('7068d655-04c4-5465-95a7-2731ac6d8927', 0, '1c5bedfa-da0a-436b-a92a-291b4aa938c7');
+-- Evil Geniuses: Clement Chu (analyst) https://lol.fandom.com/wiki/Evil_Geniuses
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('618dc103-6f6b-5f6c-a629-9f8321881da9', 'Clement Chu', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('618dc103-6f6b-5f6c-a629-9f8321881da9', 0, 'cdd26ac4-dd70-47a0-b9ce-937954f83b1f');
+-- SUPA HOT CREW: LS (analyst) https://lol.fandom.com/wiki/SUPA_HOT_CREW
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('a9e69eee-c8de-57da-9d50-b9db6bbdbc82', 'LS', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('a9e69eee-c8de-57da-9d50-b9db6bbdbc82', 0, '4687877e-98d8-4e93-aee9-bcee1faa9254');
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('258346d1-e752-5574-9456-9986f8c3c14e', 1, '684ca8ca-9e9b-4ce2-b0bc-3e8013c44b2f');
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('11c62238-fd31-5d64-97c3-e94a5e24f9d8', 1, '986c7ce8-45d1-4c23-b987-cd6ed3da796d');
+-- SK Gaming Prime: Howspiffing (manager) https://lol.fandom.com/wiki/SK_Gaming_Prime
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('3c2ebe6f-8ef4-58d9-8c14-45330fd4e5ab', 'Howspiffing', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('3c2ebe6f-8ef4-58d9-8c14-45330fd4e5ab', 0, '986c7ce8-45d1-4c23-b987-cd6ed3da796d');
+-- Rascal Jester: ENZA (manager) https://lol.fandom.com/wiki/Rascal_Jester
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('595bf297-2bdf-58c2-bbdd-97ec438e2fbe', 'ENZA', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('595bf297-2bdf-58c2-bbdd-97ec438e2fbe', 0, '1603c897-af5f-4b9f-93d6-4770bf8fc7d3');
+-- Saigon Jokers: Irean (analyst) https://lol.fandom.com/wiki/Saigon_Jokers
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('dbd9c1bc-efd3-51af-8d1b-822b1cff6b32', 'Irean', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('dbd9c1bc-efd3-51af-8d1b-822b1cff6b32', 0, '8ce70c0a-8289-4f8b-83a8-aa08f41a3abc');
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('dbd9c1bc-efd3-51af-8d1b-822b1cff6b32', 1, 'e84840e0-515d-4fc5-9d70-157cea9eb71d');
+-- Team awp: mHa (manager) https://lol.fandom.com/wiki/Team_awp
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('95e15f69-4f30-54e0-9cba-09c455a6651a', 'mHa', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('95e15f69-4f30-54e0-9cba-09c455a6651a', 0, '527afc75-60db-43d9-9072-1a3e972927ca');
+-- Team awp: yeTz (manager) https://lol.fandom.com/wiki/Team_awp
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('4f807efb-0b5a-5cc4-81b7-57e65162b7de', 'yeTz', NULL, NULL, 'manager', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('4f807efb-0b5a-5cc4-81b7-57e65162b7de', 0, '527afc75-60db-43d9-9072-1a3e972927ca');
+-- Kaos Latin Gamers: Serafin (analyst) https://lol.fandom.com/wiki/Kaos_Latin_Gamers
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('97aa44fe-28ca-599d-ad3e-0f7fbf0c5717', 'Serafin', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('97aa44fe-28ca-599d-ad3e-0f7fbf0c5717', 0, 'e7a3b7a3-b675-4b45-8735-0fb7dbfea21e');
+-- Team Immunity: Charlie101 (analyst) https://lol.fandom.com/wiki/Team_Immunity
+INSERT INTO staff_members (id, name, nationality, age, role, positional_role, draft, training, mental, macro_play, media) VALUES
+    ('a58f6cdf-a164-5938-8c6f-2ee034d263f1', 'Charlie101', NULL, NULL, 'analyst', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO staff_organisations (staff_id, position, organisation_id) VALUES
+    ('a58f6cdf-a164-5938-8c6f-2ee034d263f1', 0, '0c019588-ad9a-4469-9153-b02ef7505c33');
