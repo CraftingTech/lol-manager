@@ -1,20 +1,20 @@
 use std::path::Path;
 
 use domain::{
-    CalendarDate, Champion, ChampionId, ChampionOnPatch, CoachCompetencies, CoachId, Competencies, DamageSliders,
-    FanBase, Finances, HeadCoach, HeadCoachIdentity, InfluencerContract, InfluencerContractId, Jersey,
-    League, LeagueId, LeagueSeason, Locaux, ObjectiveEvent, Organisation, OrganisationId, PalmaresEntry,
-    Patch, PatchId, PhaseScores, Player, PlayerId, PlayerIdentity, PlayerState, PoolEntry, Presta,
-    RoleScores, Roster, SeasonRegistration, SponsorContract, SponsorId, SplitFormat, StaffId,
-    StaffMember, TankinessSliders, Team, TeamId,
+    CalendarDate, Champion, ChampionId, ChampionOnPatch, CoachCompetencies, CoachId, Competencies,
+    DamageSliders, FanBase, Finances, HeadCoach, HeadCoachIdentity, InfluencerContract,
+    InfluencerContractId, Jersey, League, LeagueId, LeagueSeason, Locaux, ObjectiveEvent,
+    Organisation, OrganisationId, PalmaresEntry, Patch, PatchId, PhaseScores, Player, PlayerId,
+    PlayerIdentity, PlayerState, PoolEntry, Presta, RoleScores, Roster, SeasonRegistration,
+    SplitFormat, SponsorContract, SponsorId, StaffId, StaffMember, TankinessSliders, Team, TeamId,
 };
 use rusqlite::{params, Connection, OptionalExtension};
 
 use crate::codec::{
-    cap_from_sql, cap_to_sql, presence_from_sql, presence_to_sql, role_from_sql, role_to_sql,
-    score_from, series_from_sql, series_to_sql, skill_from_sql, skill_kind, skill_score,
-    staff_role_from_sql, staff_role_to_sql, tag_from_sql, tag_to_sql, tier_from_sql, tier_to_sql,
-    aspiration_effect_from_sql, aspiration_type_from_sql, aspiration_type_to_sql,
+    aspiration_effect_from_sql, aspiration_type_from_sql, aspiration_type_to_sql, cap_from_sql,
+    cap_to_sql, presence_from_sql, presence_to_sql, role_from_sql, role_to_sql, score_from,
+    series_from_sql, series_to_sql, skill_from_sql, skill_kind, skill_score, staff_role_from_sql,
+    staff_role_to_sql, tag_from_sql, tag_to_sql, tier_from_sql, tier_to_sql,
 };
 use crate::error::StoreError;
 
@@ -47,7 +47,9 @@ impl Store {
     #[cfg(test)]
     fn id_named(&self, table: &str, name: &str) -> Result<uuid::Uuid, StoreError> {
         let sql = format!("SELECT id FROM {table} WHERE name = ?1");
-        let value: String = self.connection.query_row(&sql, params![name], |row| row.get(0))?;
+        let value: String = self
+            .connection
+            .query_row(&sql, params![name], |row| row.get(0))?;
         parse_id(value)
     }
 
@@ -91,7 +93,11 @@ impl Store {
             )
             .optional()?
             .ok_or(StoreError::NotFound)?;
-        Ok(Champion { id, name: name.0, portrait: name.1 })
+        Ok(Champion {
+            id,
+            name: name.0,
+            portrait: name.1,
+        })
     }
 
     pub fn save_league(&self, league: &League) -> Result<(), StoreError> {
@@ -120,7 +126,8 @@ impl Store {
                         name: row.get(0)?,
                         region: row.get(1)?,
                         tier: tier_from_sql(&row.get::<_, String>(2)?).map_err(store_to_sql)?,
-                        presence: presence_from_sql(&row.get::<_, String>(3)?).map_err(store_to_sql)?,
+                        presence: presence_from_sql(&row.get::<_, String>(3)?)
+                            .map_err(store_to_sql)?,
                         portrait: row.get(4)?,
                     })
                 },
@@ -161,7 +168,11 @@ impl Store {
         Ok(())
     }
 
-    pub fn load_league_season(&self, league: LeagueId, year: i32) -> Result<LeagueSeason, StoreError> {
+    pub fn load_league_season(
+        &self,
+        league: LeagueId,
+        year: i32,
+    ) -> Result<LeagueSeason, StoreError> {
         let league_id = sql_id(league.0);
         let (team_count, msi_slots, worlds_slots, cap_kind, cap_amount) = self
             .connection
@@ -220,25 +231,41 @@ impl Store {
                 organisation.region,
                 organisation.history,
                 organisation.staff_seats.map(i64::from),
-                organisation.locaux.map(|locaux| bool_to_sql(locaux.scrim_room)),
-                organisation.locaux.map(|locaux| bool_to_sql(locaux.gaming_house)),
+                organisation
+                    .locaux
+                    .map(|locaux| bool_to_sql(locaux.scrim_room)),
+                organisation
+                    .locaux
+                    .map(|locaux| bool_to_sql(locaux.gaming_house)),
                 organisation.locaux.map(|locaux| bool_to_sql(locaux.chef)),
-                organisation.jersey.as_ref().map(|jersey| jersey.name.clone()),
+                organisation
+                    .jersey
+                    .as_ref()
+                    .map(|jersey| jersey.name.clone()),
                 organisation.finances.budget,
                 organisation.finances.wage_bill,
                 organisation.fan_base.count.map(sql_count).transpose()?,
-                organisation.fan_base.mood.map(|mood| i64::from(mood.value())),
+                organisation
+                    .fan_base
+                    .mood
+                    .map(|mood| i64::from(mood.value())),
                 organisation.portrait,
             ],
         )?;
-        tx.execute("DELETE FROM organisation_teams WHERE organisation_id = ?1", params![id])?;
+        tx.execute(
+            "DELETE FROM organisation_teams WHERE organisation_id = ?1",
+            params![id],
+        )?;
         for (position, team) in organisation.teams.iter().enumerate() {
             tx.execute(
                 "INSERT INTO organisation_teams (organisation_id, position, team_id) VALUES (?1, ?2, ?3)",
                 params![id, position as i64, sql_id(team.0)],
             )?;
         }
-        tx.execute("DELETE FROM sponsors WHERE organisation_id = ?1", params![id])?;
+        tx.execute(
+            "DELETE FROM sponsors WHERE organisation_id = ?1",
+            params![id],
+        )?;
         for sponsor in &organisation.sponsors {
             tx.execute(
                 "INSERT INTO sponsors (id, organisation_id, payer, amount, duration_years, takes_jersey_slot)
@@ -341,7 +368,10 @@ impl Store {
         let id = sql_id(team.id.0);
         let (league_id, season_year) = match team.registration {
             None => (None, None),
-            Some(registration) => (Some(sql_id(registration.league.0)), Some(i64::from(registration.year))),
+            Some(registration) => (
+                Some(sql_id(registration.league.0)),
+                Some(i64::from(registration.year)),
+            ),
         };
         let tx = self.connection.unchecked_transaction()?;
         tx.execute(
@@ -458,7 +488,10 @@ impl Store {
                 params![id, position as i64, sql_id(team.0)],
             )?;
         }
-        tx.execute("DELETE FROM player_palmares WHERE player_id = ?1", params![id])?;
+        tx.execute(
+            "DELETE FROM player_palmares WHERE player_id = ?1",
+            params![id],
+        )?;
         for (position, entry) in player.identity.palmares.iter().enumerate() {
             tx.execute(
                 "INSERT INTO player_palmares (player_id, position, award, competition, year) VALUES (?1, ?2, ?3, ?4, ?5)",
@@ -469,7 +502,11 @@ impl Store {
         for entry in &player.pool {
             tx.execute(
                 "INSERT INTO player_pool (player_id, champion_id, mastery) VALUES (?1, ?2, ?3)",
-                params![id, sql_id(entry.champion.0), i64::from(entry.mastery.value())],
+                params![
+                    id,
+                    sql_id(entry.champion.0),
+                    i64::from(entry.mastery.value())
+                ],
             )?;
         }
         tx.execute("DELETE FROM player_tags WHERE player_id = ?1", params![id])?;
@@ -479,17 +516,28 @@ impl Store {
                 params![id, tag_to_sql(*tag)],
             )?;
         }
-        tx.execute("DELETE FROM player_aspirations WHERE player_id = ?1", params![id])?;
+        tx.execute(
+            "DELETE FROM player_aspirations WHERE player_id = ?1",
+            params![id],
+        )?;
         for aspiration in &player.aspirations {
             let (title, age, decision) = match &aspiration.value {
                 domain::AspirationValue::Title(title) => (Some(title.clone()), None, None),
                 domain::AspirationValue::Age(age) => (None, Some(i64::from(*age)), None),
-                domain::AspirationValue::Decision(decision) => (None, None, Some(bool_to_sql(*decision))),
+                domain::AspirationValue::Decision(decision) => {
+                    (None, None, Some(bool_to_sql(*decision)))
+                }
             };
             tx.execute(
                 "INSERT INTO player_aspirations (player_id, aspiration_type, title, age, decision)
                  VALUES (?1, ?2, ?3, ?4, ?5)",
-                params![id, aspiration_type_to_sql(aspiration.kind), title, age, decision],
+                params![
+                    id,
+                    aspiration_type_to_sql(aspiration.kind),
+                    title,
+                    age,
+                    decision
+                ],
             )?;
         }
         tx.commit()?;
@@ -553,8 +601,8 @@ impl Store {
         };
         let pool = self.load_pool(&player_id)?;
         let competencies = match (
-            row.4, row.5, row.6, row.7, row.8, row.9, row.10, row.11, row.12, row.13, row.14, row.15,
-            row.16,
+            row.4, row.5, row.6, row.7, row.8, row.9, row.10, row.11, row.12, row.13, row.14,
+            row.15, row.16,
         ) {
             (
                 Some(mechanics),
@@ -637,7 +685,10 @@ impl Store {
                 params![id, position as i64, sql_id(team.0)],
             )?;
         }
-        tx.execute("DELETE FROM coach_palmares WHERE coach_id = ?1", params![id])?;
+        tx.execute(
+            "DELETE FROM coach_palmares WHERE coach_id = ?1",
+            params![id],
+        )?;
         for (position, entry) in coach.identity.palmares.iter().enumerate() {
             tx.execute(
                 "INSERT INTO coach_palmares (coach_id, position, award, competition, year) VALUES (?1, ?2, ?3, ?4, ?5)",
@@ -758,7 +809,11 @@ impl Store {
         Ok(())
     }
 
-    pub fn load_presta(&self, player: domain::PlayerId, champion: ChampionId) -> Result<Presta, StoreError> {
+    pub fn load_presta(
+        &self,
+        player: domain::PlayerId,
+        champion: ChampionId,
+    ) -> Result<Presta, StoreError> {
         let found: Option<(String, String)> = self
             .connection
             .query_row(
@@ -783,18 +838,29 @@ impl Store {
             "INSERT OR REPLACE INTO patches (id, version, date) VALUES (?1, ?2, ?3)",
             params![id, patch.version, patch.date],
         )?;
-        tx.execute("DELETE FROM objective_unlocks WHERE patch_id = ?1", params![id])?;
-        tx.execute("DELETE FROM objective_events WHERE patch_id = ?1", params![id])?;
-        tx.execute("DELETE FROM champion_on_patch WHERE patch_id = ?1", params![id])?;
+        tx.execute(
+            "DELETE FROM objective_unlocks WHERE patch_id = ?1",
+            params![id],
+        )?;
+        tx.execute(
+            "DELETE FROM objective_events WHERE patch_id = ?1",
+            params![id],
+        )?;
+        tx.execute(
+            "DELETE FROM champion_on_patch WHERE patch_id = ?1",
+            params![id],
+        )?;
         for champion in &patch.champions {
             let roles = champion.roles;
             let damage = champion.damage;
             let tankiness = champion.tankiness;
+            let phases = champion.phases;
             tx.execute(
                 "INSERT INTO champion_on_patch (
                     patch_id, champion_id, top, jungle, mid, adc, support,
-                    attack, ability, true_damage, health, armor, magic_resist
-                 ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
+                    attack, ability, true_damage, health, armor, magic_resist,
+                    phase_early, phase_mid, phase_late
+                 ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)",
                 params![
                     id,
                     sql_id(champion.champion.0),
@@ -809,6 +875,9 @@ impl Store {
                     tankiness.map(|scores| i64::from(scores.health.value())),
                     tankiness.map(|scores| i64::from(scores.armor.value())),
                     tankiness.map(|scores| i64::from(scores.magic_resist.value())),
+                    phases.map(|scores| i64::from(scores.early.value())),
+                    phases.map(|scores| i64::from(scores.mid.value())),
+                    phases.map(|scores| i64::from(scores.late.value())),
                 ],
             )?;
         }
@@ -870,7 +939,8 @@ impl Store {
                 year: row.get(2)?,
             })
         })?;
-        rows.collect::<Result<Vec<_>, _>>().map_err(StoreError::from)
+        rows.collect::<Result<Vec<_>, _>>()
+            .map_err(StoreError::from)
     }
 
     fn load_pool(&self, player_id: &str) -> Result<Vec<PoolEntry>, StoreError> {
@@ -903,7 +973,10 @@ impl Store {
         Ok(tags)
     }
 
-    fn load_aspirations(&self, player_id: &str) -> Result<Vec<domain::PlayerAspiration>, StoreError> {
+    fn load_aspirations(
+        &self,
+        player_id: &str,
+    ) -> Result<Vec<domain::PlayerAspiration>, StoreError> {
         let mut statement = self.connection.prepare(
             "SELECT aspiration_type, title, age, decision
              FROM player_aspirations WHERE player_id = ?1 ORDER BY aspiration_type",
@@ -923,7 +996,9 @@ impl Store {
             let value = match (title, age, decision) {
                 (Some(title), None, None) => domain::AspirationValue::Title(title),
                 (None, Some(age), None) => domain::AspirationValue::Age(u8_from(age)?),
-                (None, None, Some(decision)) => domain::AspirationValue::Decision(sql_to_bool(decision)?),
+                (None, None, Some(decision)) => {
+                    domain::AspirationValue::Decision(sql_to_bool(decision)?)
+                }
                 _ => return Err(StoreError::InvalidValue("aspiration".into())),
             };
             aspirations.push(domain::PlayerAspiration::new(kind, value)?);
@@ -985,7 +1060,10 @@ impl Store {
         Ok(sponsors)
     }
 
-    fn load_influencer_contracts(&self, organisation_id: &str) -> Result<Vec<InfluencerContract>, StoreError> {
+    fn load_influencer_contracts(
+        &self,
+        organisation_id: &str,
+    ) -> Result<Vec<InfluencerContract>, StoreError> {
         let mut statement = self.connection.prepare(
             "SELECT id, streamer, duration_years, stream_revenue
              FROM influencer_contracts WHERE organisation_id = ?1 ORDER BY id",
@@ -1013,7 +1091,7 @@ impl Store {
 
     fn load_champions_on_patch(&self, patch_id: &str) -> Result<Vec<ChampionOnPatch>, StoreError> {
         let mut statement = self.connection.prepare(
-            "SELECT champion_id, top, jungle, mid, adc, support, attack, ability, true_damage, health, armor, magic_resist
+            "SELECT champion_id, top, jungle, mid, adc, support, attack, ability, true_damage, health, armor, magic_resist, phase_early, phase_mid, phase_late
              FROM champion_on_patch WHERE patch_id = ?1 ORDER BY champion_id",
         )?;
         let rows = statement.query_map(params![patch_id], |row| {
@@ -1030,6 +1108,9 @@ impl Store {
                 row.get::<_, Option<i64>>(9)?,
                 row.get::<_, Option<i64>>(10)?,
                 row.get::<_, Option<i64>>(11)?,
+                row.get::<_, Option<i64>>(12)?,
+                row.get::<_, Option<i64>>(13)?,
+                row.get::<_, Option<i64>>(14)?,
             ))
         })?;
         let mut champions = Vec::new();
@@ -1040,6 +1121,7 @@ impl Store {
                 roles: role_scores(values.1, values.2, values.3, values.4, values.5)?,
                 damage: damage_sliders(values.6, values.7, values.8)?,
                 tankiness: tankiness_sliders(values.9, values.10, values.11)?,
+                phases: phase_scores(values.12, values.13, values.14)?,
             });
         }
         Ok(champions)
@@ -1050,7 +1132,11 @@ impl Store {
             "SELECT position, name, reward FROM objective_events WHERE patch_id = ?1 ORDER BY position",
         )?;
         let rows = statement.query_map(params![patch_id], |row| {
-            Ok((row.get::<_, i64>(0)?, row.get::<_, String>(1)?, row.get::<_, Option<String>>(2)?))
+            Ok((
+                row.get::<_, i64>(0)?,
+                row.get::<_, String>(1)?,
+                row.get::<_, Option<String>>(2)?,
+            ))
         })?;
         let mut objectives = Vec::new();
         for row in rows {
@@ -1069,8 +1155,10 @@ impl Store {
             "SELECT name FROM objective_unlocks
              WHERE patch_id = ?1 AND objective_position = ?2 ORDER BY unlock_position",
         )?;
-        let rows = statement.query_map(params![patch_id, position], |row| row.get::<_, String>(0))?;
-        rows.collect::<Result<Vec<_>, _>>().map_err(StoreError::from)
+        let rows =
+            statement.query_map(params![patch_id, position], |row| row.get::<_, String>(0))?;
+        rows.collect::<Result<Vec<_>, _>>()
+            .map_err(StoreError::from)
     }
 
     pub fn list_champions(&self) -> Result<Vec<Champion>, StoreError> {
@@ -1113,7 +1201,8 @@ impl Store {
             .connection
             .prepare("SELECT id FROM patches ORDER BY date, version")?;
         let rows = statement.query_map([], |row| row.get::<_, String>(0))?;
-        rows.map(|value| self.load_patch(PatchId(parse_id(value?)?))).collect()
+        rows.map(|value| self.load_patch(PatchId(parse_id(value?)?)))
+            .collect()
     }
 
     fn ids_ordered(&self, table: &str) -> Result<Vec<uuid::Uuid>, StoreError> {
@@ -1229,6 +1318,22 @@ fn damage_sliders(
     }
 }
 
+fn phase_scores(
+    early: Option<i64>,
+    mid: Option<i64>,
+    late: Option<i64>,
+) -> Result<Option<domain::PhaseScores>, StoreError> {
+    match (early, mid, late) {
+        (None, None, None) => Ok(None),
+        (Some(early), Some(mid), Some(late)) => Ok(Some(domain::PhaseScores {
+            early: score_from(early)?,
+            mid: score_from(mid)?,
+            late: score_from(late)?,
+        })),
+        _ => Err(StoreError::InvalidValue("phases".into())),
+    }
+}
+
 fn tankiness_sliders(
     health: Option<i64>,
     armor: Option<i64>,
@@ -1249,13 +1354,14 @@ fn tankiness_sliders(
 mod tests {
     use super::Store;
     use domain::{
-        CalendarDate, Champion, ChampionId, ChampionOnPatch, CoachCompetencies, CoachId, Competencies,
-        DamageSliders, FanBase, Finances, HeadCoach, HeadCoachIdentity, InfluencerContract,
-        InfluencerContractId, Jersey, League, LeagueId, LeagueSeason, LeagueTier, Locaux,
-        ObjectiveEvent, Organisation, OrganisationId, PalmaresEntry, Patch, PatchId, PhaseScores,
-        Player, PlayerId, PlayerIdentity, PlayerState, PoolEntry, Presta, Role, RoleScores, RoleSkill,
-        Roster, SalaryCap, Score, SeasonPresence, SeasonRegistration, SeriesLength, SponsorContract,
-        SponsorId, SplitFormat, StaffId, StaffMember, StaffRole, Tag, Team, TeamId,
+        CalendarDate, Champion, ChampionId, ChampionOnPatch, CoachCompetencies, CoachId,
+        Competencies, DamageSliders, FanBase, Finances, HeadCoach, HeadCoachIdentity,
+        InfluencerContract, InfluencerContractId, Jersey, League, LeagueId, LeagueSeason,
+        LeagueTier, Locaux, ObjectiveEvent, Organisation, OrganisationId, PalmaresEntry, Patch,
+        PatchId, PhaseScores, Player, PlayerId, PlayerIdentity, PlayerState, PoolEntry, Presta,
+        Role, RoleScores, RoleSkill, Roster, SalaryCap, Score, SeasonPresence, SeasonRegistration,
+        SeriesLength, SplitFormat, SponsorContract, SponsorId, StaffId, StaffMember, StaffRole,
+        Tag, Team, TeamId,
     };
 
     fn score(value: u8) -> Score {
@@ -1303,7 +1409,9 @@ mod tests {
                 gaming_house: true,
                 chef: false,
             }),
-            jersey: Some(Jersey { name: "Home".into() }),
+            jersey: Some(Jersey {
+                name: "Home".into(),
+            }),
             sponsors: vec![SponsorContract {
                 id: SponsorId(uuid::Uuid::from_u128(1)),
                 payer: "Partner".into(),
@@ -1433,6 +1541,7 @@ mod tests {
                     true_damage: score(0),
                 }),
                 tankiness: None,
+                phases: None,
             }],
             objectives: vec![ObjectiveEvent {
                 name: "dragon".into(),
@@ -1449,7 +1558,9 @@ mod tests {
         store.save_champion(&champion).unwrap();
         store.save_league(&league).unwrap();
         store.save_league_season(&season).unwrap();
-        store.save_organisation(&organisation_without_teams).unwrap();
+        store
+            .save_organisation(&organisation_without_teams)
+            .unwrap();
         store.save_team(&team_without_roster).unwrap();
         store.save_player(&player).unwrap();
         store.save_team(&team).unwrap();
@@ -1462,12 +1573,18 @@ mod tests {
         assert_eq!(store.load_champion(champion.id).unwrap(), champion);
         assert_eq!(store.load_league(league.id).unwrap(), league);
         assert_eq!(store.load_league_season(league.id, 2014).unwrap(), season);
-        assert_eq!(store.load_organisation(organisation.id).unwrap(), organisation);
+        assert_eq!(
+            store.load_organisation(organisation.id).unwrap(),
+            organisation
+        );
         assert_eq!(store.load_player(player.identity.id).unwrap(), player);
         assert_eq!(store.load_team(team.id).unwrap(), team);
         assert_eq!(store.load_head_coach(coach.identity.id).unwrap(), coach);
         assert_eq!(store.load_staff(staff.id).unwrap(), staff);
-        assert_eq!(store.load_presta(presta.player, presta.champion).unwrap(), presta);
+        assert_eq!(
+            store.load_presta(presta.player, presta.champion).unwrap(),
+            presta
+        );
         assert_eq!(store.load_patch(patch.id).unwrap(), patch);
         let modifiers = store.aspiration_modifiers().unwrap();
         for kind in [
@@ -1518,14 +1635,60 @@ mod tests {
     #[test]
     fn seed_2014_leaves_unknown_sheets_empty() {
         let store = Store::memory().unwrap();
-        store.apply_script(include_str!("../seed/2014.sql")).unwrap();
+        store
+            .apply_script(include_str!("../seed/2014.sql"))
+            .unwrap();
         assert_eq!(store.count("champions").unwrap(), 123);
         assert_eq!(store.list_champions().unwrap().len(), 123);
         assert_eq!(store.list_players().unwrap().len(), 761);
         assert_eq!(store.list_teams().unwrap().len(), 142);
         assert_eq!(store.list_leagues().unwrap().len(), 13);
         assert_eq!(store.list_organisations().unwrap().len(), 140);
-        assert!(store.list_patches().unwrap().is_empty());
+        let patches = store.list_patches().unwrap();
+        assert_eq!(patches.len(), 1);
+        assert_eq!(patches[0].version, "4.21.5");
+        assert!(patches[0].date.is_empty());
+        assert_eq!(patches[0].champions.len(), 123);
+        let ahri_id = ChampionId(store.id_named("champions", "Ahri").unwrap());
+        let ahri = patches[0]
+            .champions
+            .iter()
+            .find(|row| row.champion == ahri_id)
+            .unwrap();
+        let roles = ahri.roles.unwrap();
+        assert_eq!(
+            (
+                roles.top.value(),
+                roles.jungle.value(),
+                roles.mid.value(),
+                roles.adc.value(),
+                roles.support.value()
+            ),
+            (28, 43, 80, 8, 25)
+        );
+        let damage = ahri.damage.unwrap();
+        assert_eq!(
+            (
+                damage.attack.value(),
+                damage.ability.value(),
+                damage.true_damage.value()
+            ),
+            (30, 80, 40)
+        );
+        let tankiness = ahri.tankiness.unwrap();
+        assert_eq!(
+            (
+                tankiness.health.value(),
+                tankiness.armor.value(),
+                tankiness.magic_resist.value()
+            ),
+            (57, 80, 30)
+        );
+        let phases = ahri.phases.unwrap();
+        assert_eq!(
+            (phases.early.value(), phases.mid.value(), phases.late.value()),
+            (24, 29, 35)
+        );
         let yasuo = ChampionId(store.id_named("champions", "Yasuo").unwrap());
         assert_eq!(store.load_champion(yasuo).unwrap().name, "Yasuo");
         assert_eq!(
@@ -1538,36 +1701,74 @@ mod tests {
             Some("portraits/wiki/LCS_Europe_Logo.png")
         );
         assert_eq!(
-            store.load_organisation(OrganisationId(store.id_named("organisations", "Edward Gaming").unwrap())).unwrap().region,
+            store
+                .load_organisation(OrganisationId(
+                    store.id_named("organisations", "Edward Gaming").unwrap()
+                ))
+                .unwrap()
+                .region,
             "CN"
         );
         assert_eq!(
-            store.load_organisation(OrganisationId(store.id_named("organisations", "SK Telecom T1 K").unwrap())).unwrap().region,
+            store
+                .load_organisation(OrganisationId(
+                    store.id_named("organisations", "SK Telecom T1 K").unwrap()
+                ))
+                .unwrap()
+                .region,
             "KR"
         );
-        let fnatic = store.load_team(TeamId(store.id_named("teams", "Fnatic").unwrap())).unwrap();
-        assert_eq!(fnatic.portrait.as_deref(), Some("portraits/wiki/Fnatic_original_logo.png"));
+        let fnatic = store
+            .load_team(TeamId(store.id_named("teams", "Fnatic").unwrap()))
+            .unwrap();
         assert_eq!(
-            store.load_player(PlayerId(store.id_named("players", "Faker").unwrap())).unwrap().identity.portrait.as_deref(),
+            fnatic.portrait.as_deref(),
+            Some("portraits/wiki/Fnatic_original_logo.png")
+        );
+        assert_eq!(
+            store
+                .load_player(PlayerId(store.id_named("players", "Faker").unwrap()))
+                .unwrap()
+                .identity
+                .portrait
+                .as_deref(),
             Some("portraits/wiki/Faker2014.jpg")
         );
 
-        let sneaky = store.load_player(PlayerId(store.id_named("players", "Sneaky").unwrap())).unwrap();
+        let sneaky = store
+            .load_player(PlayerId(store.id_named("players", "Sneaky").unwrap()))
+            .unwrap();
         assert_eq!(sneaky.identity.name, "Sneaky");
         assert_eq!(sneaky.identity.role, Role::Adc);
         assert_eq!(sneaky.identity.nationality.as_deref(), Some("US"));
-        assert_eq!(sneaky.identity.birth_date, CalendarDate::parse("1994-03-19"));
-        assert_eq!(sneaky.identity.age_on(CalendarDate::CAREER_OPENING), Some(19));
+        assert_eq!(
+            sneaky.identity.birth_date,
+            CalendarDate::parse("1994-03-19")
+        );
+        assert_eq!(
+            sneaky.identity.age_on(CalendarDate::CAREER_OPENING),
+            Some(19)
+        );
         assert!(sneaky.competencies.is_none());
         assert!(sneaky.state.is_none());
         assert!(sneaky.aspirations.is_empty());
 
-        let faker = store.load_player(PlayerId(store.id_named("players", "Faker").unwrap())).unwrap();
+        let faker = store
+            .load_player(PlayerId(store.id_named("players", "Faker").unwrap()))
+            .unwrap();
         assert_eq!(faker.identity.nationality.as_deref(), Some("KR"));
         assert_eq!(faker.identity.birth_date, CalendarDate::parse("1996-05-07"));
-        assert_eq!(faker.identity.age_on(CalendarDate::CAREER_OPENING), Some(17));
         assert_eq!(
-            store.load_player(PlayerId(store.id_named("players", "FZZF").unwrap())).unwrap().identity.nationality.as_deref(),
+            faker.identity.age_on(CalendarDate::CAREER_OPENING),
+            Some(17)
+        );
+        assert_eq!(
+            store
+                .load_player(PlayerId(store.id_named("players", "FZZF").unwrap()))
+                .unwrap()
+                .identity
+                .nationality
+                .as_deref(),
             Some("CN")
         );
         assert_eq!(faker.identity.role, Role::Mid);
@@ -1576,23 +1777,54 @@ mod tests {
             vec![TeamId(store.id_named("teams", "SK Telecom T1 K").unwrap())]
         );
 
-        let lpl = store.load_league(LeagueId(store.id_named("leagues", "LPL").unwrap())).unwrap();
+        let lpl = store
+            .load_league(LeagueId(store.id_named("leagues", "LPL").unwrap()))
+            .unwrap();
         assert_eq!(lpl.region, "CN");
         assert_eq!(lpl.tier, LeagueTier::Primary);
         assert_eq!(lpl.presence, SeasonPresence::Playable);
-        assert_eq!(store.load_league_season(lpl.id, 2014).unwrap().team_count, Some(8));
-        assert_eq!(store.load_league_season(lpl.id, 2014).unwrap().worlds_slots, Some(3));
-        let champions = store.load_league(LeagueId(store.id_named("leagues", "Champions").unwrap())).unwrap();
+        assert_eq!(
+            store.load_league_season(lpl.id, 2014).unwrap().team_count,
+            Some(8)
+        );
+        assert_eq!(
+            store.load_league_season(lpl.id, 2014).unwrap().worlds_slots,
+            Some(3)
+        );
+        let champions = store
+            .load_league(LeagueId(store.id_named("leagues", "Champions").unwrap()))
+            .unwrap();
         assert_eq!(champions.region, "KR");
         assert_eq!(champions.presence, SeasonPresence::Playable);
-        assert_eq!(store.load_league_season(champions.id, 2014).unwrap().team_count, Some(16));
-        assert_eq!(store.load_league_season(champions.id, 2014).unwrap().worlds_slots, Some(3));
-        let challenger = store.load_league(LeagueId(store.id_named("leagues", "EU Challenger Series").unwrap())).unwrap();
+        assert_eq!(
+            store
+                .load_league_season(champions.id, 2014)
+                .unwrap()
+                .team_count,
+            Some(16)
+        );
+        assert_eq!(
+            store
+                .load_league_season(champions.id, 2014)
+                .unwrap()
+                .worlds_slots,
+            Some(3)
+        );
+        let challenger = store
+            .load_league(LeagueId(
+                store.id_named("leagues", "EU Challenger Series").unwrap(),
+            ))
+            .unwrap();
         assert_eq!(challenger.region, "EU");
         assert_eq!(challenger.tier, LeagueTier::Secondary);
         assert_eq!(challenger.presence, SeasonPresence::InWorld);
-        assert_eq!(challenger.portrait.as_deref(), Some("portraits/wiki/CS_EU_logo.png"));
-        let gpl = store.load_league(LeagueId(store.id_named("leagues", "GPL").unwrap())).unwrap();
+        assert_eq!(
+            challenger.portrait.as_deref(),
+            Some("portraits/wiki/CS_EU_logo.png")
+        );
+        let gpl = store
+            .load_league(LeagueId(store.id_named("leagues", "GPL").unwrap()))
+            .unwrap();
         assert_eq!(gpl.region, "SEA");
         assert_eq!(gpl.presence, SeasonPresence::InWorld);
         let gpl_season = store.load_league_season(gpl.id, 2014).unwrap();
@@ -1600,79 +1832,178 @@ mod tests {
         assert_eq!(gpl_season.worlds_slots, Some(2));
         assert_eq!(gpl_season.msi_slots, 0);
         assert_eq!(
-            store.load_team(TeamId(store.id_named("teams", "Edward Gaming").unwrap())).unwrap().registration,
-            Some(SeasonRegistration { league: lpl.id, year: 2014 })
+            store
+                .load_team(TeamId(store.id_named("teams", "Edward Gaming").unwrap()))
+                .unwrap()
+                .registration,
+            Some(SeasonRegistration {
+                league: lpl.id,
+                year: 2014
+            })
         );
         assert_eq!(
-            store.load_team(TeamId(store.id_named("teams", "SK Telecom T1 K").unwrap())).unwrap().registration,
-            Some(SeasonRegistration { league: champions.id, year: 2014 })
+            store
+                .load_team(TeamId(store.id_named("teams", "SK Telecom T1 K").unwrap()))
+                .unwrap()
+                .registration,
+            Some(SeasonRegistration {
+                league: champions.id,
+                year: 2014
+            })
         );
-        let bjergsen = store.load_player(PlayerId(store.id_named("players", "Bjergsen").unwrap())).unwrap();
+        let bjergsen = store
+            .load_player(PlayerId(store.id_named("players", "Bjergsen").unwrap()))
+            .unwrap();
         assert_eq!(bjergsen.identity.role, Role::Mid);
         assert_eq!(bjergsen.identity.nationality.as_deref(), Some("DK"));
-        assert_eq!(bjergsen.identity.birth_date, CalendarDate::parse("1996-02-21"));
-        assert_eq!(bjergsen.identity.age_on(CalendarDate::CAREER_OPENING), Some(17));
+        assert_eq!(
+            bjergsen.identity.birth_date,
+            CalendarDate::parse("1996-02-21")
+        );
+        assert_eq!(
+            bjergsen.identity.age_on(CalendarDate::CAREER_OPENING),
+            Some(17)
+        );
         assert!(bjergsen.competencies.is_none());
-        let ahq = store.load_team(TeamId(store.id_named("teams", "ahq eSports Club").unwrap())).unwrap();
-        assert_eq!(ahq.registration, Some(SeasonRegistration { league: gpl.id, year: 2014 }));
-        assert_eq!(store.load_organisation(ahq.organisation).unwrap().region, "SEA");
-        let odoamne = store.load_player(PlayerId(store.id_named("players", "Odoamne").unwrap())).unwrap();
+        let ahq = store
+            .load_team(TeamId(store.id_named("teams", "ahq eSports Club").unwrap()))
+            .unwrap();
+        assert_eq!(
+            ahq.registration,
+            Some(SeasonRegistration {
+                league: gpl.id,
+                year: 2014
+            })
+        );
+        assert_eq!(
+            store.load_organisation(ahq.organisation).unwrap().region,
+            "SEA"
+        );
+        let odoamne = store
+            .load_player(PlayerId(store.id_named("players", "Odoamne").unwrap()))
+            .unwrap();
         assert_eq!(odoamne.identity.role, Role::Top);
         assert_eq!(odoamne.identity.nationality.as_deref(), Some("RO"));
-        assert_eq!(odoamne.identity.birth_date, CalendarDate::parse("1995-01-18"));
-        assert_eq!(odoamne.identity.age_on(CalendarDate::CAREER_OPENING), Some(18));
-        assert!(odoamne.competencies.is_none());
-        assert_eq!(odoamne.identity.portrait.as_deref(), Some("portraits/wiki/H2K-Odaomne-2015spring.jpg"));
         assert_eq!(
-            store.load_team(TeamId(store.id_named("teams", "Cloud9 Eclipse").unwrap())).unwrap().portrait.as_deref(),
+            odoamne.identity.birth_date,
+            CalendarDate::parse("1995-01-18")
+        );
+        assert_eq!(
+            odoamne.identity.age_on(CalendarDate::CAREER_OPENING),
+            Some(18)
+        );
+        assert!(odoamne.competencies.is_none());
+        assert_eq!(
+            odoamne.identity.portrait.as_deref(),
+            Some("portraits/wiki/H2K-Odaomne-2015spring.jpg")
+        );
+        assert_eq!(
+            store
+                .load_team(TeamId(store.id_named("teams", "Cloud9 Eclipse").unwrap()))
+                .unwrap()
+                .portrait
+                .as_deref(),
             Some("portraits/wiki/Cloud9_Eclipselogo_profile.png")
         );
-        let complexity = OrganisationId(store.id_named("organisations", "compLexity Gaming").unwrap());
+        let complexity = OrganisationId(
+            store
+                .id_named("organisations", "compLexity Gaming")
+                .unwrap(),
+        );
         for name in ["compLexity.Black", "compLexity.Red", "compLexity Academy"] {
             assert_eq!(
-                store.load_team(TeamId(store.id_named("teams", name).unwrap())).unwrap().organisation,
+                store
+                    .load_team(TeamId(store.id_named("teams", name).unwrap()))
+                    .unwrap()
+                    .organisation,
                 complexity
             );
         }
         assert_eq!(
-            store.load_team(TeamId(store.id_named("teams", "compLexity.Black").unwrap())).unwrap().portrait.as_deref(),
+            store
+                .load_team(TeamId(store.id_named("teams", "compLexity.Black").unwrap()))
+                .unwrap()
+                .portrait
+                .as_deref(),
             Some("portraits/wiki/CoLBlack.png")
         );
         let vvv = OrganisationId(store.id_named("organisations", "vVv Gaming").unwrap());
-        let white = store.load_team(TeamId(store.id_named("teams", "vVv Gaming White").unwrap())).unwrap();
+        let white = store
+            .load_team(TeamId(store.id_named("teams", "vVv Gaming White").unwrap()))
+            .unwrap();
         assert_eq!(white.organisation, vvv);
-        assert_eq!(white.portrait.as_deref(), Some("portraits/wiki/VVv_Gaminglogo_square.png"));
-        let ndd = store.load_player(PlayerId(store.id_named("players", "NdD").unwrap())).unwrap();
-        assert_eq!(ndd.identity.role, Role::Jungle);
-        assert_eq!(ndd.identity.teams, vec![TeamId(store.id_named("teams", "Bangkok Titans").unwrap())]);
-        let robert = store.load_player(PlayerId(store.id_named("players", "RobertxLee").unwrap())).unwrap();
-        assert_eq!(robert.identity.role, Role::Adc);
-        assert_eq!(robert.identity.teams, vec![TeamId(store.id_named("teams", "compLexity.Black").unwrap())]);
         assert_eq!(
-            store.load_player(PlayerId(store.id_named("players", "Porky").unwrap())).unwrap().identity.teams,
+            white.portrait.as_deref(),
+            Some("portraits/wiki/VVv_Gaminglogo_square.png")
+        );
+        let ndd = store
+            .load_player(PlayerId(store.id_named("players", "NdD").unwrap()))
+            .unwrap();
+        assert_eq!(ndd.identity.role, Role::Jungle);
+        assert_eq!(
+            ndd.identity.teams,
+            vec![TeamId(store.id_named("teams", "Bangkok Titans").unwrap())]
+        );
+        let robert = store
+            .load_player(PlayerId(store.id_named("players", "RobertxLee").unwrap()))
+            .unwrap();
+        assert_eq!(robert.identity.role, Role::Adc);
+        assert_eq!(
+            robert.identity.teams,
+            vec![TeamId(store.id_named("teams", "compLexity.Black").unwrap())]
+        );
+        assert_eq!(
+            store
+                .load_player(PlayerId(store.id_named("players", "Porky").unwrap()))
+                .unwrap()
+                .identity
+                .teams,
             vec![TeamId(store.id_named("teams", "Lyon Gaming").unwrap())]
         );
         assert_eq!(
-            store.load_player(PlayerId(store.id_named("players", "nukeduck").unwrap())).unwrap().identity.teams,
-            vec![TeamId(store.id_named("teams", "Ninjas in Pyjamas").unwrap())]
+            store
+                .load_player(PlayerId(store.id_named("players", "nukeduck").unwrap()))
+                .unwrap()
+                .identity
+                .teams,
+            vec![TeamId(
+                store.id_named("teams", "Ninjas in Pyjamas").unwrap()
+            )]
         );
         assert_eq!(
-            store.load_player(PlayerId(store.id_named("players", "goldenglue").unwrap())).unwrap().identity.teams,
+            store
+                .load_player(PlayerId(store.id_named("players", "goldenglue").unwrap()))
+                .unwrap()
+                .identity
+                .teams,
             vec![TeamId(store.id_named("teams", "compLexity.Red").unwrap())]
         );
         assert_eq!(
-            store.load_player(PlayerId(store.id_named("players", "4zeer0").unwrap())).unwrap().identity.teams,
+            store
+                .load_player(PlayerId(store.id_named("players", "4zeer0").unwrap()))
+                .unwrap()
+                .identity
+                .teams,
             vec![TeamId(store.id_named("teams", "BrawL eSports").unwrap())]
         );
         assert_eq!(
-            store.load_player(PlayerId(store.id_named("players", "BunnyFuFuu").unwrap())).unwrap().identity.teams,
+            store
+                .load_player(PlayerId(store.id_named("players", "BunnyFuFuu").unwrap()))
+                .unwrap()
+                .identity
+                .teams,
             vec![TeamId(store.id_named("teams", "Challenger8").unwrap())]
         );
-        let koukin = store.load_player(PlayerId(store.id_named("players", "Koukin").unwrap())).unwrap();
+        let koukin = store
+            .load_player(PlayerId(store.id_named("players", "Koukin").unwrap()))
+            .unwrap();
         assert_eq!(koukin.identity.role, Role::Adc);
         assert_eq!(koukin.identity.nationality.as_deref(), Some("EC"));
         assert_eq!(koukin.identity.birth_date, None);
-        assert_eq!(koukin.identity.teams, vec![TeamId(store.id_named("teams", "Tesla Gaming").unwrap())]);
+        assert_eq!(
+            koukin.identity.teams,
+            vec![TeamId(store.id_named("teams", "Tesla Gaming").unwrap())]
+        );
         assert_ne!(
             store.id_named("players", "NaMei").unwrap(),
             store.id_named("players", "NaMe1").unwrap()
@@ -1682,11 +2013,22 @@ mod tests {
             Some("portraits/wiki/LPL.jpg")
         );
         assert_eq!(
-            store.load_organisation(OrganisationId(store.id_named("organisations", "Alliance").unwrap())).unwrap().portrait.as_deref(),
+            store
+                .load_organisation(OrganisationId(
+                    store.id_named("organisations", "Alliance").unwrap()
+                ))
+                .unwrap()
+                .portrait
+                .as_deref(),
             Some("portraits/wiki/AllianceOldlogo_square.png")
         );
         assert_eq!(
-            store.load_player(PlayerId(store.id_named("players", "Froggen").unwrap())).unwrap().identity.portrait.as_deref(),
+            store
+                .load_player(PlayerId(store.id_named("players", "Froggen").unwrap()))
+                .unwrap()
+                .identity
+                .portrait
+                .as_deref(),
             Some("portraits/wiki/FroggenALL2014.png")
         );
     }

@@ -62,7 +62,10 @@ mod tests {
     #[test]
     fn completed_years_follow_the_birthday() {
         let faker = CalendarDate::parse("1996-05-07").unwrap();
-        assert_eq!(faker.completed_years_until(CalendarDate::CAREER_OPENING), Some(17));
+        assert_eq!(
+            faker.completed_years_until(CalendarDate::CAREER_OPENING),
+            Some(17)
+        );
         assert_eq!(
             faker.completed_years_until(CalendarDate::parse("2014-05-07").unwrap()),
             Some(18)

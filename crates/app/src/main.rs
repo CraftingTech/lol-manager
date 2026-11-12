@@ -5,12 +5,17 @@ use std::path::{Path, PathBuf};
 
 use browser::{Browser, Catalog};
 use domain::{LeagueId, OrganisationId, TeamId};
-use gpui::{px, prelude::*, size, App, Application, Bounds, TitlebarOptions, WindowBounds, WindowOptions};
+use gpui::{
+    prelude::*, px, size, App, Application, Bounds, TitlebarOptions, WindowBounds, WindowOptions,
+};
 use storage::Store;
 
 fn main() {
     let path = database_path();
-    let assets = path.parent().map(Path::to_path_buf).unwrap_or_else(|| PathBuf::from("data"));
+    let assets = path
+        .parent()
+        .map(Path::to_path_buf)
+        .unwrap_or_else(|| PathBuf::from("data"));
     let catalog = load_catalog(&path);
 
     Application::new().run(move |cx: &mut App| {
@@ -34,16 +39,23 @@ fn main() {
 }
 
 fn database_path() -> PathBuf {
-    std::env::args().nth(1).map(PathBuf::from).unwrap_or_else(|| {
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../data/lol-manager.sqlite")
-    })
+    std::env::args()
+        .nth(1)
+        .map(PathBuf::from)
+        .unwrap_or_else(|| {
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../data/lol-manager.sqlite")
+        })
 }
 
 fn load_catalog(path: &std::path::Path) -> Result<Catalog, String> {
     let store = Store::open(path).map_err(|error| format!("{error:?}"))?;
-    let champions = store.list_champions().map_err(|error| format!("{error:?}"))?;
+    let champions = store
+        .list_champions()
+        .map_err(|error| format!("{error:?}"))?;
     let leagues = store.list_leagues().map_err(|error| format!("{error:?}"))?;
-    let organisations = store.list_organisations().map_err(|error| format!("{error:?}"))?;
+    let organisations = store
+        .list_organisations()
+        .map_err(|error| format!("{error:?}"))?;
     let teams = store.list_teams().map_err(|error| format!("{error:?}"))?;
     let players = store.list_players().map_err(|error| format!("{error:?}"))?;
     let patches = store.list_patches().map_err(|error| format!("{error:?}"))?;
@@ -53,11 +65,18 @@ fn load_catalog(path: &std::path::Path) -> Result<Catalog, String> {
             seasons.insert(league.id, season);
         }
     }
-    let team_names: HashMap<TeamId, String> = teams.iter().map(|team| (team.id, team.name.clone())).collect();
-    let organisation_names: HashMap<OrganisationId, String> =
-        organisations.iter().map(|org| (org.id, org.name.clone())).collect();
-    let league_names: HashMap<LeagueId, String> =
-        leagues.iter().map(|league| (league.id, league.name.clone())).collect();
+    let team_names: HashMap<TeamId, String> = teams
+        .iter()
+        .map(|team| (team.id, team.name.clone()))
+        .collect();
+    let organisation_names: HashMap<OrganisationId, String> = organisations
+        .iter()
+        .map(|org| (org.id, org.name.clone()))
+        .collect();
+    let league_names: HashMap<LeagueId, String> = leagues
+        .iter()
+        .map(|league| (league.id, league.name.clone()))
+        .collect();
     Ok(Catalog {
         champions,
         leagues,

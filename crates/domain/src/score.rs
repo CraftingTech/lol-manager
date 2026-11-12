@@ -3,7 +3,11 @@ pub struct Score(u8);
 
 impl Score {
     pub fn new(value: u8) -> Option<Self> {
-        if value <= 100 { Some(Self(value)) } else { None }
+        if value <= 100 {
+            Some(Self(value))
+        } else {
+            None
+        }
     }
 
     pub fn value(self) -> u8 {

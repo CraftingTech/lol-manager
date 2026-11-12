@@ -297,6 +297,9 @@ CREATE TABLE champion_on_patch (
     health INTEGER,
     armor INTEGER,
     magic_resist INTEGER,
+    phase_early INTEGER,
+    phase_mid INTEGER,
+    phase_late INTEGER,
     PRIMARY KEY (patch_id, champion_id),
     FOREIGN KEY (patch_id) REFERENCES patches (id),
     FOREIGN KEY (champion_id) REFERENCES champions (id)

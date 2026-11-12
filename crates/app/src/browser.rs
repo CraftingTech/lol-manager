@@ -2,8 +2,9 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 use domain::{
-    CalendarDate, Champion, ChampionOnPatch, League, LeagueId, LeagueSeason, LeagueTier, Organisation,
-    OrganisationId, Patch, Player, Role, RoleSkill, Score, SeasonPresence, Team, TeamId,
+    CalendarDate, Champion, ChampionOnPatch, League, LeagueId, LeagueSeason, LeagueTier,
+    Organisation, OrganisationId, Patch, Player, Role, RoleSkill, Score, SeasonPresence, Team,
+    TeamId,
 };
 use std::ops::Range;
 
@@ -71,6 +72,9 @@ impl Section {
                 ("PV", 44.0),
                 ("Armure", 64.0),
                 ("RM", 44.0),
+                ("Early", 52.0),
+                ("Mid", 44.0),
+                ("Late", 48.0),
             ],
             Self::Teams => &[
                 ("Nom", 200.0),
@@ -192,7 +196,11 @@ impl Render for Browser {
                     .flex()
                     .justify_between()
                     .items_center()
-                    .child(label(section.label(), if active { TEXT } else { MUTED }, active))
+                    .child(label(
+                        section.label(),
+                        if active { TEXT } else { MUTED },
+                        active,
+                    ))
                     .child(label(count.to_string(), MUTED, false))
                     .on_mouse_down(
                         MouseButton::Left,
@@ -265,7 +273,10 @@ impl Browser {
                     ),
             )
             .child(match &self.catalog {
-                Err(error) => div().p_4().child(label(error, MUTED, false)).into_any_element(),
+                Err(error) => div()
+                    .p_4()
+                    .child(label(error, MUTED, false))
+                    .into_any_element(),
                 Ok(_) => uniform_list(
                     ("roster", section.index()),
                     self.count(section),
@@ -293,29 +304,39 @@ impl Browser {
             .flex()
             .flex_shrink_0()
             .items_center()
-            .bg(rgb(if selected { SELECTED } else if index % 2 == 0 { ROW } else { CANVAS }))
-            .children(cells.into_iter().enumerate().zip(self.section.headers()).map(
-                |(cell, (_, width))| {
-                    let (cell_index, value) = cell;
-                    let mut slot = div()
-                        .w(px(*width))
-                        .flex_shrink_0()
-                        .h(px(28.0))
-                        .overflow_hidden()
-                        .flex()
-                        .items_center()
-                        .gap(px(8.0));
-                    if cell_index == 0 {
-                        if let Some(path) = self.portrait_file(index) {
-                            slot = slot.child(img(path).w(px(24.0)).h(px(24.0)));
+            .bg(rgb(if selected {
+                SELECTED
+            } else if index % 2 == 0 {
+                ROW
+            } else {
+                CANVAS
+            }))
+            .children(
+                cells
+                    .into_iter()
+                    .enumerate()
+                    .zip(self.section.headers())
+                    .map(|(cell, (_, width))| {
+                        let (cell_index, value) = cell;
+                        let mut slot = div()
+                            .w(px(*width))
+                            .flex_shrink_0()
+                            .h(px(28.0))
+                            .overflow_hidden()
+                            .flex()
+                            .items_center()
+                            .gap(px(8.0));
+                        if cell_index == 0 {
+                            if let Some(path) = self.portrait_file(index) {
+                                slot = slot.child(img(path).w(px(24.0)).h(px(24.0)));
+                            }
                         }
-                    }
-                    if cell_index + 1 < self.section.headers().len() {
-                        slot = slot.mr(px(16.0));
-                    }
-                    slot.child(cell_text(value))
-                },
-            ))
+                        if cell_index + 1 < self.section.headers().len() {
+                            slot = slot.mr(px(16.0));
+                        }
+                        slot.child(cell_text(value))
+                    }),
+            )
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(move |this, _, _, cx| {
@@ -501,7 +522,10 @@ impl Browser {
                     ("Identifiant", champion.id.0.to_string()),
                     ("Patch", patch_label(catalog, champion.id)),
                 ];
-                lines.extend(named_sliders(&CHAMPION_SLIDERS, &champion_sliders(kit(catalog, champion.id))));
+                lines.extend(named_sliders(
+                    &CHAMPION_SLIDERS,
+                    &champion_sliders(kit(catalog, champion.id)),
+                ));
                 lines
             }
             Section::Players => {
@@ -527,7 +551,10 @@ impl Browser {
                 lines.extend(named_sliders(&PLAYER_SLIDERS, &player_sliders(player)));
                 lines.extend([
                     ("Forme", score_text(player.state.map(|state| state.form))),
-                    ("Fatigue", score_text(player.state.map(|state| state.fatigue))),
+                    (
+                        "Fatigue",
+                        score_text(player.state.map(|state| state.fatigue)),
+                    ),
                     ("Pool", count_or_empty(player.pool.len())),
                     ("Tags", count_or_empty(player.tags.len())),
                     ("Aspirations", count_or_empty(player.aspirations.len())),
@@ -566,7 +593,14 @@ impl Browser {
                     ("Organisation", organisation),
                     ("Région", organisation_region(catalog, team.organisation)),
                     ("Inscription", league),
-                    ("Effectif", if roster.is_empty() { "vide".into() } else { roster }),
+                    (
+                        "Effectif",
+                        if roster.is_empty() {
+                            "vide".into()
+                        } else {
+                            roster
+                        },
+                    ),
                     ("Identifiant", team.id.0.to_string()),
                 ]
             }
@@ -588,7 +622,9 @@ impl Browser {
                     ),
                     (
                         "Places MSI",
-                        season.map(|season| season.msi_slots.to_string()).unwrap_or_else(|| "—".into()),
+                        season
+                            .map(|season| season.msi_slots.to_string())
+                            .unwrap_or_else(|| "—".into()),
                     ),
                     (
                         "Places Worlds",
@@ -610,7 +646,13 @@ impl Browser {
                     ("Région", blank(some_text(&org.region))),
                     ("Sièges staff", shown(org.staff_seats)),
                     ("Locaux", presence(org.locaux.is_some())),
-                    ("Maillot", org.jersey.as_ref().map(|jersey| jersey.name.clone()).unwrap_or_else(|| "non renseigné".into())),
+                    (
+                        "Maillot",
+                        org.jersey
+                            .as_ref()
+                            .map(|jersey| jersey.name.clone())
+                            .unwrap_or_else(|| "non renseigné".into()),
+                    ),
                     ("Budget", shown(org.finances.budget)),
                     ("Masse salariale", shown(org.finances.wage_bill)),
                     ("Fans", shown(org.fan_base.count)),
@@ -627,13 +669,22 @@ fn sheet_width(headers: &[(&str, f32)]) -> f32 {
 }
 
 fn headed(titles: &[(&str, f32)]) -> impl IntoElement {
-    div().flex().flex_shrink_0().children(titles.iter().copied().enumerate().map(|(index, (title, width))| {
-        let mut cell = div().w(px(width)).flex_shrink_0().overflow_hidden();
-        if index + 1 < titles.len() {
-            cell = cell.mr(px(16.0));
-        }
-        cell.child(label(title, MUTED, false))
-    }))
+    div()
+        .flex()
+        .flex_shrink_0()
+        .children(
+            titles
+                .iter()
+                .copied()
+                .enumerate()
+                .map(|(index, (title, width))| {
+                    let mut cell = div().w(px(width)).flex_shrink_0().overflow_hidden();
+                    if index + 1 < titles.len() {
+                        cell = cell.mr(px(16.0));
+                    }
+                    cell.child(label(title, MUTED, false))
+                }),
+        )
 }
 
 fn cell_text(value: String) -> impl IntoElement {
@@ -641,12 +692,19 @@ fn cell_text(value: String) -> impl IntoElement {
 }
 
 fn label(value: impl AsRef<str>, color: u32, strong: bool) -> impl IntoElement {
-    let text = div().text_color(rgb(color)).child(value.as_ref().to_string());
-    if strong { text.text_sm() } else { text.text_xs() }
+    let text = div()
+        .text_color(rgb(color))
+        .child(value.as_ref().to_string());
+    if strong {
+        text.text_sm()
+    } else {
+        text.text_xs()
+    }
 }
 
 fn photo_label(path: Option<&str>) -> String {
-    path.map(str::to_string).unwrap_or_else(|| "sans photo".into())
+    path.map(str::to_string)
+        .unwrap_or_else(|| "sans photo".into())
 }
 
 fn players_of(catalog: &Catalog, team: TeamId) -> Vec<&Player> {
@@ -672,7 +730,7 @@ const PLAYER_SLIDERS: [&str; 12] = [
     "Lane / path",
 ];
 
-const CHAMPION_SLIDERS: [&str; 11] = [
+const CHAMPION_SLIDERS: [&str; 14] = [
     "Top",
     "Jungle",
     "Mid",
@@ -684,6 +742,9 @@ const CHAMPION_SLIDERS: [&str; 11] = [
     "PV",
     "Armure",
     "Résist. magique",
+    "Early",
+    "Mid",
+    "Late",
 ];
 
 fn player_sliders(player: &Player) -> Vec<String> {
@@ -708,6 +769,7 @@ fn champion_sliders(on_patch: Option<&ChampionOnPatch>) -> Vec<String> {
     let roles = on_patch.and_then(|row| row.roles);
     let damage = on_patch.and_then(|row| row.damage);
     let tankiness = on_patch.and_then(|row| row.tankiness);
+    let phases = on_patch.and_then(|row| row.phases);
     vec![
         score_text(roles.map(|roles| roles.top)),
         score_text(roles.map(|roles| roles.jungle)),
@@ -720,13 +782,18 @@ fn champion_sliders(on_patch: Option<&ChampionOnPatch>) -> Vec<String> {
         score_text(tankiness.map(|tankiness| tankiness.health)),
         score_text(tankiness.map(|tankiness| tankiness.armor)),
         score_text(tankiness.map(|tankiness| tankiness.magic_resist)),
+        score_text(phases.map(|phases| phases.early)),
+        score_text(phases.map(|phases| phases.mid)),
+        score_text(phases.map(|phases| phases.late)),
     ]
 }
 
 fn kit<'a>(catalog: &'a Catalog, champion: domain::ChampionId) -> Option<&'a ChampionOnPatch> {
-    catalog.patches.iter().rev().find_map(|patch| {
-        patch.champions.iter().find(|row| row.champion == champion)
-    })
+    catalog
+        .patches
+        .iter()
+        .rev()
+        .find_map(|patch| patch.champions.iter().find(|row| row.champion == champion))
 }
 
 fn patch_label(catalog: &Catalog, champion: domain::ChampionId) -> String {
@@ -735,7 +802,10 @@ fn patch_label(catalog: &Catalog, champion: domain::ChampionId) -> String {
         .iter()
         .rev()
         .find(|patch| patch.champions.iter().any(|row| row.champion == champion))
-        .map(|patch| format!("{} ({})", patch.version, patch.date))
+        .map(|patch| match patch.date.is_empty() {
+            true => patch.version.clone(),
+            false => format!("{} ({})", patch.version, patch.date),
+        })
         .unwrap_or_else(|| "aucun".into())
 }
 
@@ -750,7 +820,9 @@ fn role_skill_score(skill: RoleSkill) -> Score {
 }
 
 fn score_text(score: Option<Score>) -> String {
-    score.map(|score| score.value().to_string()).unwrap_or_else(|| "—".into())
+    score
+        .map(|score| score.value().to_string())
+        .unwrap_or_else(|| "—".into())
 }
 
 fn role_label(role: Role) -> &'static str {
@@ -789,21 +861,38 @@ fn shown_age(player: &Player) -> String {
 }
 
 fn blank(value: Option<&str>) -> String {
-    value.filter(|text| !text.is_empty()).unwrap_or("—").to_string()
+    value
+        .filter(|text| !text.is_empty())
+        .unwrap_or("—")
+        .to_string()
 }
 
 fn some_text(value: &str) -> Option<&str> {
-    if value.is_empty() { None } else { Some(value) }
+    if value.is_empty() {
+        None
+    } else {
+        Some(value)
+    }
 }
 
 fn presence(present: bool) -> String {
-    if present { "renseigné".into() } else { "non renseigné".into() }
+    if present {
+        "renseigné".into()
+    } else {
+        "non renseigné".into()
+    }
 }
 
 fn count_or_empty(count: usize) -> String {
-    if count == 0 { "vide".into() } else { count.to_string() }
+    if count == 0 {
+        "vide".into()
+    } else {
+        count.to_string()
+    }
 }
 
 fn shown<T: ToString>(value: Option<T>) -> String {
-    value.map(|item| item.to_string()).unwrap_or_else(|| "non renseigné".into())
+    value
+        .map(|item| item.to_string())
+        .unwrap_or_else(|| "non renseigné".into())
 }

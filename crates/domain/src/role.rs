@@ -27,7 +27,10 @@ impl RoleSkill {
         matches!(
             (role, self),
             (Role::Jungle, Self::Pathing(_))
-                | (Role::Top | Role::Mid | Role::Adc | Role::Support, Self::Laning(_))
+                | (
+                    Role::Top | Role::Mid | Role::Adc | Role::Support,
+                    Self::Laning(_)
+                )
         )
     }
 }
@@ -40,8 +43,14 @@ mod tests {
     #[test]
     fn jungle_paths_and_lanes_do_not() {
         let score = Score::new(40).unwrap();
-        assert!(matches!(RoleSkill::for_role(Role::Jungle, score), RoleSkill::Pathing(_)));
-        assert!(matches!(RoleSkill::for_role(Role::Mid, score), RoleSkill::Laning(_)));
+        assert!(matches!(
+            RoleSkill::for_role(Role::Jungle, score),
+            RoleSkill::Pathing(_)
+        ));
+        assert!(matches!(
+            RoleSkill::for_role(Role::Mid, score),
+            RoleSkill::Laning(_)
+        ));
         assert!(!RoleSkill::Laning(score).fits(Role::Jungle));
         assert!(RoleSkill::Pathing(score).fits(Role::Jungle));
     }

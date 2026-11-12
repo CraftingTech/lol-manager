@@ -1,6 +1,6 @@
 use crate::champion::{DamageSliders, TankinessSliders};
 use crate::ids::{ChampionId, PatchId};
-use crate::score::Score;
+use crate::score::{PhaseScores, Score};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RoleScores {
@@ -17,6 +17,7 @@ pub struct ChampionOnPatch {
     pub roles: Option<RoleScores>,
     pub damage: Option<DamageSliders>,
     pub tankiness: Option<TankinessSliders>,
+    pub phases: Option<PhaseScores>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -63,6 +64,7 @@ mod tests {
                 roles: None,
                 damage: None,
                 tankiness: None,
+                phases: None,
             }],
             objectives: vec![ObjectiveEvent {
                 name: "drake".into(),

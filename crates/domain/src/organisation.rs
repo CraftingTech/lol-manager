@@ -73,7 +73,10 @@ mod tests {
             region: "EU".to_string(),
             history: String::new(),
             portrait: None,
-            teams: vec![TeamId(uuid::Uuid::from_u128(1)), TeamId(uuid::Uuid::from_u128(2))],
+            teams: vec![
+                TeamId(uuid::Uuid::from_u128(1)),
+                TeamId(uuid::Uuid::from_u128(2)),
+            ],
             staff_seats: Some(3),
             locaux: Some(Locaux {
                 scrim_room: false,
@@ -95,7 +98,13 @@ mod tests {
             },
         };
 
-        assert_eq!(organisation.teams, vec![TeamId(uuid::Uuid::from_u128(1)), TeamId(uuid::Uuid::from_u128(2))]);
+        assert_eq!(
+            organisation.teams,
+            vec![
+                TeamId(uuid::Uuid::from_u128(1)),
+                TeamId(uuid::Uuid::from_u128(2))
+            ]
+        );
         assert!(organisation.finances.budget.is_none());
         assert!(organisation.sponsors.is_empty());
     }

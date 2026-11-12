@@ -107,7 +107,8 @@ pub struct PlayerIdentity {
 
 impl PlayerIdentity {
     pub fn age_on(&self, on: CalendarDate) -> Option<u8> {
-        self.birth_date.and_then(|birth| birth.completed_years_until(on))
+        self.birth_date
+            .and_then(|birth| birth.completed_years_until(on))
     }
 }
 
@@ -190,8 +191,7 @@ impl Player {
 mod tests {
     use super::{
         AspirationEffect, AspirationType, AspirationValue, Competencies, PalmaresEntry, Player,
-        PlayerAspiration,
-        PlayerError, PlayerIdentity, PlayerState, PoolEntry,
+        PlayerAspiration, PlayerError, PlayerIdentity, PlayerState, PoolEntry,
     };
     use crate::ids::{ChampionId, PlayerId, TeamId};
     use crate::role::{Role, RoleSkill};
@@ -268,11 +268,8 @@ mod tests {
             Some(state()),
             vec![Tag::Rookie],
             vec![
-                PlayerAspiration::new(
-                    AspirationType::RetirementAge,
-                    AspirationValue::Age(28),
-                )
-                .unwrap(),
+                PlayerAspiration::new(AspirationType::RetirementAge, AspirationValue::Age(28))
+                    .unwrap(),
                 PlayerAspiration::new(
                     AspirationType::SatisfyingTitle,
                     AspirationValue::Title("Worlds".into()),
@@ -313,7 +310,10 @@ mod tests {
             Some(competencies(RoleSkill::Laning(score(40)))),
             Some(state()),
             vec![],
-            vec![PlayerAspiration::new(AspirationType::RetirementAge, AspirationValue::Age(28)).unwrap()],
+            vec![
+                PlayerAspiration::new(AspirationType::RetirementAge, AspirationValue::Age(28))
+                    .unwrap(),
+            ],
         )
         .unwrap();
         assert!(matches!(

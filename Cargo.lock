@@ -5063,6 +5063,7 @@ version = "0.1.0"
 dependencies = [
  "domain",
  "rusqlite",
+ "serde_json",
  "uuid",
 ]
 

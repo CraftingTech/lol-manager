@@ -1,7 +1,7 @@
 use crate::error::StoreError;
 use domain::{
-    AspirationEffect, AspirationType, LeagueTier, Role, RoleSkill, SalaryCap, Score, SeasonPresence,
-    SeriesLength, StaffRole, Tag,
+    AspirationEffect, AspirationType, LeagueTier, Role, RoleSkill, SalaryCap, Score,
+    SeasonPresence, SeriesLength, StaffRole, Tag,
 };
 
 pub fn score_from(value: i64) -> Result<Score, StoreError> {
@@ -154,7 +154,10 @@ pub fn cap_to_sql(cap: Option<SalaryCap>) -> (Option<&'static str>, Option<i64>)
     }
 }
 
-pub fn cap_from_sql(kind: Option<String>, amount: Option<i64>) -> Result<Option<SalaryCap>, StoreError> {
+pub fn cap_from_sql(
+    kind: Option<String>,
+    amount: Option<i64>,
+) -> Result<Option<SalaryCap>, StoreError> {
     match kind.as_deref() {
         None => Ok(None),
         Some("hard") => Ok(Some(SalaryCap::Hard { amount })),
@@ -172,7 +175,10 @@ pub fn staff_role_to_sql(role: StaffRole) -> (&'static str, Option<&'static str>
     }
 }
 
-pub fn staff_role_from_sql(role: &str, positional: Option<String>) -> Result<StaffRole, StoreError> {
+pub fn staff_role_from_sql(
+    role: &str,
+    positional: Option<String>,
+) -> Result<StaffRole, StoreError> {
     match role {
         "assistant_coach" => Ok(StaffRole::AssistantCoach),
         "analyst" => Ok(StaffRole::Analyst),
